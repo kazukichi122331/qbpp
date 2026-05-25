@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 import math
 import os
 
-#nodes = [(10, 12),  (33, 125),  (12, 226),
-#         (121, 11), (108, 142), (111, 243),
-#         (220, 4),  (210, 113), (211, 233)]
+nodes = [(10, 12),  (33, 125),  (12, 226),
+         (121, 11), (108, 142), (111, 243),
+         (220, 4),  (210, 113), (211, 233)]
 
-nodes = [(10, 12),  (33, 125),  (12, 226), (121, 11), (108, 142), (111, 243)]
+#nodes = [(10, 12),  (33, 125),  (12, 226), (121, 11), (108, 142), (111, 243)]
 
 def distance(i, j):
     dx = nodes[i][0] - nodes[j][0]
@@ -36,7 +36,7 @@ constraint2 = qbpp.sum([
     if i != j
 ])
 
-constraint = constraint1 + constraint2
+constraint = 1000*(constraint1 + constraint2)
 
 obj = qbpp.sum([
     distance(i, j) * x[i][j]
@@ -45,7 +45,7 @@ obj = qbpp.sum([
     if i != j
 ])
 
-f = obj + 1000*constraint
+f = obj + constraint
 f.simplify_as_binary()
 
 # フォルダ作成
@@ -56,7 +56,7 @@ for trial in range(10):
     print(f"\n=== Trial {trial} ===")
 
     solver = qbpp.EasySolver(f)
-    sol = solver.search(time_limit=10.0)
+    sol = solver.search(time_limit=30.0)
 
     print("energy:", sol(f))
     print("min distance", sol(obj))
