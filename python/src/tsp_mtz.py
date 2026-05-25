@@ -18,14 +18,8 @@ n = len(nodes)
 x = qbpp.var("x", shape=(n, n))
 y = qbpp.var("y", shape=n, between=(0, n-1))
 
-constraint1 = qbpp.sum([
-    qbpp.constrain(qbpp.sum([x[i][j] for j in range(n) if i != j]), equal=1)
-    for i in range(n)
-]) + \
-    qbpp.sum([
-    qbpp.constrain(qbpp.sum([x[i][j] for i in range(n) if i != j]), equal=1)
-    for j in range(n)
-])
+constraint1 = qbpp.sum(qbpp.constrain(qbpp.vector_sum(x, axis=1), equal=1)) + \
+              qbpp.sum(qbpp.constrain(qbpp.vector_sum(x, axis=0), equal=1))
 
 
 constraint2 = qbpp.sum([
@@ -35,26 +29,28 @@ constraint2 = qbpp.sum([
     if i != j
 ])
 
-constraint = constraint1 + constraint2
+constraint3 = qbpp.sum([qbpp.constrain(x[i][i], equal=0) for i in range(n)])
+
+constraint = constraint1 + constraint2 + constraint3
 
 obj = qbpp.sum([
     distance(i, j) * x[i][j]
     for i in range(n)
     for j in range(n)
-    if i != j
 ])
 
 f = obj + 1000*constraint
 f.simplify_as_binary()
 
 solver = qbpp.EasySolver(f)
-sol = solver.search(time_limit=10.0)
+sol = solver.search(time_limit=20.0)
 
 print("energy:", sol(f))
 print("min distance", sol(obj))
 print("constraint  = ", sol(constraint ))
 print("constraint1 = ", sol(constraint1))
 print("constraint2 = ", sol(constraint2))
+print("constraint3 = ", sol(constraint3))
 
 tour = [0]
 current = 0
