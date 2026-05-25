@@ -6,8 +6,6 @@ nodes = [(10, 12),  (33, 125),  (12, 226),
          (121, 11), (108, 142), (111, 243),
          (220, 4),  (210, 113), (211, 233)]
 
-#nodes = [(10, 12),  (33, 125),  (12, 226), (121, 11), (108, 142), (111, 243)]
-
 def distance(i, j):
     dx = nodes[i][0] - nodes[j][0]
     dy = nodes[i][1] - nodes[j][1]
@@ -43,7 +41,7 @@ f = obj + constraint
 f.simplify_as_binary()
 
 solver = qbpp.EasySolver(f)
-sol = solver.search(time_limit=10.0)
+sol = solver.search(time_limit=20.0)
 
 print("energy:", sol(f))
 print("min distance", sol(obj))

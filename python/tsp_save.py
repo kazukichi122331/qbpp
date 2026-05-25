@@ -17,35 +17,19 @@ def distance(i, j):
 
 n = len(nodes)
 x = qbpp.var("x", shape=(n, n))
-y = qbpp.var("y", shape=n, between=(0, n-1))
 
-constraint1 = qbpp.sum([
-    qbpp.constrain(qbpp.sum([x[i][j] for j in range(n) if i != j]), equal=1)
-    for i in range(n)
-]) + \
-    qbpp.sum([
-    qbpp.constrain(qbpp.sum([x[i][j] for i in range(n) if i != j]), equal=1)
-    for j in range(n)
-])
+constraint = qbpp.sum(qbpp.vector_sum(x, axis=1) == 1) + \
+             qbpp.sum(qbpp.vector_sum(x, axis=0) == 1)
 
+objective = qbpp.expr()
+for i in range(n):
+    next_i = (i + 1) % n
+    for j in range(n):
+        for k in range(n):
+            if k != j:
+                objective += distance(j, k) * x[i][j] * x[next_i][k]
 
-constraint2 = qbpp.sum([
-    qbpp.constrain(y[i] - y[j] + n * x[i][j], between=(None, n-1))
-    for i in range(1, n)
-    for j in range(1, n)
-    if i != j
-])
-
-constraint = 1000*(constraint1 + constraint2)
-
-obj = qbpp.sum([
-    distance(i, j) * x[i][j]
-    for i in range(n)
-    for j in range(n)
-    if i != j
-])
-
-f = obj + constraint
+f = objective + constraint * 1000
 f.simplify_as_binary()
 
 # フォルダ作成
@@ -56,42 +40,18 @@ for trial in range(10):
     print(f"\n=== Trial {trial} ===")
 
     solver = qbpp.EasySolver(f)
-    sol = solver.search(time_limit=30.0)
-
-    print("energy:", sol(f))
-    print("min distance", sol(obj))
-    print("constraint  = ", sol(constraint ))
-    print("constraint1 = ", sol(constraint1))
-    print("constraint2 = ", sol(constraint2))
+    sol = solver.search(time_limit=1.0)
 
     # 経路復元
-    tour = [0]
-    current = 0
-    visited = set([0])
+    tour = []
 
-    while True:
-        next_city = None
-
+    for i in range(n):
         for j in range(n):
-            if j != current and sol(x[current][j]) == 1:
-                next_city = j
+            if sol(x[i][j]) == 1:
+                tour.append(j)
                 break
 
-        if next_city is None:
-            print("経路復元失敗")
-            break
-
-        tour.append(next_city)
-
-        if next_city == 0:
-            break
-
-        if next_city in visited:
-            print("部分巡回発生")
-            break
-
-        visited.add(next_city)
-        current = next_city
+    tour.append(tour[0])
 
     print("Tour:", " -> ".join(map(str, tour)))
 
@@ -99,9 +59,9 @@ for trial in range(10):
     selected_edges = []
 
     for i in range(n):
-        for j in range(n):
-            if i != j and sol(x[i][j]) == 1:
-                selected_edges.append((i, j))
+        a = tour[i]
+        b = tour[i + 1]
+        selected_edges.append((a, b))
 
     # 新しい図を作成
     plt.figure()
@@ -133,7 +93,7 @@ for trial in range(10):
     plt.ylabel("y")
 
     # 保存
-    plt.savefig(f"results/mtz_{trial}.png")
+    plt.savefig(f"results/tsp_{trial}.png")
 
     # メモリ解放
     plt.close()

@@ -1,5 +1,6 @@
 import math
 import pyqbpp as qbpp
+import matplotlib.pyplot as plt
 
 nodes = [(10, 12),  (33, 125),  (12, 226),
          (121, 11), (108, 142), (111, 243),
@@ -39,20 +40,32 @@ for i in range(n):
             break
 print(f"Tour: {tour}")
 
-
-import matplotlib.pyplot as plt
-
+# 巡回路を画像として保存
 plt.figure(figsize=(6, 6))
-for i, (nx_, ny) in enumerate(nodes):
-    plt.plot(nx_, ny, "ko", markersize=8)
-    plt.annotate(str(i), (nx_, ny), textcoords="offset points", xytext=(5, 5))
 
+# 都市を描画
+xs = [p[0] for p in nodes]
+ys = [p[1] for p in nodes]
+plt.scatter(xs, ys)
+
+# 都市番号を表示
+for i, (x_pos, y_pos) in enumerate(nodes):
+    plt.text(x_pos + 3, y_pos + 3, str(i), fontsize=12)
+
+# 経路を描画
 for i in range(n):
-    fr = tour[i]
-    to = tour[(i + 1) % n]
-    plt.annotate("", xy=(nodes[to][0], nodes[to][1]),
-                 xytext=(nodes[fr][0], nodes[fr][1]),
-                 arrowprops=dict(arrowstyle="->", color="#e74c3c", lw=2))
-plt.title("TSP Tour")
-plt.savefig("tsp.png", dpi=150, bbox_inches="tight")
-plt.show()
+    a = tour[i]
+    b = tour[(i + 1) % n]
+
+    x_values = [nodes[a][0], nodes[b][0]]
+    y_values = [nodes[a][1], nodes[b][1]]
+
+    plt.plot(x_values, y_values, color="blue")
+
+plt.title(f"TSP Tour: {tour}")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid(True)
+plt.axis("equal")
+
+plt.savefig("tsp_result.png", dpi=300, bbox_inches="tight")
