@@ -58,7 +58,7 @@ def plot_tour(nodes, tour, filename):
     plt.xticks([])
     plt.yticks([])
 
-    plt.savefig(f"results/tsp_{filename}.png")
+    plt.savefig(f"results/{filename}.png")
     plt.close()
 
 def plot_edges(nodes, edges, filename):
@@ -117,5 +117,5 @@ def plot_edges(nodes, edges, filename):
     plt.xticks([])
     plt.yticks([])
 
-    plt.savefig(f"results/tsp_{filename}.png")
+    plt.savefig(f"results/{filename}.png")
     plt.close()

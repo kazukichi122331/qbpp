@@ -73,6 +73,7 @@ objective = qbpp.sum([
 ])
 
 f = objective + constraint
+
 ml = {x[0][n+1]: 0}
 ml.update({x[i][i]: 0 for i in range(1, n+1)})
 
@@ -80,9 +81,16 @@ g = qbpp.replace(f, ml)
 g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
-sol = solver.search(time_limit=10.0)
 
-full_sol = qbpp.Sol(f).set(sol, ml)
+best_sol = None
+for loop in range(10):
+    sol = solver.search(time_limit=10.0)
+    energy = sol(g)
+    print(f"{loop+1}: energy = {energy}")
+    if best_sol is None or energy < best_sol(g):
+        best_sol = sol
+
+full_sol = qbpp.Sol(f).set(best_sol, ml)
 
 tour = make_tour(full_sol)
 edges = make_edges(full_sol)
@@ -94,4 +102,4 @@ print(f"constraint2 = {full_sol(constraint2)}")
 print(f"var_count: {sol.info['var_count']}")
 print(f"term_count: {sol.info['term_count']}")
 
-plot_edges(nodes, edges, "tsp_mtz")
+plot_edges(nodes, edges, "loop_tsp_mtz")

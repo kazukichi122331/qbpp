@@ -44,9 +44,16 @@ g = qbpp.replace(f, ml)
 g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
-sol = solver.search(time_limit=60.0)
 
-full_sol = qbpp.Sol(f).set(sol, ml)
+best_sol = None
+for loop in range(10):
+    sol = solver.search(time_limit=10.0)
+    energy = sol(g)
+    print(f"{loop+1}: energy = {energy}")
+    if best_sol is None or energy < best_sol(g):
+        best_sol = sol
+
+full_sol = qbpp.Sol(f).set(best_sol, ml)
 
 tour = make_tour(full_sol)
 
@@ -56,4 +63,4 @@ print(f"constraint: {full_sol(constraint)}")
 print(f"var_count: {sol.info['var_count']}")
 print(f"term_count: {sol.info['term_count']}")
 
-plot_tour(nodes, tour, "tsp_order")
+plot_tour(nodes, tour, "loop_tsp_order")

@@ -77,9 +77,16 @@ f = objective + P*(constraint1 + constraint2 + constraint3 + constraint4)
 f.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(f)
-sol = solver.search(time_limit=10.0)
 
-tour = make_tour(sol)
+best_sol = None
+for loop in range(10):
+    sol = solver.search(time_limit=10.0)
+    energy = sol(f)
+    print(f"{loop+1}: energy = {energy}")
+    if best_sol is None or energy < best_sol(f):
+        best_sol = sol
+
+tour = make_tour(best_sol)
 
 print(f"Tour: {tour}")
 print(f"energy: {sol(f)}")
@@ -90,4 +97,4 @@ print(f"constraint4: {sol(constraint4)}")
 print(f"var_count: {sol.info['var_count']}")
 print(f"term_count: {sol.info['term_count']}")
 
-plot_tour(nodes, tour, "tsp_native")
+plot_tour(nodes, tour, "loop_tsp_native")

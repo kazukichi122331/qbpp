@@ -1,7 +1,7 @@
 import math
 import random
 
-n = 9
+n = 10
 seed = 1
 random.seed(seed)
 
