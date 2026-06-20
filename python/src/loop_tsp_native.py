@@ -80,7 +80,7 @@ solver = qbpp.ABS3Solver(f)
 
 best_sol = None
 for loop in range(10):
-    sol = solver.search(time_limit=10.0)
+    sol = solver.search(time_limit=20.0)
     energy = sol(f)
     print(f"{loop+1}: energy = {energy}")
     if best_sol is None or energy < best_sol(f):
