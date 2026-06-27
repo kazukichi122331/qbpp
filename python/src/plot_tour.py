@@ -48,7 +48,7 @@ def plot_tour(nodes, tour, filename):
             zorder=2
         )
 
-    plt.title(f"{filename} TSP")
+    plt.title(f"{filename}")
     plt.xlabel("")
     plt.ylabel("")
     plt.grid(True)
@@ -107,7 +107,7 @@ def plot_edges(nodes, edges, filename):
             zorder=2
         )
 
-    plt.title(f"{filename} TSP")
+    plt.title(f"{filename}")
     plt.xlabel("")
     plt.ylabel("")
     plt.grid(True)

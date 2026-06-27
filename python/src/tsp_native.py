@@ -77,7 +77,7 @@ f = objective + P*(constraint1 + constraint2 + constraint3 + constraint4)
 f.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(f)
-sol = solver.search(time_limit=20.0)
+sol = solver.search(time_limit=10.0)
 
 tour = make_tour(sol)
 

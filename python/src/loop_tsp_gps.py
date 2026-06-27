@@ -105,7 +105,7 @@ solver = qbpp.ABS3Solver(g)
 
 best_sol = None
 for loop in range(10):
-    sol = solver.search(time_limit=20.0)
+    sol = solver.search(time_limit=30.0)
     energy = sol(g)
     print(f"{loop+1}: energy = {energy}")
     if best_sol is None or energy < best_sol(g):
@@ -126,4 +126,4 @@ print(f"constraint = {full_sol(constraint)}")
 print(f"var_count: {sol.info['var_count']}")
 print(f"term_count: {sol.info['term_count']}")
 
-plot_edges(nodes, edges, "loop_tsp_gps")
+plot_edges(nodes, edges, "tsp_gps")

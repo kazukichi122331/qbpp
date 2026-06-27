@@ -82,15 +82,38 @@ g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
 
-best_sol = None
-for loop in range(10):
-    sol = solver.search(time_limit=20.0)
-    energy = sol(g)
-    print(f"{loop+1}: energy = {energy}")
-    if best_sol is None or energy < best_sol(g):
-        best_sol = sol
+cuts = 0
 
-full_sol = qbpp.Sol(f).set(best_sol, ml)
+for loop in range(10):
+    model = f + 10000*cuts
+    g = qbpp.replace(model, ml)
+    g.simplify_as_binary()
+
+    solver = qbpp.ABS3Solver(g)
+
+    sol = solver.search(time_limit=10.0)
+
+    full_sol = qbpp.Sol(model).set(sol, ml)
+
+    tour = make_tour(full_sol)
+
+    if (full_sol(f)==840):
+        print("valid tour found")
+        break
+
+    print("invalid solution -> add cut")
+
+    used_edges = [
+        x[i][j]
+        for i in range(n+2)
+        for j in range(n+2)
+        if i != j and full_sol(x[i][j]) == 1
+    ]
+
+    cuts += qbpp.constrain(
+        qbpp.sum(used_edges),
+        between=(None, len(used_edges)-1)
+    )
 
 tour = make_tour(full_sol)
 edges = make_edges(full_sol)

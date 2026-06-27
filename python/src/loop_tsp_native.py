@@ -60,7 +60,6 @@ for u in range(1, n+2):
                     constraint3 += x[u][v][t] * x[w][u][j]
 
 # 論文では制約1~3だけだったけどtについてもone-hotって言わないと大変なことになる
-
 constraint4 = qbpp.expr()
 
 for t in range(n+1):
@@ -71,16 +70,20 @@ for t in range(n+1):
             constraint += x[u][v][t]
     constraint4 += qbpp.constrain(constraint, equal=1)
 
-P = 1000
+P = 500
 
 f = objective + P*(constraint1 + constraint2 + constraint3 + constraint4)
 f.simplify_as_binary()
 
+ml = {
+
+}
+
 solver = qbpp.ABS3Solver(f)
 
 best_sol = None
-for loop in range(10):
-    sol = solver.search(time_limit=20.0)
+for loop in range(5):
+    sol = solver.search(time_limit=30.0)
     energy = sol(f)
     print(f"{loop+1}: energy = {energy}")
     if best_sol is None or energy < best_sol(f):
@@ -97,4 +100,4 @@ print(f"constraint4: {sol(constraint4)}")
 print(f"var_count: {sol.info['var_count']}")
 print(f"term_count: {sol.info['term_count']}")
 
-plot_tour(nodes, tour, "loop_tsp_native")
+plot_tour(nodes, tour, "tsp_native")

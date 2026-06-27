@@ -44,7 +44,7 @@ g = qbpp.replace(f, ml)
 g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
-sol = solver.search(time_limit=20.0)
+sol = solver.search(time_limit=30.0)
 
 full_sol = qbpp.Sol(f).set(sol, ml)
 
