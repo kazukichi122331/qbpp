@@ -1,7 +1,7 @@
 import math
 import random
 
-n = 30
+n = 5
 seed = 1
 random.seed(seed)
 
@@ -12,5 +12,3 @@ def distance(i, j, nodes):
     dx = nodes[i][0] - nodes[j][0]
     dy = nodes[i][1] - nodes[j][1]
     return round(math.sqrt(dx * dx + dy * dy))
-
-print(nodes)
