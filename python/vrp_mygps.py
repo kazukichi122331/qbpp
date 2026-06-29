@@ -110,71 +110,8 @@ for j in range(1, N+1):
             c05 += x[i][j][1][q]
     constraint05 += qbpp.constrain(c05, equal=1)
 
-#constraint06 どの車両から見ても訪問順序は同じ
-for i in range(1, N+1):
-    for j in range(1, N+1):
-        if i==j: continue
-        if i==0 and j==N+1: continue
-        for q in range(Q-1):
-            c06 = (
-                (x[i][j][0][q]+x[i][j][1][q]+x[i][j][3][q])
-                - (x[i][j][0][q+1]+x[i][j][1][q+1]+x[i][j][3][q+1])
-            )
-            constraint06 += qbpp.constrain(c06, equal=0)
-
-#constraint07 都市iから都市jに行ったら都市jは他の都市kに行かなければならない
-for q in range(Q):
-    for i in range(0, N+1):
-        for j in range(1, N+2):
-            if i==j: continue
-            if i==0 and j==N+1: continue
-            sum_k = 0
-            for k in range(1, N+2):
-                if j==k: continue
-                sum_k += x[j][k][1][q]
-            c07 = x[i][j][1][q]*(1-sum_k)
-            constraint07 += qbpp.constrain(c07, equal=0)
-
-##constraint08 訪問順序はi->jかj->iのいずれか
-#for i in range(1, N+1):
-#    for j in range(i+1, N+1):
-#        c_08 = (
-#            x[i][j][0][1]
-#            + x[i][j][1][1]
-#            + x[i][j][3][1]
-#            + x[j][i][0][1]
-#            + x[j][i][1][1]
-#            + x[j][i][3][1]
-#        )
-#        constraint08 += qbpp.constrain(c_08, equal=1)
-for i in range(1, N+1):
-    for j in range(i+1, N+1):
-        c_08 = (
-            (x[i][j][0][1]+ x[i][j][1][1]+ x[i][j][3][1]
-            )
-            *(x[j][i][0][1]
-            + x[j][i][1][1]
-            + x[j][i][3][1]
-            )
-        )
-        constraint08 += c_08
-
-#constraint09 部分巡回路はあってはいけない
-for i in range(1, N+1):
-    for j in range(1, N+1):
-        for k in range(1, N+1):
-            if i==j or j==k or k==i: continue
-            a_ij = x[i][j][0][1] + x[i][j][1][1] + x[i][j][3][1]
-            a_jk = x[j][k][0][1] + x[j][k][1][1] + x[j][k][3][1]
-            a_ik = x[i][k][0][1] + x[i][k][1][1] + x[i][k][3][1]
-            constraint09 += a_ij*a_jk - a_ij*a_ik - a_jk*a_ik + a_ik*a_ik
-
-#constraint10 LqはD以下
-for q in range(Q):
-    constraint10 += qbpp.constrain(L[q] - D, between=(None, 0))
-
 constraint = (
-    100*constraint01
+    constraint01
     + constraint02_1
     + constraint02_2
     + constraint03_1
@@ -217,7 +154,7 @@ f.simplify_as_binary()
 g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
-sol = solver.search(time_limit=100.0)
+sol = solver.search(time_limit=30.0)
 full_sol = qbpp.Sol(f).set(sol, ml)
 
 print(f"energy = {full_sol(f)}")
