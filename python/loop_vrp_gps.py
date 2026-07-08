@@ -39,9 +39,10 @@ def vehicle_distance():
 
 x = qbpp.var("x", shape=(N+2, N+2, R, Q))
 a = qbpp.var("a", shape=(N+2, N+2))
+D = qbpp.var("D", between=(0,1000))
 L = vehicle_distance()
 
-objective = qbpp.expr()
+objective = D
 constraint01 = qbpp.expr()
 constraint02 = qbpp.expr()
 constraint03 = qbpp.expr()
@@ -51,6 +52,7 @@ constraint06 = qbpp.expr()
 constraint07 = qbpp.expr()
 constraint08 = qbpp.expr()
 constraint09 = qbpp.expr()
+constraint10 = qbpp.expr()
 
 # constraint01: rは5状態のうち1つを選ぶ
 for i in range(0, N+1):
@@ -134,9 +136,9 @@ for i in range(1, N+1):
         for k in range(1, N+1):
             if i==j or j==k or k==i: continue
             constraint09 += a[i][j]*a[j][k] - a[i][j]*a[i][k] - a[j][k]*a[i][k] + a[i][k]
-#objective    Lqの和
+#constraint10 LqはD以下
 for q in range(Q):
-    objective += L[q]
+    constraint10 += qbpp.constrain(L[q] - D, between=(None, 0))
 
 constraint = (
     constraint01
@@ -148,10 +150,11 @@ constraint = (
     + constraint07
     + constraint08
     + constraint09
+    + constraint10
 )
 
 P = 1000
-f =  objective + P*constraint
+f =  D + P*constraint
 
 fixed_zero_vars = chain(
     # a のダミー部・対角
@@ -173,7 +176,6 @@ fixed_zero_vars = chain(
     # 0 -> N+1 を使わないなら禁止
     (x[0][N + 1][r][q] for r in range(R) for q in range(Q)),
 )
-
 ml = {}
 ml.update({var: 0 for var in fixed_zero_vars})
 
@@ -184,13 +186,26 @@ g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
 
-sol = solver.search(time_limit=30.0)
+best_energy = 100000
+best_sol = None
+for loop in range(10):
+    print(f"solve{loop+1}: ", end="")
+    sol = solver.search(time_limit=1.0)
+    solg = sol(g)
+    print(f"energy={solg}")
 
-print(f"energy = {sol(g)}")
-print(f"constraint = {sol(constraint)}")
+    if solg < best_energy:
+        best_energy = solg
+        best_sol = sol
+
+print(f"energy = {best_sol(g)}")
+print(f"constraint = {best_sol(constraint)}")
+for q in range(Q):
+    print(f"L{q} = {best_sol(L[q])}")
 print(f"var_count: {sol.info['var_count']}")
 print(f"term_count: {sol.info['term_count']}")
 print("")
-edges = make_edges(sol)
-plot_edges(nodes, edges, "vrp_gps")
-print_edges(sol)
+
+edges = make_edges(best_sol)
+plot_edges(nodes, edges, "minimax_gps")
+print_edges(best_sol)

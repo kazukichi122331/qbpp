@@ -1,4 +1,4 @@
-# VRP定式化
+# GPS法によるVRP定式化
 $x_{i,j,r,q}$はバイナリ変数 \
 $i,j \in \{0,\cdots,N+1\},r \in \{0,1,2,3,4\}, q \in \{0,\cdots, Q-1\}$
 
@@ -35,7 +35,7 @@ $$
 
 ## 制約3-2 終点からはどの都市にも出発しない
 $$
-\text{For all }q: \sum_{j=0}^{N+1}x_{N+1,j,1,q} = 1
+\text{For all }q: \sum_{j=0}^{N+1}x_{N+1,j,1,q} = 0
 $$
 
 ## 制約4 すべての都市において出発できるのは一回だけ
@@ -49,9 +49,9 @@ $$
 $$
 
 ## 制約6 どの車両から見ても訪問順序は同じ
-$\text{For each }i,j \in \{1, \cdots, N\}$ $\text{For all }q:$
+$\text{For each }i,j \in \{1, \cdots, N\}$
 $$
-x_{i,j,0,q} + x_{i,j,1,q} + x_{i,j,3,q} = 1
+\sum_{q=0}^Qx_{i,j,0,q} + x_{i,j,1,q} + x_{i,j,3,q} = a_{i,j}Q
 $$
 
 ## 制約7 都市iから都市jに行ったら都市jは他の都市kに行かなければならない
@@ -60,14 +60,14 @@ $$
 $$
 
 ## 制約8 訪問順序はi->jかj->iのいずれか
-$\text{For }i,j,q:$
+$\text{For }i\in \{0,...,N\},j\in \{1,...,N\},q\in \{1,...,Q\}:$
 $$
 x_{i,j,0,q} + x_{i,j,1,q} + x_{i,j,3,q} = 1 - x_{j,i,0,q} - x_{j,i,1,q} - x_{j,i,3,q}
 $$
 
 ## 制約9 部分巡回路はあってはいけない
 $$
-\sum_{i}\sum_{j}\sum_{k}(a_{i}{j}a_{j}{k} - a_{i}{j}a_{i}{k} - a_{j}{k}a_{i}{k} + a_{i}{k}^2)
+\sum_{i}\sum_{j}\sum_{k}(a_{i,j}a_{j,k} - a_{i,j}a_{i,k} - a_{j,k}a_{i,k} + a_{i,k}^2)
 $$
 
 ## 制約10 LqはD以下
