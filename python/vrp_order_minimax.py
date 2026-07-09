@@ -82,9 +82,20 @@ f.simplify_as_binary()
 g.simplify_as_binary()
 solver = qbpp.ABS3Solver(g)
 
-sol = solver.search(time_limit=1.0)
+best_energy = 100000
+best_sol = None
+for loop in range(10):
+    print(f"solve{loop+1}: ", end="")
+    sol = solver.search(time_limit=60.0)
+    solg = sol(g)
+    print(f"energy={solg}")
 
-full_sol = qbpp.Sol(f).set(sol, ml)
+    if solg < best_energy:
+        best_energy = solg
+        best_sol = sol
+    solver.hint(best_sol)
+
+full_sol = qbpp.Sol(f).set(best_sol, ml)
 
 print(f"row_constraint = {full_sol(row_constraint)}")
 print(f"column_constraint = {full_sol(column_constraint)}")
@@ -105,4 +116,4 @@ for v in range(V):
     print(route)
 
 edges = make_edge(full_sol)
-plot_order_edges(locations, edges, "vrp_order")
+plot_order_edges(locations, edges, "vrp_order_minimax")

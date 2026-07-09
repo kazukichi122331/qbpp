@@ -189,23 +189,40 @@ best_energy = 100000
 best_sol = None
 for loop in range(10):
     print(f"solve{loop+1}: ", end="")
-    sol = solver.search(time_limit=30.0)
+    sol = solver.search(time_limit=60.0)
     solg = sol(g)
-    print(f"energy={solg}")
+    print(f"energy={solg}  ", end="")
 
-    if solg < best_energy:
+    if solg < best_energy and sol(constraint)==0:
         best_energy = solg
         best_sol = sol
-    solver.hint(best_sol)
+        print("update sol!", end="")
+    if best_sol != None:
+        solver.hint(best_sol)
+    print("")
 
-print(f"energy = {best_sol(g)}")
-print(f"constraint = {best_sol(constraint)}")
-for q in range(Q):
-    print(f"L{q} = {best_sol(L[q])}")
-print(f"var_count: {sol.info['var_count']}")
-print(f"term_count: {sol.info['term_count']}")
-print("")
+if best_sol != None:
+    print(f"energy = {best_sol(g)}")
+    print(f"constraint = {best_sol(constraint)}")
+    for q in range(Q):
+        print(f"L{q} = {best_sol(L[q])}")
+    print(f"var_count: {sol.info['var_count']}")
+    print(f"term_count: {sol.info['term_count']}")
+    print("")
 
-edges = make_edges(best_sol)
-plot_edges(nodes, edges, "minimax_gps")
-print_edges(best_sol)
+    edges = make_edges(best_sol)
+    plot_edges(nodes, edges, "minimax_gps_hint")
+    print_edges(best_sol)
+else:
+    print(f"energy = {sol(g)}")
+    print(f"constraint = {sol(constraint)}")
+    for q in range(Q):
+        print(f"L{q} = {sol(L[q])}")
+    print(f"var_count: {sol.info['var_count']}")
+    print(f"term_count: {sol.info['term_count']}")
+    print("")
+
+    edges = make_edges(sol)
+    plot_edges(nodes, edges, "minimax_gps_hint")
+    print_edges(sol)
+    print("This is not best sol.")

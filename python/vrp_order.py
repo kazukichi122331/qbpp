@@ -1,14 +1,12 @@
 # a[v][t][i]：車両vがt番目に都市iに訪れる
 import math
 import pyqbpp as qbpp
-from nodes import distance
+from nodes import distance, n
 from plot_tour import plot_order_edges
 
-
-n = 12
 R = 100  # 半径
 cx, cy = 125, 125  # 中心座標
-locations = [(cx, cy)]
+locations = []
 for i in range(n):
     theta = 2 * math.pi * i / n
     x = round(cx + R * math.cos(theta))
@@ -31,8 +29,20 @@ def make_edge(sol):
                         edges.append((i, j))
     return edges
 
-a = qbpp.var("a", shape=(V, N, N))
+def vehicle_distance():
+    L = [0 for _ in range(V)]
+    for v in range(V):
+        for t in range(N):
+            next_t = (t+1) % N
+            for i in range(N):
+                for j in range(N):
+                    if i==j: 
+                        continue
+                    L[v] += a[v][t][i]*a[v][next_t][j]*distance(i, j, locations)
+    return L
 
+a = qbpp.var("a", shape=(V, N, N))
+L = vehicle_distance()
 row_constraint = qbpp.sum(qbpp.vector_sum(a) == 1)
 
 column_sum = [0 for _ in range(N - 1)]
@@ -50,17 +60,8 @@ for v in range(V):
         consecutive_constraint += a[v][t][0] * (1 - a[v][t + 1][0])
 
 
-objective = 0
+objective = qbpp.sum(L)
 
-for v in range(V):
-    for t in range(N):
-        next_t = (t + 1) % N
-        for i in range(N):
-            x1, y1 = locations[i][0], locations[i][1]
-            for j in range(N):
-                x2, y2 = locations[j][0], locations[j][1]
-                dist = int(math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2))
-                objective += dist * a[v][t][i] * a[v][next_t][j]
 
 f = objective + 10000 * (row_constraint + column_constraint +
                           consecutive_constraint)
@@ -72,17 +73,31 @@ ml.update({a[v][1][0]: 0 for v in range(V)})
 g = qbpp.replace(f, ml)
 f.simplify_as_binary()
 g.simplify_as_binary()
-solver = qbpp.EasySolver(g)
+solver = qbpp.ABS3Solver(g)
 
-sol = solver.search()
+best_energy = 100000
+best_sol = None
+for loop in range(5):
+    print(f"solve{loop+1}: ", end="")
+    sol = solver.search(time_limit=1.0)
+    solg = sol(g)
+    print(f"energy={solg}")
 
-full_sol = qbpp.Sol(f).set(sol, ml)
+    if solg < best_energy:
+        best_energy = solg
+        best_sol = sol
+
+full_sol = qbpp.Sol(f).set(best_sol, ml)
 
 print(f"row_constraint = {full_sol(row_constraint)}")
 print(f"column_constraint = {full_sol(column_constraint)}")
 print(f"consecutive_constraint = {full_sol(consecutive_constraint)}")
 print(f"objective = {full_sol(objective)}")
-
+for v in range(V):
+    print(f"L{v} = {full_sol(L[v])}")
+print(f"var_count: {sol.info['var_count']}")
+print(f"term_count: {sol.info['term_count']}")
+print("")
 
 for v in range(V):
     route = f"Vehicle {v} : 0 "

@@ -17,34 +17,16 @@ def make_edges(sol):
                 if sol(x[i][j][1][q]) == 1:
                     edges.append((i, j))
     return edges
-
 def print_edges(sol):
     for q in range(Q):
         print(f"q={q}:")
-
-        # 使われている辺を next_map にする
-        next_map = {}
         for i in range(0, N+1):
             for j in range(1, N+2):
-                if i == j:
-                    continue
-                if i == 0 and j == N+1:
-                    continue
+                if i==j: continue
+                if i==0 and j==N+1: continue
                 if sol(x[i][j][1][q]) == 1:
-                    next_map[i] = j
-
-        # 0 からたどる
-        cur = 0
-        visited = set()
-
-        while cur in next_map and cur not in visited:
-            nxt = next_map[cur]
-            print(f"{cur}->{nxt} ", end="")
-            visited.add(cur)
-            cur = nxt
-
+                    print(f"{i}->{j} ", end="")
         print("")
-
 def vehicle_distance():
     L = [0 for _ in range(Q)]
     for q in range(Q):
@@ -57,9 +39,10 @@ def vehicle_distance():
 
 x = qbpp.var("x", shape=(N+2, N+2, R, Q))
 a = qbpp.var("a", shape=(N+2, N+2))
+D = qbpp.var("D", between=(0,1000))
 L = vehicle_distance()
 
-objective = qbpp.expr()
+objective = D
 constraint01 = qbpp.expr()
 constraint02 = qbpp.expr()
 constraint03 = qbpp.expr()
@@ -69,6 +52,7 @@ constraint06 = qbpp.expr()
 constraint07 = qbpp.expr()
 constraint08 = qbpp.expr()
 constraint09 = qbpp.expr()
+constraint10 = qbpp.expr()
 
 # constraint01: rは5状態のうち1つを選ぶ
 for i in range(0, N+1):
@@ -152,9 +136,9 @@ for i in range(1, N+1):
         for k in range(1, N+1):
             if i==j or j==k or k==i: continue
             constraint09 += a[i][j]*a[j][k] - a[i][j]*a[i][k] - a[j][k]*a[i][k] + a[i][k]
-#objective    Lqの和
+#constraint10 LqはD以下
 for q in range(Q):
-    objective += L[q]
+    constraint10 += qbpp.constrain(L[q] - D, between=(None, 0))
 
 constraint = (
     constraint01
@@ -166,10 +150,11 @@ constraint = (
     + constraint07
     + constraint08
     + constraint09
+    + constraint10
 )
 
 P = 1000
-f =  objective + P*constraint
+f =  D + P*constraint
 
 fixed_zero_vars = chain(
     # a のダミー部・対角
@@ -203,9 +188,9 @@ solver = qbpp.ABS3Solver(g)
 
 best_energy = 100000
 best_sol = None
-for loop in range(10):
+for loop in range(1):
     print(f"solve{loop+1}: ", end="")
-    sol = solver.search(time_limit=1.0)
+    sol = solver.search(time_limit=30.0)
     solg = sol(g)
     print(f"energy={solg}")
 
@@ -213,27 +198,14 @@ for loop in range(10):
         best_energy = solg
         best_sol = sol
 
-if best_sol != None:
-    print(f"energy = {best_sol(g)}")
-    print(f"constraint = {best_sol(constraint)}")
-    for q in range(Q):
-        print(f"L{q} = {best_sol(L[q])}")
-    print(f"var_count: {sol.info['var_count']}")
-    print(f"term_count: {sol.info['term_count']}")
-    print("")
+print(f"energy = {best_sol(g)}")
+print(f"constraint = {best_sol(constraint)}")
+for q in range(Q):
+    print(f"L{q} = {best_sol(L[q])}")
+print(f"var_count: {sol.info['var_count']}")
+print(f"term_count: {sol.info['term_count']}")
+print("")
 
-    edges = make_edges(best_sol)
-    plot_edges(nodes, edges, "mindist_gps")
-    print_edges(best_sol)
-else:
-    print(f"energy = {sol(g)}")
-    print(f"constraint = {sol(constraint)}")
-    for q in range(Q):
-        print(f"L{q} = {sol(L[q])}")
-    print(f"var_count: {sol.info['var_count']}")
-    print(f"term_count: {sol.info['term_count']}")
-    print("")
-
-    edges = make_edges(sol)
-    plot_edges(nodes, edges, "mindist_gps")
-    print_edges(sol)
+edges = make_edges(best_sol)
+plot_edges(nodes, edges, "minimax_gps")
+print_edges(best_sol)

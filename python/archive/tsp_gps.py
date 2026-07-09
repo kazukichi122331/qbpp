@@ -102,7 +102,7 @@ g = qbpp.replace(f, ml)
 g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
-sol = solver.search(time_limit=10.0)
+sol = solver.search(time_limit=1.0)
 
 full_sol = qbpp.Sol(f).set(sol)
 
@@ -113,10 +113,11 @@ for i in range(1, n+1):
 tour = make_tour(full_sol)
 edges = make_edges(full_sol)
 
-print(f"Tour: {tour}")
-print(f"energy = {full_sol(f)}")
-print(f"constraint = {full_sol(constraint)}")
+#print(f"Tour: {tour}")
+#print(f"energy = {full_sol(f)}")
+#print(f"constraint = {full_sol(constraint)}")
+print("gps")
 print(f"var_count: {sol.info['var_count']}")
 print(f"term_count: {sol.info['term_count']}")
 
-plot_edges(nodes, edges, "tsp_gps")
+#plot_edges(nodes, edges, "tsp_gps")

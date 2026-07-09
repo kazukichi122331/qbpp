@@ -1,0 +1,35 @@
+QUBO++ Ver. 2026.07.05 (Latest: 2026.07.09 - update available)
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: 2147483647/2147483647 (CPU/GPU)
+solve1: start
+TTS = solve1: energy=1223
+solve2: start
+solve2: energy=1177
+solve3: start
+solve3: energy=1060
+solve4: start
+solve4: energy=1032
+solve5: start
+solve5: energy=1160
+solve6: start
+solve6: energy=1220
+solve7: start
+solve7: energy=1287
+solve8: start
+solve8: energy=1088
+solve9: start
+solve9: energy=993
+solve10: start
+solve10: energy=993
+energy = 993
+constraint = 0
+L0 = 431
+L1 = 562
+var_count: 972
+term_count: 15336
+
+q=0:
+0->6 6->7 7->8 8->10 
+q=1:
+0->1 1->2 2->3 3->4 4->5 5->9 9->10 
