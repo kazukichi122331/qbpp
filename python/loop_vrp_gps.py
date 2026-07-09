@@ -188,9 +188,9 @@ solver = qbpp.ABS3Solver(g)
 
 best_energy = 100000
 best_sol = None
-for loop in range(10):
+for loop in range(1):
     print(f"solve{loop+1}: ", end="")
-    sol = solver.search(time_limit=1.0)
+    sol = solver.search(time_limit=30.0)
     solg = sol(g)
     print(f"energy={solg}")
 
