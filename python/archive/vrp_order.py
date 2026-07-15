@@ -1,14 +1,12 @@
 # a[v][t][i]：車両vがt番目に都市iに訪れる
 import math
 import pyqbpp as qbpp
-from nodes import distance
-from plot_tour import plot_order_edges
+from tsp.nodes import distance, n
+from tsp.plot_tour import plot_order_edges
 
-locations = []
-n = 10
 R = 100  # 半径
 cx, cy = 125, 125  # 中心座標
-
+locations = []
 for i in range(n):
     theta = 2 * math.pi * i / n
     x = round(cx + R * math.cos(theta))
@@ -44,9 +42,7 @@ def vehicle_distance():
     return L
 
 a = qbpp.var("a", shape=(V, N, N))
-D = qbpp.var("D", between=(0,1000))
 L = vehicle_distance()
-
 row_constraint = qbpp.sum(qbpp.vector_sum(a) == 1)
 
 column_sum = [0 for _ in range(N - 1)]
@@ -64,14 +60,11 @@ for v in range(V):
         consecutive_constraint += a[v][t][0] * (1 - a[v][t + 1][0])
 
 
-objective = D
+objective = qbpp.sum(L)
 
-minimax_constraint = 0
-for v in range(V):
-    minimax_constraint += qbpp.constrain(L[v] - D, between=(None, 0))
 
 f = objective + 10000 * (row_constraint + column_constraint +
-                          consecutive_constraint + minimax_constraint)
+                          consecutive_constraint)
 
 ml = {a[v][0][0]: 1 for v in range(V)}
 ml.update({a[v][0][i]: 0 for v in range(V) for i in range(1, N)})
@@ -84,26 +77,27 @@ solver = qbpp.ABS3Solver(g)
 
 best_energy = 100000
 best_sol = None
-for loop in range(10):
+for loop in range(5):
     print(f"solve{loop+1}: ", end="")
-    sol = solver.search(time_limit=60.0)
+    sol = solver.search(time_limit=1.0)
     solg = sol(g)
     print(f"energy={solg}")
 
     if solg < best_energy:
         best_energy = solg
         best_sol = sol
-    solver.hint(best_sol)
 
 full_sol = qbpp.Sol(f).set(best_sol, ml)
 
 print(f"row_constraint = {full_sol(row_constraint)}")
 print(f"column_constraint = {full_sol(column_constraint)}")
 print(f"consecutive_constraint = {full_sol(consecutive_constraint)}")
-print(f"minimax_constraint = {full_sol(minimax_constraint)}")
 print(f"objective = {full_sol(objective)}")
+for v in range(V):
+    print(f"L{v} = {full_sol(L[v])}")
 print(f"var_count: {sol.info['var_count']}")
 print(f"term_count: {sol.info['term_count']}")
+print("")
 
 for v in range(V):
     route = f"Vehicle {v} : 0 "
@@ -116,4 +110,4 @@ for v in range(V):
     print(route)
 
 edges = make_edge(full_sol)
-plot_order_edges(locations, edges, "vrp_order_minimax")
+plot_order_edges(locations, edges, "vrp_order")

@@ -1,11 +1,24 @@
 import matplotlib.pyplot as plt
 
 def plot_tour(nodes, tour, filename):
-    closed_tour = tour + [tour[0]]
+    """
+    巡回順序tourを矢印付きで描画する。
+
+    tourが最後に始点を含んでいない場合だけ、
+    始点を追加して巡回路を閉じる。
+    """
+    if not tour:
+        print("Tour is empty.")
+        return
+
+    if tour[-1] == tour[0]:
+        closed_tour = tour
+    else:
+        closed_tour = tour + [tour[0]]
 
     plt.figure(figsize=(8, 8))
 
-    # ノードを白丸で描画
+    # 都市を白丸で描画
     xs_nodes = [p[0] for p in nodes]
     ys_nodes = [p[1] for p in nodes]
 
@@ -18,11 +31,12 @@ def plot_tour(nodes, tour, filename):
         zorder=3
     )
 
-    # 都市番号をノードの真ん中に表示
-    for i, (x, y) in enumerate(nodes):
-        if i == len(nodes) - 1: continue
+    # すべての都市番号を表示
+    for i, (px, py) in enumerate(nodes):
         plt.text(
-            x, y, str(i),
+            px,
+            py,
+            str(i),
             fontsize=12,
             ha="center",
             va="center",
@@ -48,9 +62,7 @@ def plot_tour(nodes, tour, filename):
             zorder=2
         )
 
-    plt.title(f"{filename}")
-    plt.xlabel("")
-    plt.ylabel("")
+    plt.title(filename)
     plt.grid(True)
     plt.axis("equal")
 
@@ -58,7 +70,12 @@ def plot_tour(nodes, tour, filename):
     plt.xticks([])
     plt.yticks([])
 
-    plt.savefig(f"results/{filename}.png")
+    plt.tight_layout()
+    plt.savefig(
+        f"results/{filename}.png",
+        dpi=150,
+        bbox_inches="tight"
+    )
     plt.close()
 
 def plot_edges(nodes, edges, filename):

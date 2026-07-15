@@ -1,17 +1,20 @@
 import math
 import random
 
-n = 10
+n = 15
 R = 100  # 半径
 cx, cy = 125, 125  # 中心座標
-nodes = []
+random.seed(1)
+reg_nodes = []
+ran_nodes = []
 
 for i in range(n):
     theta = 2 * math.pi * i / n
     x = round(cx + R * math.cos(theta))
     y = round(cy + R * math.sin(theta))
-    nodes.append((x, y))
-nodes.append(nodes[0])
+    reg_nodes.append((x, y))
+
+ran_nodes = [(random.randint(0, 250), random.randint(0, 250)) for _ in range(n)]
 
 def distance(i, j, nodes):
     dx = nodes[i][0] - nodes[j][0]

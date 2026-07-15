@@ -1,0 +1,6 @@
+{
+    "python.defaultInterpreterPath": "/home/kazuki/qbpp-env/bin/python",
+    "python.analysis.stubPath": "${workspaceFolder}/typings",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true
+}

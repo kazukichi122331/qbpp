@@ -1,6 +1,6 @@
 import pyqbpp as qbpp
-from nodes import nodes, distance
-from plot_tour import plot_edges
+from tsp.nodes import nodes, distance
+from tsp.plot_tour import plot_edges
 
 def make_edges(sol):
     edges = []

@@ -1,8 +1,8 @@
 import math
 from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
-from nodes import nodes
-from plot_tour import plot_tour
+from tsp.nodes import nodes
+from tsp.plot_tour import plot_tour
 # ------------------------------
 # ノード座標
 # ------------------------------

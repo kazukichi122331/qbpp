@@ -1,6 +1,6 @@
 import pyqbpp as qbpp
-from nodes import nodes, distance
-from plot_tour import plot_edges
+from tsp.nodes import nodes, distance
+from tsp.plot_tour import plot_edges
 from itertools import chain
 
 N = len(nodes) - 2
@@ -17,16 +17,34 @@ def make_edges(sol):
                 if sol(x[i][j][1][q]) == 1:
                     edges.append((i, j))
     return edges
+
 def print_edges(sol):
     for q in range(Q):
         print(f"q={q}:")
+
+        # 使われている辺を next_map にする
+        next_map = {}
         for i in range(0, N+1):
             for j in range(1, N+2):
-                if i==j: continue
-                if i==0 and j==N+1: continue
+                if i == j:
+                    continue
+                if i == 0 and j == N+1:
+                    continue
                 if sol(x[i][j][1][q]) == 1:
-                    print(f"{i}->{j} ", end="")
+                    next_map[i] = j
+
+        # 0 からたどる
+        cur = 0
+        visited = set()
+
+        while cur in next_map and cur not in visited:
+            nxt = next_map[cur]
+            print(f"{cur}->{nxt} ", end="")
+            visited.add(cur)
+            cur = nxt
+
         print("")
+
 def vehicle_distance():
     L = [0 for _ in range(Q)]
     for q in range(Q):
@@ -173,7 +191,6 @@ fixed_zero_vars = chain(
     # 0 -> N+1 を使わないなら禁止
     (x[0][N + 1][r][q] for r in range(R) for q in range(Q)),
 )
-
 ml = {}
 ml.update({var: 0 for var in fixed_zero_vars})
 
@@ -184,13 +201,39 @@ g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
 
-sol = solver.search(time_limit=30.0)
+best_energy = 100000
+best_sol = None
+for loop in range(10):
+    print(f"solve{loop+1}: ", end="")
+    sol = solver.search(time_limit=1.0)
+    solg = sol(g)
+    print(f"energy={solg}")
 
-print(f"energy = {sol(g)}")
-print(f"constraint = {sol(constraint)}")
-print(f"var_count: {sol.info['var_count']}")
-print(f"term_count: {sol.info['term_count']}")
-print("")
-edges = make_edges(sol)
-plot_edges(nodes, edges, "vrp_gps")
-print_edges(sol)
+    if solg < best_energy:
+        best_energy = solg
+        best_sol = sol
+
+if best_sol != None:
+    print(f"energy = {best_sol(g)}")
+    print(f"constraint = {best_sol(constraint)}")
+    for q in range(Q):
+        print(f"L{q} = {best_sol(L[q])}")
+    print(f"var_count: {sol.info['var_count']}")
+    print(f"term_count: {sol.info['term_count']}")
+    print("")
+
+    edges = make_edges(best_sol)
+    plot_edges(nodes, edges, "mindist_gps")
+    print_edges(best_sol)
+else:
+    print(f"energy = {sol(g)}")
+    print(f"constraint = {sol(constraint)}")
+    for q in range(Q):
+        print(f"L{q} = {sol(L[q])}")
+    print(f"var_count: {sol.info['var_count']}")
+    print(f"term_count: {sol.info['term_count']}")
+    print("")
+
+    edges = make_edges(sol)
+    plot_edges(nodes, edges, "mindist_gps")
+    print_edges(sol)
