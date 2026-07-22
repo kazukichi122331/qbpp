@@ -21,16 +21,24 @@ for i in range(n):
 f = objective + constraint * 1000
 f.simplify_as_binary()
 
-solver = qbpp.EasySolver(f)
-sol = solver.search(time_limit=1.0)
+ml = {x[0][0]: 1}
+ml.update({x[i][0]: 0 for i in range(1, n)})
+ml.update({x[0][i]: 0 for i in range(1, n)})
 
-print(f"energy = {sol(f)}")
+g = qbpp.replace(f, ml)
+g.simplify_as_binary()
 
+solver = qbpp.EasySolver(g)
+sol = solver.search(time_limit=30.0)
+
+full_sol = qbpp.Sol(f).set(sol, ml)
+
+print(full_sol(f))
 # 置換行列から巡回路（頂点番号のリスト）を抽出
 tour = []
 for i in range(n):
     for j in range(n):
-        if sol(x[i][j]) == 1:
+        if full_sol(x[i][j]) == 1:
             tour.append(j)
             break
 print(f"Tour: {tour}")

@@ -93,7 +93,7 @@ saved_cons_energy = []
 saved_cons_violation = []
 print("---consあり---")
 for loop in range(LOOP):
-    sol_cons = solver.search(time_limit=1.0)
+    sol_cons = solver_cons.search(time_limit=1.0)
     cons_solg = sol_cons(g_cons)
     cons_violation = g_cons.cons(sol_cons)
     print(f"solve{loop+1}:")

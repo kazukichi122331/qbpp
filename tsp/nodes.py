@@ -1,7 +1,7 @@
 import math
 import random
 
-n = 15
+n = 30
 R = 100  # 半径
 cx, cy = 125, 125  # 中心座標
 random.seed(1)
