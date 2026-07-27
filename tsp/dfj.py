@@ -50,9 +50,9 @@ def make_dfj(tour):
 
 nodes = ran_nodes
 N = len(nodes)
+LOOP = 10
 
 x = qbpp.var("x", shape=(N, N))
-y = qbpp.var("y", shape=N-1, between=(1, N-1))
 
 rowconstraint = qbpp.sum(qbpp.vector_sum(x, axis=0) == 1)
 colconstraint = qbpp.sum(qbpp.vector_sum(x, axis=1) == 1)
@@ -72,6 +72,8 @@ g = qbpp.replace(f, ml)
 added = set()
 num_dfj = 0
 
+best_sol = None
+best_energy = 10000
 while True:
     sol = qbpp.ABS3Solver(g).search(time_limit=1.0)
 
@@ -80,6 +82,16 @@ while True:
     print(tours)
 
     if len(tours) == 1 and len(set(tours[0][:-1])) == N:
+        best_sol = sol
+        best_energy = sol(g)
+        best_tours = tours
+        for loop in range(LOOP):
+            sol = qbpp.ABS3Solver(g).search(time_limit=10.0)
+            ene_g = sol(g)
+            if best_energy > ene_g:
+                best_sol = sol
+                best_energy = ene_g
+                best_tours = find_subtours(best_sol)
         break
 
     constraints = 0
@@ -97,6 +109,9 @@ while True:
     g += P * qbpp.cons(constraints)
     g.simplify_as_binary()
 
-print("energy = ", sol(g))
-print("add constraint count", num_dfj)
-plot_tour(nodes, tours[0], "dfj")
+if best_sol == None:
+    print("best_sol = None")
+else:
+    print("energy = ", best_sol(g))
+    print("add constraint count", num_dfj)
+    plot_tour(nodes, best_tours[0], "dfj")

@@ -39,7 +39,7 @@ def make_tour(sol):
 nodes = ran_nodes
 N = len(nodes)
 LOOP = 10
-TIME = 1.0
+TIME = 10.0
 
 x = qbpp.var("x", shape=(N, N))
 y = qbpp.var("y", shape=N-1, between=(1, N-1))

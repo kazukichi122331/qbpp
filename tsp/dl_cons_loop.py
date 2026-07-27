@@ -67,7 +67,7 @@ solver_cons = qbpp.ABS3Solver(g_cons)
 
 print("---consあり---")
 for loop in range(LOOP):
-    sol_cons = solver_cons.search(time_limit=30.0)
+    sol_cons = solver_cons.search(time_limit=10.0)
     print(f"cons_energy = {sol_cons(g_cons)}")
     print("violated constraints =", g_cons.cons(sol_cons))
     tour = make_tour(sol_cons)
