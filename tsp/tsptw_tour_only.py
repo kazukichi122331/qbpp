@@ -1,9 +1,8 @@
 import pyqbpp as qbpp
-from nodes import travel_time #, time_nodes
+from nodes import travel_time
 
 time_nodes = [
     (0, 0, 0, 999),     # depot
-
     (10, 0, 0, 100),     # customer 1
     (20, 0, 0, 100),     # customer 2
     (30, 0, 0, 100),     # customer 3
@@ -34,34 +33,42 @@ objective = 0
 #各ツアー位置で遷移が一つ(一つのiで選べるu,vは一つ)
 i_constraint = 0
 for i in range(1, N+2):
-    sum_uv = qbpp.sum([x[u][v][i]
-                       for u in range(N+1)
-                       for v in range(N+1)
-                       if u!=v])
+    sum_uv = 0
+    for u in range(N+1):
+        for v in range(N+1):
+            if u!=v:
+                sum_uv += x[u][v][i]
     i_constraint += (sum_uv == 1)
 
 #i=1でデポから出発し、i=N+1でデポに戻ってくる
-sum_0v = qbpp.sum([x[0][v][1] for v in range(1, N+1)])
-sum_u0 = qbpp.sum([x[u][0][N+1] for u in range(1, N+1)])
-depo_constraint = (sum_0v == 1) + (sum_u0 == 1)
+sum_0u = 0
+sum_u0 = 0
+for u in range(1, N+1):
+    sum_0u += x[0][u][1]
+    sum_u0 += x[u][0][N+1]
+depo_constraint = (sum_0u == 1) + (sum_u0 == 1)
 
 #各都市からは一度しか出発できない(一つのuで選べるv,iは一つ)
 u_constraint = 0
 for u in range(1, N+1):
-    sum_vi = qbpp.sum([x[u][v][i]
-                       for v in range(1, N+1)
-                       for i in range(2, N+2)
-                       if u!=v])
+    sum_vi = 0
+    for v in range(N+1):
+        if u != v:
+            for i in range(2, N+2):
+                sum_vi += x[u][v][i]
     u_constraint += (sum_vi == 1)
 
 #各都市には一度しか訪問できない(一つのvで選べるu,iは一つ)
 v_constraint = 0
 for v in range(1, N+1):
-    sum_ui = qbpp.sum([x[u][v][i]
-                       for u in range(1, N+1)
-                       for i in range(1, N+1)
-                       if u!=v])
+    sum_ui = 0
+    for u in range(N+1):
+        if u != v:
+            for i in range(1, N+1):
+                sum_ui += x[u][v][i]
     v_constraint += (sum_ui == 1)
+
+flow_constraint = 0
 
 tour_P = 1000
 tour_constraints = (
