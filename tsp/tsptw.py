@@ -1,19 +1,48 @@
 import pyqbpp as qbpp
-from nodes import travel_time #, time_nodes
+from datetime import datetime
+from nodes import travel_time, time_nodes
+from tsptw_plot import plot_tour
+
+def make_tour(sol):
+    tour = [0]  # depotから開始
+
+    current = 0
+
+    for i in range(1, N + 2):
+
+        found = False
+
+        for v in range(N + 1):
+
+            if current == v:
+                continue
+
+            if sol(x[current][v][i]) == 1:
+                tour.append(v)
+                current = v
+                found = True
+                break
+
+        if not found:
+            raise ValueError(
+                f"position {i} の遷移が見つかりません"
+            )
+
+    return tour
 
 time_nodes = [
-    (0, 0, 0, 999),     # depot
-
-    (10, 0, 0, 20),     # customer 1
-    (20, 0, 0, 40),     # customer 2
-    (30, 0, 0, 60),     # customer 3
-    (40, 0, 0, 80),     # customer 4
-    (50, 0, 0, 100),    # customer 5
+    (0, 0, 0, 30),   # depot
+    (1, 2, 0, 12),
+    (3, 1, 0, 15),
+    (5, 0, 0, 18),
+    (4, 3, 0, 20),
+    (2, 5, 0, 22),
+    (0, 4, 0, 16),
+    (5, 5, 0, 25),
 ]
-
 nodes = time_nodes #(x座標, y座標, 訪問時間の開始, 訪問時間の終了)
 N = len(nodes)-1 # len(nodes): デポ1箇所 + 顧客N箇所
-
+TIME = 10.0
 #締め切りの最大値
 K = max(nodes[v][3] for v in range(1, N + 1))
 
@@ -51,13 +80,11 @@ for i in range(1, N + 1):
 
 #訪問時間の終了
 l = {}
-
 # 位置1はデポ0から顧客vへの遷移
 l[1] = qbpp.sum([
     x[0][v][1] * nodes[v][3]
     for v in range(1, N + 1)
 ])
-
 # 位置2,...,N
 for i in range(2, N + 1):
     l[i] = qbpp.sum([
@@ -67,55 +94,57 @@ for i in range(2, N + 1):
         if u != v
     ])
 
-#移動コストの最小化
-objective = 0
-for i in range(1, N+2):
-    for u in range(N+1):
-        for v in range(N+1):
-            objective += x[u][v][i]*c[u][v]
-
 #各ツアー位置で遷移が一つ(一つのiで選べるu,vは一つ)
 i_constraint = 0
 for i in range(1, N+2):
-    sum_uv = qbpp.sum([x[u][v][i]
-                       for u in range(N+1)
-                       for v in range(N+1)
-                       if u!=v])
+    sum_uv = 0
+    for u in range(N+1):
+        for v in range(N+1):
+            if u!=v:
+                sum_uv += x[u][v][i]
     i_constraint += (sum_uv == 1)
 
 #i=1でデポから出発し、i=N+1でデポに戻ってくる
-sum_0v = qbpp.sum([x[0][v][1] for v in range(1, N+1)])
-sum_u0 = qbpp.sum([x[u][0][N+1] for u in range(1, N+1)])
-depo_constraint = (sum_0v == 1) + (sum_u0 == 1)
+sum_0u = 0
+sum_u0 = 0
+for u in range(1, N+1):
+    sum_0u += x[0][u][1]
+    sum_u0 += x[u][0][N+1]
+depo_constraint = (sum_0u == 1) + (sum_u0 == 1)
 
 #各都市からは一度しか出発できない(一つのuで選べるv,iは一つ)
 u_constraint = 0
 for u in range(1, N+1):
-    sum_vi = qbpp.sum([x[u][v][i]
-                       for v in range(1, N+1)
-                       for i in range(2, N+1)
-                       if u!=v])
+    sum_vi = 0
+    for v in range(N+1):
+        if u != v:
+            for i in range(2, N+2):
+                sum_vi += x[u][v][i]
     u_constraint += (sum_vi == 1)
 
 #各都市には一度しか訪問できない(一つのvで選べるu,iは一つ)
 v_constraint = 0
 for v in range(1, N+1):
-    sum_ui = qbpp.sum([x[u][v][i]
-                       for u in range(1, N+1)
-                       for i in range(2, N+1)
-                       if u!=v])
+    sum_ui = 0
+    for u in range(N+1):
+        if u != v:
+            for i in range(1, N+1):
+                sum_ui += x[u][v][i]
     v_constraint += (sum_ui == 1)
 
-#time margin制約 各位置で余裕時間は一つ
-k_constraint = 0
+#部分巡回路除去制約 i:u->v i+1:v->w i番目にvに来た辺の数とi+1番目にvを出た辺の数が一致する
+flow_constraint = 0
 for i in range(1, N+1):
-    sum_k = qbpp.sum([t[k][i] for k in range(0, K+1)])
-    k_constraint += (sum_k == 1)
-
-time_margin_constraint = 0
-for i in range(1, N+1):
-    sum_k = qbpp.sum([k*t[k][i] for k in range(0, K+1)])
-    time_margin_constraint += (a[i] + sum_k - l[i] == 0)
+    for v in range(N+1):
+        inflow_sum = 0
+        outflow_sum = 0
+        for u in range(N+1):
+            if u != v:
+                inflow_sum += x[u][v][i]
+        for w in range(N+1):
+            if v != w:
+                outflow_sum += x[v][w][i+1]
+        flow_constraint += (inflow_sum - outflow_sum == 0)
 
 tour_P = 1000
 tour_constraints = (
@@ -123,7 +152,24 @@ tour_constraints = (
     + depo_constraint
     + u_constraint
     + v_constraint
+    + flow_constraint
 )
+
+#time margin制約 各位置で余裕時間は一つ
+k_constraint = 0
+for i in range(1, N+1):
+    sum_k = 0
+    for k in range(0, K+1):
+        sum_k += t[k][i]
+    k_constraint += (sum_k == 1)
+
+#余裕時間を考え (余裕時間 >= 0)なら時間内であるという制約
+time_margin_constraint = 0
+for i in range(1, N+1):
+    sum_tm = 0
+    for k in range(0, K+1):
+        sum_tm += k*t[k][i]
+    time_margin_constraint += (a[i] + sum_tm - l[i] == 0)
 
 tw_P = 10
 tw_constraints = (
@@ -131,16 +177,28 @@ tw_constraints = (
     + time_margin_constraint
 )
 
+#移動コストの最小化
+objective = 0
+for i in range(1, N+2):
+    for u in range(N+1):
+        for v in range(N+1):
+            objective += x[u][v][i]*c[u][v]
+
 f = objective + qbpp.cons(tour_P*tour_constraints + tw_P*tw_constraints)
 f.simplify_as_binary()
 
-ml = {x[u][u][i]: 0 for u in range(N+1) for i in range(1, N+2)}
+ml = {}
+ml.update({x[u][u][i]: 0 for u in range(N+1) for i in range(1, N+2)})#自己ループ禁止
+ml.update({x[u][v][1]: 0 for u in range(1, N+1) for v in range(N+1)})#i=1ならばu=0なのでそれ以外は禁止
+ml.update({x[u][v][N+1]: 0 for u in range(N+1) for v in range(1, N+1)})#i=N+1ならばv=0なのでそれ以外は禁止
+ml.update({x[u][0][i]: 0 for u in range(1, N+1) for i in range(1, N+1)})#デポに戻れるのはi=N+1のみ
+ml.update({x[0][v][i]: 0 for v in range(1, N+1) for i in range(2, N+2)})#デポから出るのはi=1のみ
 
 g = qbpp.replace(f, ml)
 g.simplify_as_binary()
 
 solver =qbpp.ABS3Solver(g)
-sol = solver.search(time_limit=30.0)
+sol = solver.search(time_limit=TIME)
 
 print("energy = ", sol(g))
 print("objective = ", sol(objective))
@@ -151,12 +209,26 @@ print("u_constraint = ", sol(u_constraint))
 print("v_constraint = ", sol(v_constraint))
 print("k_constraint = ", sol(k_constraint))
 print("time_margin_constraint = ", sol(time_margin_constraint))
-print("N = ", N)
 print("K = ", K)
-for i in range(1, N+2):
-    print(f"visit {i}: ", end="")
+
+tour = make_tour(sol)
+print(tour)
+
+filename = "tsptw_" + datetime.now().strftime("%m%d%H%M")
+plot_nodes = [(x, y) for x, y, _, _ in time_nodes]
+arrival_times = [0]*(N+1)
+due_times = [nodes[v][3] for v in range(N+1)]
+for i in range(1, N+1):
     for u in range(N+1):
         for v in range(N+1):
-            if(sol(x[u][v][i]) == 1):
-                print(f"{u}->{v} ", end="")
-    print("")
+            if sol(x[u][v][i]) == 1:
+                arrival_times[v] = sol(a[i])
+                
+plot_tour(
+    plot_nodes,
+    tour,
+    arrival_times,
+    due_times,
+    c,
+    filename
+)
