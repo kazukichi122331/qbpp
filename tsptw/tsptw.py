@@ -1,8 +1,7 @@
 import pyqbpp as qbpp
 from datetime import datetime
-from nodes import travel_time, time_nodes
+from travel_time import travel_time
 from tsptw_plot import plot_tour
-
 def make_tour(sol):
     tour = [0]  # depotから開始
 
@@ -29,20 +28,21 @@ def make_tour(sol):
             )
 
     return tour
-
 time_nodes = [
-    (0, 0, 0, 30),   # depot
-    (1, 2, 0, 12),
-    (3, 1, 0, 15),
-    (5, 0, 0, 18),
-    (4, 3, 0, 20),
-    (2, 5, 0, 22),
-    (0, 4, 0, 16),
-    (5, 5, 0, 25),
+    (0, 0, 0, 100),
+    (2, 0, 0, 2),
+    (4, 0, 0, 4),
+    (0, 3, 0, 16),
+    (0, 5, 0, 14),
+    (1, 2, 0, 17),
+    (3, 4, 0, 11),
+    (5, 5, 0, 9),
+    (3, 1, 0, 3),
+    (2, 4, 0, 12),
 ]
 nodes = time_nodes #(x座標, y座標, 訪問時間の開始, 訪問時間の終了)
 N = len(nodes)-1 # len(nodes): デポ1箇所 + 顧客N箇所
-TIME = 10.0
+TIME = 30.0
 #締め切りの最大値
 K = max(nodes[v][3] for v in range(1, N + 1))
 
@@ -171,7 +171,7 @@ for i in range(1, N+1):
         sum_tm += k*t[k][i]
     time_margin_constraint += (a[i] + sum_tm - l[i] == 0)
 
-tw_P = 10
+tw_P = 20
 tw_constraints = (
     k_constraint
     + time_margin_constraint

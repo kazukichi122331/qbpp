@@ -1,7 +1,7 @@
 import math
 import random
 
-n = 10
+n = 20
 R = 100  # 半径
 cx, cy = 125, 125  # 中心座標
 random.seed(1)
@@ -15,12 +15,17 @@ for i in range(n):
 
 ran_nodes = [(random.randint(0, 250), random.randint(0, 250)) for _ in range(n)]
 
-time_nodes = [(10, 10, 0, 100)]
-for _ in range(n-1):
-    x = random.randint(0, 5)
-    y = random.randint(0, 5)
+candidates = [
+    (x, y)
+    for x in range(6)
+    for y in range(6)
+    if not (x == 0 and y == 0)
+]
+random.shuffle(candidates)
+time_nodes = [(0, 0, 0, 100)]
+for x, y in candidates[:n-1]:
     earliest = 0
-    latest = earliest + random.randint(50, 150)
+    latest = random.randint(5, 25)
     time_nodes.append((x, y, earliest, latest))
 
 x = [node[0] for node in time_nodes]

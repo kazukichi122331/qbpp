@@ -1,5 +1,5 @@
 import pyqbpp as qbpp
-from nodes import travel_time #, time_nodes
+from tsptw.travel_time import travel_time #, time_nodes
 
 time_nodes = [
     (0, 0, 0, 999),     # depot

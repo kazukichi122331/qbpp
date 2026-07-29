@@ -1,7 +1,20 @@
-from nodes import tm_nodes_xy, distance
+from tsptw.travel_time import travel_time
 import pyqbpp as qbpp
 
-nodes = tm_nodes_xy
+time_nodes = [
+    (0, 0, 0, 100),
+    (2, 0, 0, 100),
+    (4, 0, 0, 100),
+    (0, 3, 0, 100),
+    (0, 5, 0, 100),
+    (1, 2, 0, 100),
+    (3, 4, 0, 100),
+    (5, 5, 0, 100),
+    (3, 1, 0, 100),
+    (2, 4, 0, 100),
+]
+
+nodes = time_nodes #(x座標, y座標, 訪問時間の開始, 訪問時間の終了)
 
 n = len(nodes)
 x = qbpp.var("x", shape=(n, n))
@@ -15,7 +28,7 @@ for i in range(n):
     for j in range(n):
         for k in range(n):
             if k != j:
-                objective += distance(j, k, nodes) * x[i][j] * x[next_i][k]
+                objective += travel_time(j, k, nodes) * x[i][j] * x[next_i][k]
 
 f = objective + constraint * 1000
 f.simplify_as_binary()

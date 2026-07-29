@@ -1,5 +1,18 @@
 import pyqbpp as qbpp
-from nodes import travel_time, time_nodes
+from travel_time import travel_time
+
+time_nodes = [
+    (0, 0, 0, 100),
+    (2, 0, 0, 100),
+    (4, 0, 0, 100),
+    (0, 3, 0, 100),
+    (0, 5, 0, 100),
+    (1, 2, 0, 100),
+    (3, 4, 0, 100),
+    (5, 5, 0, 100),
+    (3, 1, 0, 100),
+    (2, 4, 0, 100),
+]
 
 nodes = time_nodes #(x座標, y座標, 訪問時間の開始, 訪問時間の終了)
 N = len(nodes)-1 # len(nodes): デポ1箇所 + 顧客N箇所

@@ -1,7 +1,6 @@
 import os
 import matplotlib.pyplot as plt
 
-
 def plot_tour(
     nodes,
     tour,
@@ -19,15 +18,26 @@ def plot_tour(
     xs_nodes = [p[0] for p in nodes]
     ys_nodes = [p[1] for p in nodes]
 
-    # 都市を白丸で描画
+    # デポ(都市0)
     plt.scatter(
-        xs_nodes,
-        ys_nodes,
+        nodes[0][0],
+        nodes[0][1],
+        s=250,
+        facecolors="lightgreen",  # 好きな色
+        edgecolors="black",
+        zorder=3
+    )
+
+    # その他の都市
+    plt.scatter(
+        xs_nodes[1:],
+        ys_nodes[1:],
         s=250,
         facecolors="white",
         edgecolors="black",
         zorder=3
     )
+
 
     # すべての都市番号、到着時刻、締切時刻を表示
     for i, (px, py) in enumerate(nodes):
