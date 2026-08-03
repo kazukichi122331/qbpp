@@ -1,7 +1,7 @@
 import math
 import random
 
-n = 20
+n = 5
 R = 100  # 半径
 cx, cy = 125, 125  # 中心座標
 random.seed(1)
@@ -13,7 +13,7 @@ for i in range(n):
     y = round(cy + R * math.sin(theta))
     reg_nodes.append((x, y))
 
-ran_nodes = [(random.randint(0, 250), random.randint(0, 250)) for _ in range(n)]
+ran_nodes = [(random.randint(10, 250), random.randint(10, 250)) for _ in range(n)]
 
 candidates = [
     (x, y)

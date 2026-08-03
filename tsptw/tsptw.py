@@ -185,7 +185,7 @@ for i in range(1, N+2):
             objective += x[u][v][i]*c[u][v]
 
 f = objective + qbpp.cons(tour_P*tour_constraints + tw_P*tw_constraints)
-f.simplify_as_binary()
+f = qbpp.simplify_as_binary(f)
 
 ml = {}
 ml.update({x[u][u][i]: 0 for u in range(N+1) for i in range(1, N+2)})#自己ループ禁止
@@ -195,7 +195,7 @@ ml.update({x[u][0][i]: 0 for u in range(1, N+1) for i in range(1, N+1)})#デポ�
 ml.update({x[0][v][i]: 0 for v in range(1, N+1) for i in range(2, N+2)})#デポから出るのはi=1のみ
 
 g = qbpp.replace(f, ml)
-g.simplify_as_binary()
+g = qbpp.simplify_as_binary(g)
 
 solver =qbpp.ABS3Solver(g)
 sol = solver.search(time_limit=TIME)

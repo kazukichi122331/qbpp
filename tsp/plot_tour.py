@@ -72,7 +72,7 @@ def plot_tour(nodes, tour, filename):
 
     plt.tight_layout()
     plt.savefig(
-        f"results/{filename}.png",
+        f"results/{filename}.svg",
         dpi=150,
         bbox_inches="tight"
     )
@@ -134,7 +134,7 @@ def plot_edges(nodes, edges, filename):
     plt.xticks([])
     plt.yticks([])
 
-    plt.savefig(f"results/{filename}.png")
+    plt.savefig(f"results/{filename}.svg")
     plt.close()
 
 

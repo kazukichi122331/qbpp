@@ -2,7 +2,21 @@ import math
 from nodes import ran_nodes, distance
 import pyqbpp as qbpp
 
-nodes = ran_nodes
+tw_nodes = [
+    (0, 0, 0, 100),
+    (2, 0, 0, 2),
+    (4, 0, 0, 4),
+    (0, 3, 0, 16),
+    (0, 5, 0, 14),
+    (1, 2, 0, 17),
+    (3, 4, 0, 11),
+    (5, 5, 0, 9),
+    (3, 1, 0, 3),
+    (2, 4, 0, 12),
+]
+nodes = []
+for x, y, _, _ in tw_nodes:
+    nodes.append((x, y))
 
 n = len(nodes)
 x = qbpp.var("x", shape=(n, n))
