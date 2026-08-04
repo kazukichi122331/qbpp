@@ -54,24 +54,6 @@ objective = qbpp.sum({x[i][j]*distance(i, j, nodes) for i in range(N) for j in r
 
 P = 1000
 
-f = objective + P*(row_constraint
-                   + col_constraint
-                   + mtz_constraint)
-f.simplify_as_binary()
-
-ml = {x[i][i]: 0 for i in range(N)}
-g = qbpp.replace(f, ml)
-
-sol = qbpp.ABS3Solver(g).search(time_limit=1.0)
-
-print("\nconsなし")
-print(f"energy = {sol(g)}")
-print("violated constraints =", sol(row_constraint+col_constraint+mtz_constraint))
-tour = make_tour(sol)
-print(tour)
-plot_tour(nodes, tour, "mtz_no_cons")
-print("")
-
 f_cons = objective + P*qbpp.cons(row_constraint
                             + col_constraint
                             + mtz_constraint)
@@ -80,7 +62,7 @@ f_cons.simplify_as_binary()
 ml = {x[i][i]: 0 for i in range(N)}
 g_cons = qbpp.replace(f_cons, ml)
 
-sol_cons = qbpp.ABS3Solver(g_cons).search(time_limit=30.0)
+sol_cons = qbpp.ABS3Solver(g_cons).search(time_limit=1.0)
 
 print("consあり")
 print(f"cons_energy = {sol_cons(g_cons)}")
@@ -88,3 +70,4 @@ print("violated constraints =", g_cons.cons(sol_cons))
 tour = make_tour(sol_cons)
 print(tour)
 plot_tour(nodes, tour, "mtz_cons")
+print(sol_cons.info)

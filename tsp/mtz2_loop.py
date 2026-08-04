@@ -38,6 +38,8 @@ def make_tour(sol):
 
 nodes = ran_nodes
 N = len(nodes) - 1
+TIME = 10.0
+LOOP = 10
 
 x = qbpp.var("x", shape=(N+1, N+1))
 u = qbpp.var("u", shape=N+1, between=(1, N))
@@ -95,18 +97,22 @@ g = qbpp.replace(f, ml)
 g = qbpp.simplify_as_binary(g)
 
 solver = qbpp.ABS3Solver(g)
-sol = solver.search(time_limit=30.0)
 
-print("energy = ", sol(g))
-print("constraint = ", g.cons(sol))
-print("row_constraint = ", sol(row_constraint))
-print("col_constraint = ", sol(col_constraint))
-print("constraint1 = ", sol(constraint1))
-print("constraint2 = ", sol(constraint2))
-print("constraint3 = ", sol(constraint3))
+saved_energy = []
+saved_violation = []
+for loop in range(LOOP):
+    sol = solver.search(time_limit=TIME)
+    energy = sol(g)
+    violation = g.cons(sol)
+    saved_energy.append(energy)
+    saved_violation.append(violation)
+    print("energy = ", energy)
+    print("violated constraints =", violation)
+    tour = make_tour(sol)
+    print(tour)
+    filename = "mtz2_" + datetime.now().strftime("%m%d%H%M%S")
+    plot_tour(nodes, tour, filename)
+    plot_tour(nodes, tour, "mtz2")
 
-tour = make_tour(sol)
-filename = "mtz2_" + datetime.now().strftime("%m%d%H%M")
-plot_tour(nodes, tour, filename)
-plot_tour(nodes, tour, "mtz2")
-print(tour)
+print(energy)
+print(violation)

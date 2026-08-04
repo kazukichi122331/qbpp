@@ -2,6 +2,7 @@ import pyqbpp as qbpp
 from datetime import datetime
 from travel_time import travel_time
 from tsptw_plot import plot_tour
+
 def make_tour(sol):
     tour = [0]  # depotから開始
 
@@ -28,18 +29,20 @@ def make_tour(sol):
             )
 
     return tour
+
 time_nodes = [
-    (0, 0, 0, 100),
-    (2, 0, 0, 2),
-    (4, 0, 0, 4),
-    (0, 3, 0, 16),
-    (0, 5, 0, 14),
-    (1, 2, 0, 17),
-    (3, 4, 0, 11),
-    (5, 5, 0, 9),
-    (3, 1, 0, 3),
-    (2, 4, 0, 12),
+    (0, 0, 0, 100), #デポ
+    (2, 0, 0, 20),   #都市1
+    (3, 1, 0, 20),   #都市2
+    (4, 0, 0, 20),   #都市3
+    (5, 5, 0, 20),   #都市4
+    (3, 4, 0, 20),  #都市5
+    (2, 4, 0, 4),  #都市6
+    (0, 5, 0, 6),  #都市7
+    (0, 3, 0, 20),  #都市8
+    (1, 2, 0, 2),  #都市9
 ]
+
 nodes = time_nodes #(x座標, y座標, 訪問時間の開始, 訪問時間の終了)
 N = len(nodes)-1 # len(nodes): デポ1箇所 + 顧客N箇所
 TIME = 30.0
@@ -146,7 +149,7 @@ for i in range(1, N+1):
                 outflow_sum += x[v][w][i+1]
         flow_constraint += (inflow_sum - outflow_sum == 0)
 
-tour_P = 1000
+tour_P = 500
 tour_constraints = (
     i_constraint
     + depo_constraint
@@ -171,9 +174,9 @@ for i in range(1, N+1):
         sum_tm += k*t[k][i]
     time_margin_constraint += (a[i] + sum_tm - l[i] == 0)
 
-tw_P = 20
+tw_P = 30
 tw_constraints = (
-    k_constraint
+    10*k_constraint
     + time_margin_constraint
 )
 

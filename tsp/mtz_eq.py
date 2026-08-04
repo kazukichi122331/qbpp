@@ -65,7 +65,7 @@ g = qbpp.replace(f, ml)
 g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
-sol = solver.search(time_limit=30.0)
+sol = solver.search(time_limit=1.0)
 
 print("energy = ", sol(g))
 print("row constraint = ", sol(row_constraint))
@@ -79,3 +79,4 @@ for i in range(N):
 tour = make_tour(sol)
 print("tour = ", tour)
 plot_tour(nodes, tour, "mtz_eq")
+print(sol.info)
