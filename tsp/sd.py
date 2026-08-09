@@ -41,7 +41,7 @@ nodes = ran_nodes
 n = len(nodes)
 
 LOOP = 1
-TIME = 20.0
+TIME = 1.0
 
 x = qbpp.var("x", shape=(n, n))
 u = qbpp.var("u", shape=n, between=(1, n - 1))
@@ -165,7 +165,7 @@ constraint = (
 )
 
 P = 100
-f = objective + P * qbpp.cons(constraint)
+f = objective + P * (constraint)
 f = qbpp.simplify_as_binary(f)
 
 ml = {x[i][i]: 0 for i in range(n)}
@@ -181,7 +181,7 @@ for loop in range(LOOP):
     print("solve:", loop+1)
     sol = solver.search(time_limit=TIME)
     energy = sol(g)
-    violation = g.cons(sol)
+    violation = sol(constraint)
     saved_energy.append(energy)
     saved_violation.append(violation)
     print("energy = ", energy)
