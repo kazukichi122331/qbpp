@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 def plot_tour(
     nodes,
     tour,
-    ready_times,
     arrival_times,
     due_times,
     travel_time,
@@ -57,7 +56,7 @@ def plot_tour(
         plt.text(
             px + 0.4,
             py,
-            f"rdy={ready_times[i]}\narr={arrival_times[i]}\ndue={due_times[i]}",
+            f"arr={arrival_times[i]}\ndue={due_times[i]}",
             fontsize=10,
             color="blue",
             ha="center",

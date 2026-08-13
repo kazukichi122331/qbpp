@@ -1,7 +1,7 @@
 import pyqbpp as qbpp
 from datetime import datetime
 from travel_time import travel_time
-from tsptw_plot import plot_tour
+from tsptw_plot_no_e import plot_tour
 from time_nodes import time_nodes_10, time_nodes_8, time_nodes_5
 
 TIME = 1.0
@@ -105,4 +105,8 @@ else:
                 break
         if visit == 0:
             print(f"pos {i}: None")
-print()
+var_count = sol.info["var_count"]
+term_count = sol.info["term_count"]
+
+print("var_count = ", var_count)
+print("term_count = ", term_count)

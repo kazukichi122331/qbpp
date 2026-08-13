@@ -1,59 +1,49 @@
-from datetime import datetime
-
 import pyqbpp as qbpp
-from time_nodes import time_nodes_10
+from datetime import datetime
 from travel_time import travel_time
-from tsptw_plot import plot_tour
+from tsptw_plot_no_e import plot_tour
+from time_nodes import time_nodes_10, time_nodes_8, time_nodes_5
 
-TIME = 10.0 #ソルバーの実行時間
+TIME = 1.0
+LOOP = 10
 
-nodes = time_nodes_10 #デポ+顧客10人
+nodes = time_nodes_10
 N = len(nodes) - 1
 
-L = [] #顧客番号順の訪問締切時刻
-E = [] #顧客番号順の訪問開始時刻
-for _,_,e,l in nodes:
-    L.append(l)
-    E.append(e)
+x = qbpp.var("x", shape=(N+1,N+1))
 
-#u->vの移動時間
-c = []
-for u in range(N+1):
-    c.append([travel_time(u, v, nodes) for v in range(N+1)])
-
-x = qbpp.var("x", shape=(N+1,N+1)) #x[i][u]=1: i番目に顧客uに訪れる
-
-l = [] #顧客訪問順の締切時刻
+c = [[travel_time(u, v, nodes) for v in range(N+1)] for u in range(N+1)]
+a = []
 for i in range(N+1):
-    expr = qbpp.expr()
-    for u in range(N+1):
-        expr += L[u]*x[i][u]
-    l.append(expr)
-
-e = [] #顧客訪問順の訪問時刻
-for i in range(N+1):
-    expr = qbpp.expr()
-    for u in range(N+1):
-        expr += E[u]*x[i][u]
-    e.append(expr)
-
-a = {}
-for i in range(N+1):
-    arrival_i = qbpp.expr()
+    a_i = qbpp.expr()
     for j in range(i):
-        next_j = j+1
+        next_j = (j+1)%(N+1)
         for u in range(N+1):
             for v in range(N+1):
-                arrival_i += x[j][u]*x[next_j][v]*travel_time(u, v, nodes)
-    a[i] = arrival_i
-    
-row_constraint = qbpp.sum(qbpp.vector_sum(x, axis=0) == 1) 
+                a_i += x[j][u]*x[next_j][v]*c[u][v]
+    a.append(a_i)
+
+l = []
+e = []
+for i in range(N+1):
+    l_i = qbpp.expr()
+    e_i = qbpp.expr()
+    next_i = (i+1)%(N+1)
+    for u in range(N+1):
+        for v in range(N+1):
+            l_i += x[i][u]*x[next_i][v]*nodes[u][3]
+            e_i += x[i][u]*x[next_i][v]*nodes[u][2]
+    l.append(l_i)
+    e.append(e_i)
+
+row_constraint = qbpp.sum(qbpp.vector_sum(x, axis=0) == 1)
 col_constraint = qbpp.sum(qbpp.vector_sum(x, axis=1) == 1)
 
 time_constraint = qbpp.expr()
 for i in range(N+1):
     time_constraint += (a[i] - l[i] <= 0)
-    time_constraint += (e[i] - a[i] <= 0)
+    time_constraint += (a[i] - e[i] >= 0)
+
 
 objective = qbpp.expr()
 for i in range(N+1):
@@ -64,47 +54,65 @@ for i in range(N+1):
 
 P = 1000
 f = objective + P*qbpp.cons(row_constraint + col_constraint + time_constraint)
-f = qbpp.simplify_as_binary(f)
+f.simplify_as_binary()
 
-ml = {x[0][0]: 1}
-ml = {x[N][0]: 1}
-ml.update({x[i][0]: 0 for i in range(1, N)})
-ml.update({x[0][i]: 0 for i in range(1, N+1)})
+ml = {}
+ml.update({x[0][0]: 1})
+ml.update({x[0][u]: 0 for u in range(1, N+1)})
+ml.update({x[i][0]: 0 for i in range(1, N+1)})
 
 g = qbpp.replace(f, ml)
-g = qbpp.simplify_as_binary(g)
+g.simplify_as_binary()
 
 solver = qbpp.ABS3Solver(g)
 sol = solver.search(time_limit=TIME)
+
 full_sol = qbpp.Sol(f).set(sol, ml)
 
-print("エネルギー値：", full_sol(f))
-print("違反した制約の本数：", f.cons(full_sol))
+print("energy = ", full_sol(f))
+print("constarint = ", f.cons(full_sol))
+
+plot_nodes = [(x, y) for x, y, _, _ in nodes]
 
 tour = []
 for i in range(N+1):
     for u in range(N+1):
         if full_sol(x[i][u]) == 1:
             tour.append(u)
-            break
-tour.append(0)
-print(f"Tour: {tour}")
+if len(tour) == N+1:
+    arrival_times = [0]*(N+1)
+    for i in range(N+1):
+        v = tour[i]
+        arrival_times[v] = full_sol(a[i])
+    due_times = [nodes[v][3] for v in range(N+1)]
+    filename = "tsptw_no_E_" + datetime.now().strftime("%m%d%H%M")
 
-filename = "tsptw_" + datetime.now().strftime("%m%d%H%M")
-plot_nodes = [(x, y) for x, y, _, _ in nodes]
-arrival_times = [0]*(N+1)
-due_times = [nodes[v][3] for v in range(N+1)]
-for i in range(N+1):
-    for u in range(N+1):
+    tour.append(0)
+
+    plot_tour(
+        plot_nodes,
+        tour,
+        arrival_times,
+        due_times,
+        c,
+        filename
+    )
+    print("tour: ", tour)
+    print("a_tm: ", arrival_times)
+    print("l_tm: ", due_times)
+else:
+    print("ツアー制約違反")
+    for i in range(N+1):
+        visit = 0
+        for u in range(N+1):
             if full_sol(x[i][u]) == 1:
-                arrival_times[u] = full_sol(a[i])
+                print(f"pos {i}: {u}")
+                visit = 1
                 break
+        if visit == 0:
+            print(f"pos {i}: None")
+var_count = sol.info["var_count"]
+term_count = sol.info["term_count"]
 
-plot_tour(
-    plot_nodes,
-    tour,
-    arrival_times,
-    due_times,
-    c,
-    filename
-)
+print("var_count = ", var_count)
+print("term_count = ", term_count)
