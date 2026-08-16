@@ -5,9 +5,10 @@ def plot_tour(
     nodes,
     tour,
     ready_times,
+    wait_times,
     arrival_times,
     due_times,
-    travel_time,
+    travel_times,
     filename
 ):
     # 保存先が存在しない場合は作成
@@ -57,7 +58,7 @@ def plot_tour(
         plt.text(
             px + 0.4,
             py,
-            f"rdy={ready_times[i]}\narr={arrival_times[i]}\ndue={due_times[i]}",
+            f"arr={arrival_times[i]}\nwait={wait_times[i]}\nrdy={ready_times[i]}\ndue={due_times[i]}",
             fontsize=10,
             color="blue",
             ha="center",
@@ -75,7 +76,7 @@ def plot_tour(
         x1, y1 = nodes[a]
         x2, y2 = nodes[b]
 
-        cost = travel_time[a][b]
+        cost = travel_times[a][b]
 
         # 辺の中点
         mx = (x1 + x2) / 2
