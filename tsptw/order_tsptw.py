@@ -53,9 +53,8 @@ for i in range(N + 1):
 time_constraint = qbpp.sum(time_constraints)
 
 return_dist = qbpp.sum(
-    x[N][u] * x[0][v] * c[u][v]
+    x[N][u]*x[0][0]*c[u][0]
     for u in range(N+1)
-    for v in range(N+1)
 )
 objective = t[N] + w[N] + return_dist
 

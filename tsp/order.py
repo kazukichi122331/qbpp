@@ -3,21 +3,23 @@ from nodes import ran_nodes, distance
 import pyqbpp as qbpp
 
 tw_nodes = [
-    (0, 0, 0, 100),
-    (2, 0, 0, 2),
-    (4, 0, 0, 4),
-    (0, 3, 0, 16),
-    (0, 5, 0, 14),
-    (1, 2, 0, 17),
-    (3, 4, 0, 11),
-    (5, 5, 0, 9),
-    (3, 1, 0, 3),
-    (2, 4, 0, 12),
+    (5, 5, 0, 100),   # デポ
+    (2, 8, 4, 12),
+    (7, 2, 8, 16),
+    (9, 7, 13, 22),
+    (3, 3, 18, 27),
+    (6, 9, 23, 32),
+    (1, 6, 28, 37),
+    (8, 4, 33, 42),
+    (4, 1, 38, 47),
+    (2, 2, 43, 52),
+    (8, 9, 48, 57)
 ]
 nodes = []
 for x, y, _, _ in tw_nodes:
     nodes.append((x, y))
 
+TIME = 10.0
 n = len(nodes)
 x = qbpp.var("x", shape=(n, n))
 
@@ -43,7 +45,7 @@ g = qbpp.replace(f, ml)
 g.simplify_as_binary()
 
 solver = qbpp.EasySolver(g)
-sol = solver.search(time_limit=30.0)
+sol = solver.search(time_limit=TIME)
 
 full_sol = qbpp.Sol(f).set(sol, ml)
 
