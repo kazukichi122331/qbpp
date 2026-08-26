@@ -1,8 +1,8 @@
 import pyqbpp as qbpp
 from datetime import datetime
 from travel_time import travel_time
-from tsptw_plot import plot_tour
-from time_nodes import time_nodes_10, time_nodes_8, time_nodes_5
+from tsptw_plot_no_e import plot_tour
+from time_nodes import time_nodes_10, time_nodes_15, time_nodes_20
 
 def make_tour(sol):
     tour = [0]  # depotから開始
@@ -31,12 +31,12 @@ def make_tour(sol):
 
     return tour
 
-time_nodes = time_nodes_10
+time_nodes = time_nodes_20
 
 nodes = time_nodes #(x座標, y座標, 訪問時間の開始, 訪問時間の終了)
 N = len(nodes)-1 # len(nodes): デポ1箇所 + 顧客N箇所
-TIME = 10.0
-
+TIME = 20.0
+LOOP = 10
 #u->vの移動時間
 c = []
 for u in range(N+1):
@@ -47,39 +47,20 @@ for u in range(N+1):
 #i ∈ {1, ..., N+1} なので N+2個にしてt=0は使わない
 x = qbpp.var("x", shape=(N+1,N+1,N+2)) 
 
-#ツアーのi番目にいる顧客の到着時刻
-a = {}
-for i in range(1, N + 1):
-    arrival_i = qbpp.sum([
-        x[0][v][1] * c[0][v]
-        for v in range(1, N + 1)
-    ])
+a = [0] #a[i]: i番目の顧客までの移動時間
+for i in range(1, N+1):
+    dist = qbpp.sum(x[u][v][i]*c[u][v] for u in range(N+1) for v in range(N+1))
+    next_a = a[i-1] + dist
+    a.append(next_a)
 
-    for j in range(2, i + 1):
-        arrival_i += qbpp.sum([
-            x[u][v][j] * c[u][v]
-            for u in range(1, N + 1)
-            for v in range(1, N + 1)
-            if u != v
-        ])
-
-    a[i] = arrival_i
-
-#訪問時間の終了
-l = {}
-# 位置1はデポ0から顧客vへの遷移
-l[1] = qbpp.sum([
-    x[0][v][1] * nodes[v][3]
-    for v in range(1, N + 1)
-])
-# 位置2,...,N
-for i in range(2, N + 1):
-    l[i] = qbpp.sum([
+l = [0] #l[i]: i番目の顧客の締切時刻
+for i in range(1, N+1):
+    l_i = qbpp.sum(
         x[u][v][i] * nodes[v][3]
-        for u in range(1, N + 1)
-        for v in range(1, N + 1)
-        if u != v
-    ])
+        for u in range(N+1)
+        for v in range(N+1)
+    )
+    l.append(l_i)
 
 #各ツアー位置で遷移が一つ(一つのiで選べるu,vは一つ)
 i_constraint = 0
@@ -144,7 +125,7 @@ tour_constraints = (
 
 time_constraint = 0
 for i in range(1, N+1):
-    time_constraint += (a[i] - l[i] <= 0)
+    time_constraint += qbpp.cons(a[i] - l[i] <= 0)
 
 tw_P = 30
 
@@ -155,7 +136,7 @@ for i in range(1, N+2):
         for v in range(N+1):
             objective += x[u][v][i]*c[u][v]
 
-f = objective + qbpp.cons(tour_P*tour_constraints + tw_P*time_constraint)
+f = objective + qbpp.cons(tour_P * tour_constraints) + (tw_P * time_constraint)
 f = qbpp.simplify_as_binary(f)
 
 ml = {}
@@ -170,6 +151,12 @@ g = qbpp.simplify_as_binary(g)
 
 solver =qbpp.ABS3Solver(g)
 sol = solver.search(time_limit=TIME)
+
+var_count = sol.info["var_count"]
+term_count = sol.info["term_count"]
+
+print("var_count = ", var_count)
+print("term_count = ", term_count)
 
 print("energy = ", sol(g))
 print("objective = ", sol(objective))
@@ -188,22 +175,14 @@ for i in range(1, N+1):
             if sol(x[u][v][i]) == 1:
                 arrival_times[v] = sol(a[i])
 
-ready_times = [0]*(N+1)
-wait_times = [0]*(N+1)
 plot_tour(
     plot_nodes,
     tour,
-    ready_times,
-    wait_times,
     arrival_times,
     due_times,
     c,
     filename
 )
 
-
-var_count = sol.info["var_count"]
-term_count = sol.info["term_count"]
-
-print("var_count = ", var_count)
-print("term_count = ", term_count)
+print("arrival_time", arrival_times)
+print("due_time", due_times)

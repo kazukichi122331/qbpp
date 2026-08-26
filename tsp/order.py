@@ -1,25 +1,10 @@
 import math
-from nodes import ran_nodes, distance
+from nodes import reg_nodes, distance
 import pyqbpp as qbpp
 
-tw_nodes = [
-    (5, 5, 0, 100),   # デポ
-    (2, 8, 4, 12),
-    (7, 2, 8, 16),
-    (9, 7, 13, 22),
-    (3, 3, 18, 27),
-    (6, 9, 23, 32),
-    (1, 6, 28, 37),
-    (8, 4, 33, 42),
-    (4, 1, 38, 47),
-    (2, 2, 43, 52),
-    (8, 9, 48, 57)
-]
-nodes = []
-for x, y, _, _ in tw_nodes:
-    nodes.append((x, y))
+nodes = reg_nodes
 
-TIME = 10.0
+TIME = 60.0
 n = len(nodes)
 x = qbpp.var("x", shape=(n, n))
 
@@ -34,7 +19,7 @@ for i in range(n):
             if k != j:
                 objective += distance(j, k, nodes) * x[i][j] * x[next_i][k]
 
-f = objective + constraint * 1000
+f = objective + qbpp.cons(constraint) * 1000
 f.simplify_as_binary()
 
 ml = {x[0][0]: 1}
@@ -58,4 +43,4 @@ for i in range(n):
             tour.append(j)
             break
 print(f"Tour: {tour}")
-
+print("constraint = ", g.cons(sol))

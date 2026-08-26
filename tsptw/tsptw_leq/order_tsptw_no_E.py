@@ -2,41 +2,38 @@ import pyqbpp as qbpp
 from datetime import datetime
 from travel_time import travel_time
 from tsptw_plot_no_e import plot_tour
-from time_nodes import time_nodes_10, time_nodes_8, time_nodes_5
+from time_nodes import time_nodes_10, time_nodes_15, time_nodes_20, time_nodes_30
 
-TIME = 1.0
+
+TIME = 10.0
 LOOP = 10
 
-nodes = time_nodes_10
+nodes = time_nodes_20
 N = len(nodes) - 1
 
 x = qbpp.var("x", shape=(N+1,N+1))
 
 c = [[travel_time(u, v, nodes) for v in range(N+1)] for u in range(N+1)]
-a = []
-for i in range(N+1):
-    a_i = qbpp.expr()
-    for j in range(i):
-        next_j = (j+1)%(N+1)
-        for u in range(N+1):
-            for v in range(N+1):
-                a_i += x[j][u]*x[next_j][v]*c[u][v]
-    a.append(a_i)
+a = [0] #a[i]: i番目の顧客までの移動時間
+for i in range(1, N+1):
+    dist = qbpp.sum(x[i-1][u]*x[i][v]*c[u][v] for u in range(N+1) for v in range(N+1))
+    next_a = a[i-1] + dist
+    a.append(next_a)
 
-l = []
+l = [] #l[i]: i番目の顧客の締切時刻
 for i in range(N+1):
-    l_i = qbpp.expr()
-    next_i = (i+1)%(N+1)
-    for u in range(N+1):
-        for v in range(N+1):
-            l_i += x[i][u]*x[next_i][v]*nodes[u][3]
+    l_i = qbpp.sum(
+        x[i][u] * nodes[u][3]
+        for u in range(N+1)
+    )
     l.append(l_i)
+    
 row_constraint = qbpp.sum(qbpp.vector_sum(x, axis=0) == 1)
 col_constraint = qbpp.sum(qbpp.vector_sum(x, axis=1) == 1)
 
 time_constraint = qbpp.expr()
 for i in range(N+1):
-    time_constraint += (a[i] - l[i] <= 0)
+    time_constraint += qbpp.cons(a[i] - l[i] <= 0)
 
 
 objective = qbpp.expr()
@@ -47,7 +44,7 @@ for i in range(N+1):
             objective += x[i][u]*x[next_i][v]*c[u][v]
 
 P = 1000
-f = objective + P*qbpp.cons(row_constraint + col_constraint + time_constraint)
+f = objective + P*qbpp.cons(row_constraint + col_constraint) + time_constraint*P
 f.simplify_as_binary()
 
 ml = {}

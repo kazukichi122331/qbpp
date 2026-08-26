@@ -2,12 +2,12 @@ import pyqbpp as qbpp
 from datetime import datetime
 from travel_time import travel_time
 from tsptw_plot import plot_tour
-from time_nodes import time_nodes_10, time_nodes_8, time_nodes_5
+from time_nodes import time_nodes_10, time_nodes_15, time_nodes_20
 
-TIME = 300.0 #ソルバーの実行時間
+TIME = 30.0 #ソルバーの実行時間
 LOOP = 10  #実行回数
 
-nodes = time_nodes_5 #(x座標, y座標, 開始時刻, 締切時刻)
+nodes = time_nodes_20 #(x座標, y座標, 開始時刻, 締切時刻)
 N = len(nodes) - 1 #デポ:0 顧客:1~N
 
 x = qbpp.var("x", shape=(N+1,N+1)) #x[i][u]=1: i番目に顧客uに訪れる
@@ -58,15 +58,18 @@ return_dist = qbpp.sum(
 )
 objective = t[N] + w[N] + return_dist
 
-P = 1000
-f = objective + P*qbpp.cons(row_constraint + col_constraint + time_constraint)
+assign_P = 10000
+time_P = 1000
+assign_constraint = assign_P*(row_constraint + col_constraint)
+time_constraint = time_P*time_constraint
+
+f = objective + qbpp.cons(assign_constraint + time_constraint)
 f.simplify_as_binary()
 
 ml = {}
 ml.update({x[0][0]: 1})
 ml.update({x[0][u]: 0 for u in range(1, N+1)})
 ml.update({x[i][0]: 0 for i in range(1, N+1)})
-
 g = qbpp.replace(f, ml)
 g.simplify_as_binary()
 

@@ -1,7 +1,7 @@
 import math
 import random
 
-n = 5
+n = 100
 R = 100  # 半径
 cx, cy = 125, 125  # 中心座標
 random.seed(1)
@@ -27,10 +27,6 @@ for x, y in candidates[:n-1]:
     earliest = 0
     latest = random.randint(5, 25)
     time_nodes.append((x, y, earliest, latest))
-
-x = [node[0] for node in time_nodes]
-y = [node[1] for node in time_nodes]
-tm_nodes_xy = [(x[i], y[i]) for i in range(n)]
 
 def distance(i, j, nodes):
     dx = nodes[i][0] - nodes[j][0]
