@@ -15,6 +15,7 @@ with open("Dumas/n20w20.001.txt", "r") as f:
         E.append(e)
         L.append(l)
 
+#txtファイルの出力
 #print(N)
 #for i in range(N):
 #    for j in range(N):
