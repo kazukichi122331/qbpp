@@ -3,7 +3,7 @@ from datetime import datetime
 from dist_matrix import N, c, L
 from tsptw_plot_no_e import plot_tour, recover_coordinates
 
-TIME = 10.0
+TIME = 60.0
 LOOP = 1
 
 x = qbpp.var("x", shape=(N,N))
@@ -11,36 +11,24 @@ print("Created x")
 
 t = [qbpp.expr()] #i番目の顧客への到着時刻
 for i in range(1, N):
-    next_t = qbpp.expr()
-    for j in range(1, i+1):
-        for u in range(N):
-            for v in range(N):
-                if u!=v:
-                    next_t += x[j-1][u]*x[j][v]*c[u][v]
+    next_t = qbpp.copy(t[i-1])
+    for u in range(N):
+        for v in range(N):
+            if u!=v:
+                next_t += x[i-1][u]*x[i][v]*c[u][v]
     t.append(next_t)
 print("Created t")
 
-T = [[qbpp.expr() for u in range(N)] for i in range(N)] #i番目に顧客uに到着するときの時刻
-for i in range(1, N):
-    for u in range(1, N):
-        T[i][u] += t[i-1]
-        next_time = qbpp.expr()
-        for v in range(N):
-            if u!=v:
-                T[i][u] += x[i-1][v]*x[i][u]*c[v][u]
-print("Created T")
-
-row_constraint = qbpp.cons(qbpp.sum(qbpp.vector_sum(x, axis=1) == 1))
+row_constraint = qbpp.sum(qbpp.vector_sum(x, axis=1) == 1)
 print("Created row_constraint")
 
-col_constraint = qbpp.cons(qbpp.sum(qbpp.vector_sum(x, axis=0) == 1))
+col_constraint = qbpp.sum(qbpp.vector_sum(x, axis=0) == 1)
 print("Created col_constraint")
 
 time_constraint = qbpp.expr()
-for u in range(1, N):
-    for i in range(1, N):
-        time_constraint += qbpp.cons(x[i][u]*(T[i][u] - L[u]) <= 0)
-        print(f"{i} {u} OK")
+for i in range(1, N):
+    for u in range(1, N):
+        time_constraint += qbpp.cons(x[i][u]*(t[i] - L[u]), between=(None, 0))
 print("Created time_constraint")
 
 objective = qbpp.expr()
@@ -53,8 +41,8 @@ for i in range(N):
 print("Created objective")
 
 TOUR_P = 1000
-TIME_P = 10
-f = objective + TOUR_P*(row_constraint + col_constraint) + TIME_P*(time_constraint)
+TIME_P = 100
+f = objective + TOUR_P*qbpp.cons(row_constraint + col_constraint) + TIME_P*(time_constraint)
 f.simplify_as_binary()
 print("Created f")
 
@@ -70,6 +58,7 @@ print("Created g")
 
 solver = qbpp.ABS3Solver(g)
 print("Created ABS3Solver")
+print(f"solve now...({TIME} sec)")
 sol = solver.search(time_limit=TIME)
 print("Created sol")
 full_sol = qbpp.Sol(f).set(sol, ml)
@@ -108,15 +97,27 @@ plot_tour(
     filename
 )
 
-print("---------- T vs t ----------")
-
 for i in range(1, N):
+    visit = 0
     for u in range(1, N):
         if full_sol(x[i][u]) == 1:
+            visit = 1
             print(
                 f"i={i:2d}, u={u:2d}, "
                 f"x={full_sol(x[i][u])}, "
-                f"t[i]={full_sol(t[i])}, "
-                f"T[i][u]={full_sol(T[i][u])}, "
-                f"L[u]={L[u]}"
+                f"t[i]={full_sol(t[i]):3d}, "
+                f"L[u]={L[u]:3d} "
+                , end=""
             )
+            if full_sol(t[i]) - L[u] > 0:
+                print("VIOLATION!")
+            else:
+                print("")
+    if visit == 0:
+        print(f"i={i:2d}, u=None VIOLATION!")
+
+var_count = sol.info["var_count"]
+term_count = sol.info["term_count"]
+
+print("var_count = ", var_count)
+print("term_count = ", term_count)
