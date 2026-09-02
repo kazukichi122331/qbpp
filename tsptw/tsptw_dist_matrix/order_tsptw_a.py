@@ -1,50 +1,66 @@
 import pyqbpp as qbpp
 from datetime import datetime
-from dist_matrix import N, c, L
+from dist_matrix import N, c, L, E
 from tsptw_plot_no_e import plot_tour, recover_coordinates
 
-TIME = 10.0
+TIME = 60.0
 LOOP = 1
 
 x = qbpp.var("x", shape=(N,N))
 
-t = [qbpp.expr()] # i番目の顧客への到着時刻
-for i in range(1, N):
-    next_t = qbpp.copy(t[i-1])
+w = qbpp.var("w", shape=N, between=(0, 100))
+
+a = qbpp.var("a", shape=N, between=(0,500))
+
+
+row_constraint = qbpp.expr()
+for i in range(N):
+    row = qbpp.expr()
+    for u in range(N):
+        row += x[i][u]
+    row_constraint += qbpp.cons(row == 1)
+
+col_constraint = qbpp.expr()
+for u in range(N):
+    col = qbpp.expr()
+    for i in range(N):
+        col += x[i][u]
+    col_constraint += qbpp.cons(col == 1)
+
+M = 1000
+arrival_constraint = qbpp.expr()
+for i in range(N-1):
     for u in range(N):
         for v in range(N):
             if u!=v:
-                next_t += x[i-1][u]*x[i][v]*c[u][v]
-    t.append(next_t)
-
-row_constraint = qbpp.sum(qbpp.vector_sum(x, axis=1) == 1)
-
-col_constraint = qbpp.sum(qbpp.vector_sum(x, axis=0) == 1)
+                arrival_constraint += qbpp.cons(
+                    a[v] - (a[u] + w[u] + c[u][v] - M*(1 - x[i][u] - x[i+1][v]))
+                    , between=(0, None)
+                )
 
 time_constraint = qbpp.expr()
-# 顧客ごと
-#for i in range(1, N):
-#    for u in range(1, N):
-#        time_constraint += qbpp.cons(x[i][u]*(t[i] - L[u]), between=(None, 0))
-# 訪問順
-for i in range(N):
-    sum_L = qbpp.expr()
-    for u in range(N):
-        sum_L += x[i][u]*L[u]
-    time_constraint += qbpp.cons(t[i] - sum_L, between=(None, 0))
+for u in range(1, N):
+    time_constraint += qbpp.cons(a[u] + w[u], between=(E[u], None))
+    time_constraint += qbpp.cons(a[u] + w[u], between=(None, L[u]))
 
 objective = qbpp.expr()
 for i in range(N):
-    next_i = (i+1)%(N)
+    next_i = (i+1)%N
     for u in range(N):
         for v in range(N):
             if u!=v:
                 objective += x[i][u]*x[next_i][v]*c[u][v]
 
-TOUR_P = 1000
+ASSIGN_P = 1000
+ARRIVAL_P = 1000
 TIME_P = 100
-f = objective + TOUR_P*qbpp.cons(row_constraint + col_constraint) + TIME_P*(time_constraint)
-f.simplify_as_binary()
+f = (
+    objective
+    + ASSIGN_P * row_constraint
+    + ASSIGN_P * col_constraint
+    + ARRIVAL_P * arrival_constraint
+    + TIME_P * time_constraint
+)
 
 ml = {}
 ml.update({x[0][0]: 1})
@@ -52,7 +68,9 @@ ml.update({x[0][u]: 0 for u in range(1, N)})
 ml.update({x[i][0]: 0 for i in range(1, N)})
 
 g = qbpp.replace(f, ml)
-g.simplify_as_binary()
+
+f = qbpp.simplify_as_binary(f)
+g = qbpp.simplify_as_binary(g)
 
 solver = qbpp.ABS3Solver(g)
 print(f"solve now...({TIME} sec)")
@@ -63,23 +81,30 @@ print("")
 print(f"----------result({TIME} sec)----------")
 
 print("energy = ", full_sol(f))
+print("objective = ", full_sol(objective))
 print("constarint = ", f.cons(full_sol))
 print("row_constraint = ", full_sol(row_constraint))
 print("col_constraint = ", full_sol(col_constraint))
 print("time_constraint = ", full_sol(time_constraint))
 
 tour = []
+
 for i in range(N):
     for u in range(N):
         if full_sol(x[i][u]) == 1:
             tour.append(u)
             break
+
 tour.append(0)
+
 filename = "tsptw_no_e_" + datetime.now().strftime("%m%d%H%M")
+
 nodes = recover_coordinates(c)
+
 arrival_times = [0] * N
-for i, u in enumerate(tour[:-1]):
-    arrival_times[u] = full_sol(t[i])
+for u in tour[:-1]:
+    arrival_times[u] = full_sol(a[u])
+
 due_times = L
 travel_time = c
 
@@ -97,17 +122,27 @@ for i in range(N):
     for u in range(N):
         if full_sol(x[i][u]) == 1:
             visit = 1
+
+            arrival = full_sol(a[u])
+            wait = full_sol(w[u])
+            service_start = arrival + wait
+
             print(
                 f"tour{i:2d}: {u:2d}, "
-                f"arrived={full_sol(t[i]):3d}, "
-                f"[0, {L[u]:3d}] "
-                , end=""
+                f"arrived={arrival:3d}, "
+                f"wait={wait:3d}, "
+                f"visit={service_start:3d}, "
+                f"[{E[u]:3d}, {L[u]:3d}] ",
+                end=""
             )
-            if full_sol(t[i]) - L[u] > 0:
+
+            if service_start > L[u] or service_start < E[u]:
                 print("VIOLATION!")
             else:
                 print("")
+
             break
+
     if visit == 0:
         print(f"tour{i:2d}: None VIOLATION!")
 

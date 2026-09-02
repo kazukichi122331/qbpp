@@ -1,59 +1,14 @@
 import os
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import least_squares
-
-
-def recover_coordinates(c):
-    N = len(c)
-
-    coords = np.zeros((N, 2))
-
-    # デポを (0, 0) に固定
-    coords[0] = [0.0, 0.0]
-
-    # 顧客1を x 軸上に固定
-    coords[1] = [float(c[0][1]), 0.0]
-
-    # 初期値
-    for u in range(2, N):
-        r = c[0][u]
-        theta = 2 * np.pi * (u - 2) / (N - 2)
-
-        coords[u] = [
-            r * np.cos(theta),
-            r * np.sin(theta)
-        ]
-
-    # 距離行列に合うように座標を調整
-    def residual(z):
-        xy = coords.copy()
-        xy[2:] = z.reshape(-1, 2)
-
-        errors = []
-
-        for i in range(N):
-            for j in range(i + 1, N):
-                distance = np.linalg.norm(xy[i] - xy[j])
-                errors.append(distance - c[i][j])
-
-        return errors
-
-    result = least_squares(
-        residual,
-        coords[2:].reshape(-1)
-    )
-
-    coords[2:] = result.x.reshape(-1, 2)
-
-    return coords
 
 def plot_tour(
     nodes,
     tour,
+    ready_times,
+    wait_times,
     arrival_times,
     due_times,
-    travel_time,
+    travel_times,
     filename
 ):
     # 保存先が存在しない場合は作成
@@ -61,26 +16,9 @@ def plot_tour(
 
     plt.figure(figsize=(8, 8))
 
-    # その他の都市
-    for i, (px, py) in enumerate(nodes):
-        if arrival_times[i] - due_times[i] > 0:
-            plt.scatter(
-                px,
-                py,
-                s=250,
-                facecolors="red",
-                edgecolors="black",
-                zorder=3
-            )
-        else:
-            plt.scatter(
-                px,
-                py,
-                s=250,
-                facecolors="white",
-                edgecolors="black",
-                zorder=3
-            )
+    # 都市の座標
+    xs_nodes = [p[0] for p in nodes]
+    ys_nodes = [p[1] for p in nodes]
 
     # デポ(都市0)
     plt.scatter(
@@ -91,6 +29,17 @@ def plot_tour(
         edgecolors="black",
         zorder=3
     )
+
+    # その他の都市
+    plt.scatter(
+        xs_nodes[1:],
+        ys_nodes[1:],
+        s=250,
+        facecolors="white",
+        edgecolors="black",
+        zorder=3
+    )
+
 
     # すべての都市番号、到着時刻、締切時刻を表示
     for i, (px, py) in enumerate(nodes):
@@ -104,13 +53,11 @@ def plot_tour(
             va="center",
             zorder=4
         )
-
-        # 到着時刻と締切時刻
-        if arrival_times[i] - due_times[i] > 0:
+        if i==0:
             plt.text(
-                px,
-                py - 2.0,
-                f"{arrival_times[i]}\n[0, {due_times[i]}]",
+                px + 0.5,
+                py - 0.5,
+                f"arr={arrival_times[i]}",
                 fontsize=10,
                 color="blue",
                 ha="center",
@@ -123,29 +70,28 @@ def plot_tour(
                 zorder=4
             )
         else:
-            plt.text(
-                px,
-                py - 2.0,
-                f"{arrival_times[i]}",
-                fontsize=10,
-                color="blue",
-                ha="center",
-                va="top",
-                bbox=dict(
-                    facecolor="white",
-                    alpha=0.8,
-                    edgecolor="none"
-                ),
-                zorder=4
-            )
-
+                    plt.text(
+            px + 0.5,
+            py - 0.5,
+            f"arr={arrival_times[i]}\nwait={wait_times[i]}\n[{ready_times[i]}, {due_times[i]}]",
+            fontsize=10,
+            color="blue",
+            ha="center",
+            va="top",
+            bbox=dict(
+                facecolor="white",
+                alpha=0.8,
+                edgecolor="none"
+            ),
+            zorder=4
+        )
 
     # 赤い矢印で巡回路を描画
     for a, b in zip(tour[:-1], tour[1:]):
         x1, y1 = nodes[a]
         x2, y2 = nodes[b]
 
-        cost = travel_time[a][b]
+        cost = travel_times[a][b]
 
         # 辺の中点
         mx = (x1 + x2) / 2
@@ -156,12 +102,12 @@ def plot_tour(
             mx,
             my,
             str(cost),
-            fontsize=10,
+            fontsize=15,
             color="black",
             ha="center",
             va="center",
             bbox=dict(
-                facecolor="none",
+                facecolor="white",
                 alpha=0.7,
                 edgecolor="none"
             ),

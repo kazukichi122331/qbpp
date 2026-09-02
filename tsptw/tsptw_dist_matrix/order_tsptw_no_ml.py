@@ -4,10 +4,11 @@ from dist_matrix import N, c, L, E
 from tsptw_plot_no_e import plot_tour, recover_coordinates
 
 TIME = 60.0
+LOOP = 1
 
 x = qbpp.var("x", shape=(N,N))
 
-w = qbpp.var("w", shape=N, between=(0, 100))
+w = qbpp.var("w", shape=N, between=(0, 60))
 
 t = [qbpp.expr()] #累積移動時間
 for i in range(1, N):
@@ -24,9 +25,9 @@ for i in range(1, N):
     next_tw = t[i] + sum(w[j] for j in range(1, i))
     tw.append(next_tw)
 
-row_constraint = qbpp.sum(qbpp.vector_sum(x, axis=1) == 1)
+row_constraint = qbpp.cons(qbpp.sum(qbpp.vector_sum(x, axis=1) == 1))
 
-col_constraint = qbpp.sum(qbpp.vector_sum(x, axis=0) == 1)
+col_constraint = qbpp.cons(qbpp.sum(qbpp.vector_sum(x, axis=0) == 1))
 
 time_constraint = qbpp.expr()
 # 顧客ごと
@@ -46,48 +47,39 @@ for i in range(1, N):
     time_constraint += qbpp.cons(service_start - sum_L, between=(None, 0))
     time_constraint += qbpp.cons(service_start - sum_E, between=(0, None))
 
-#移動時間のみ
+fix_constraint = qbpp.expr()
+fix_constraint += qbpp.cons(x[0][0] == 1)
+for u in range(1, N):
+    fix_constraint += qbpp.cons(x[0][u] == 0)
+for i in range(1, N):
+    fix_constraint += qbpp.cons(x[i][0] == 0)
+
 objective = t[N-1] + qbpp.sum(x[N-1][u]*c[u][0] for u in range(1, N))
 
-#合計時間
-#objective = tw[N-1] + w[N-1] + qbpp.sum(x[N-1][u]*c[u][0] for u in range(1, N))
+TOUR_P = 1000
+TIME_P = 300
+f = objective + TOUR_P*(row_constraint + col_constraint + fix_constraint) + TIME_P*(time_constraint)
 
+f.simplify_as_binary()
 
-ROW_P = 50000
-COL_P = 50000
-TIME_P = 10
-f = objective + ROW_P*qbpp.cons(row_constraint) + COL_P*qbpp.cons(col_constraint) + TIME_P*time_constraint
-
-
-ml = {}
-ml.update({x[0][0]: 1})
-ml.update({x[0][u]: 0 for u in range(1, N)})
-ml.update({x[i][0]: 0 for i in range(1, N)})
-
-g = qbpp.replace(f, ml)
-
-f = qbpp.simplify_as_binary(f)
-g = qbpp.simplify_as_binary(g)
-
-solver = qbpp.ABS3Solver(g)
-print(f"N={N} solve now...({TIME} sec)")
+solver = qbpp.ABS3Solver(f)
+print(f"solve now...({TIME} sec)")
 sol = solver.search(time_limit=TIME)
-full_sol = qbpp.Sol(f).set(sol, ml)
 print("")
 
 print(f"----------result({TIME} sec)----------")
 
-print("energy = ", full_sol(f))
-print("objective = ", full_sol(objective))
-print("constarint = ", f.cons(full_sol))
-print("row_constraint = ", full_sol(row_constraint))
-print("col_constraint = ", full_sol(col_constraint))
-print("time_constraint = ", full_sol(time_constraint))
+print("energy = ", sol(f))
+print("objective = ", sol(objective))
+print("constarint = ", f.cons(sol))
+print("row_constraint = ", sol(row_constraint))
+print("col_constraint = ", sol(col_constraint))
+print("time_constraint = ", sol(time_constraint))
 
 tour = []
 for i in range(N):
     for u in range(N):
-        if full_sol(x[i][u]) == 1:
+        if sol(x[i][u]) == 1:
             tour.append(u)
             break
 tour.append(0)
@@ -95,7 +87,7 @@ filename = "tsptw_no_e_" + datetime.now().strftime("%m%d%H%M")
 nodes = recover_coordinates(c)
 arrival_times = [0] * N
 for i, u in enumerate(tour[:-1]):
-    arrival_times[u] = full_sol(tw[i])
+    arrival_times[u] = sol(tw[i])
 due_times = L
 travel_time = c
 
@@ -108,31 +100,42 @@ plot_tour(
     filename
 )
 
+pre_u = 0
 for i in range(N):
     visit = 0
     for u in range(N):
-        if full_sol(x[i][u]) == 1:
+        if sol(x[i][u]) == 1:
             visit = 1
             print(
-                f"tour{i:2d}: {u:2d}, "
-                f"arrived={full_sol(tw[i]):3d}, "
-                f"wait={full_sol(w[i]):3d}, "
-                f"visit={full_sol(tw[i]) + full_sol(w[i]):3d}, "
+                f"x[{i:02d}][{u:02d}]=1: "
+                f"arrv={sol(tw[i]):3d}, "
+                f"wait={sol(w[i]):3d}, "
+                f"dist={c[pre_u][u]:2d}, "
                 f"[{E[u]:3d}, {L[u]:3d}] "
                 , end=""
             )
-            if full_sol(tw[i] + w[i]) - L[u] > 0 or full_sol(tw[i] + w[i]) - E[u] < 0:
+            if sol(tw[i] + w[i]) - L[u] > 0 or sol(tw[i] + w[i]) - E[u] < 0:
                 print("VIOLATION!")
             else:
                 print("")
+            pre_u = u
             break
     if visit == 0:
-        print(f"tour{i:2d}: None VIOLATION!")
+        print(f"i={i:2d}, u=None VIOLATION!")
 
-print("tour:", tour)
+visited = []
+
+for i in range(N):
+    for u in range(N):
+        if sol(x[i][u]) == 1:
+            visited.append(u)
+
+print("visited =", visited)
+print("duplicates =", [u for u in set(visited) if visited.count(u) > 1])
+print("missing =", [u for u in range(N) if u not in visited])
 
 var_count = sol.info["var_count"]
 term_count = sol.info["term_count"]
+
 print("var_count = ", var_count)
 print("term_count = ", term_count)
-

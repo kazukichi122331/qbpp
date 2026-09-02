@@ -1,14 +1,16 @@
 import pyqbpp as qbpp
 from datetime import datetime
-from dist_matrix import N, c, L
+from dist_matrix import N, c, L, E
 from tsptw_plot_no_e import plot_tour, recover_coordinates
 
-TIME = 10.0
-LOOP = 1
+TIME = 1.0
+LOOP = 100
 
 x = qbpp.var("x", shape=(N,N))
 
-t = [qbpp.expr()] # i番目の顧客への到着時刻
+w = qbpp.var("w", shape=N, between=(0, 100))
+
+t = [qbpp.expr()] #累積移動時間
 for i in range(1, N):
     next_t = qbpp.copy(t[i-1])
     for u in range(N):
@@ -16,6 +18,12 @@ for i in range(1, N):
             if u!=v:
                 next_t += x[i-1][u]*x[i][v]*c[u][v]
     t.append(next_t)
+
+
+tw = [qbpp.expr()] #合計時間
+for i in range(1, N):
+    next_tw = t[i] + sum(w[j] for j in range(1, i))
+    tw.append(next_tw)
 
 row_constraint = qbpp.sum(qbpp.vector_sum(x, axis=1) == 1)
 
@@ -25,26 +33,38 @@ time_constraint = qbpp.expr()
 # 顧客ごと
 #for i in range(1, N):
 #    for u in range(1, N):
-#        time_constraint += qbpp.cons(x[i][u]*(t[i] - L[u]), between=(None, 0))
+#        service_start = tw[i] + w[i]
+#        time_constraint += qbpp.cons(x[i][u]*service_start - L[u], between=(None, 0))
+#        time_constraint += qbpp.cons(x[i][u]*service_start - E[u], between=(0, None))
 # 訪問順
-for i in range(N):
+for i in range(1, N):
+    service_start = tw[i] + w[i]
     sum_L = qbpp.expr()
-    for u in range(N):
+    sum_E = qbpp.expr()
+    for u in range(1, N):
         sum_L += x[i][u]*L[u]
-    time_constraint += qbpp.cons(t[i] - sum_L, between=(None, 0))
+        sum_E += x[i][u]*E[u]
+    time_constraint += qbpp.cons(service_start - sum_L, between=(None, 0))
+    time_constraint += qbpp.cons(service_start - sum_E, between=(0, None))
 
-objective = qbpp.expr()
-for i in range(N):
-    next_i = (i+1)%(N)
-    for u in range(N):
-        for v in range(N):
-            if u!=v:
-                objective += x[i][u]*x[next_i][v]*c[u][v]
+none_penalty = qbpp.expr()
 
-TOUR_P = 1000
-TIME_P = 100
-f = objective + TOUR_P*qbpp.cons(row_constraint + col_constraint) + TIME_P*(time_constraint)
-f.simplify_as_binary()
+for i in range(1, N):
+    row_sum = qbpp.sum(x[i][u] for u in range(1, N))
+    none_penalty += (1 - row_sum) * (1 - row_sum)
+
+#移動時間のみ
+objective = t[N-1] + qbpp.sum(x[N-1][u]*c[u][0] for u in range(1, N))
+
+#合計時間
+#objective = tw[N-1] + w[N-1] + qbpp.sum(x[N-1][u]*c[u][0] for u in range(1, N))
+
+ROW_P = 1000
+COL_P = 1000
+TIME_P = 10
+NONE_P = 1000
+f = objective + ROW_P*qbpp.cons(row_constraint) + COL_P*qbpp.cons(col_constraint) + TIME_P*time_constraint + NONE_P*none_penalty
+
 
 ml = {}
 ml.update({x[0][0]: 1})
@@ -52,10 +72,12 @@ ml.update({x[0][u]: 0 for u in range(1, N)})
 ml.update({x[i][0]: 0 for i in range(1, N)})
 
 g = qbpp.replace(f, ml)
-g.simplify_as_binary()
+
+f = qbpp.simplify_as_binary(f)
+g = qbpp.simplify_as_binary(g)
 
 solver = qbpp.ABS3Solver(g)
-print(f"solve now...({TIME} sec)")
+print(f"N={N} solve now...({TIME} sec)")
 sol = solver.search(time_limit=TIME)
 full_sol = qbpp.Sol(f).set(sol, ml)
 print("")
@@ -63,6 +85,7 @@ print("")
 print(f"----------result({TIME} sec)----------")
 
 print("energy = ", full_sol(f))
+print("objective = ", full_sol(objective))
 print("constarint = ", f.cons(full_sol))
 print("row_constraint = ", full_sol(row_constraint))
 print("col_constraint = ", full_sol(col_constraint))
@@ -79,7 +102,7 @@ filename = "tsptw_no_e_" + datetime.now().strftime("%m%d%H%M")
 nodes = recover_coordinates(c)
 arrival_times = [0] * N
 for i, u in enumerate(tour[:-1]):
-    arrival_times[u] = full_sol(t[i])
+    arrival_times[u] = full_sol(tw[i])
 due_times = L
 travel_time = c
 
@@ -99,11 +122,13 @@ for i in range(N):
             visit = 1
             print(
                 f"tour{i:2d}: {u:2d}, "
-                f"arrived={full_sol(t[i]):3d}, "
-                f"[0, {L[u]:3d}] "
+                f"arrived={full_sol(tw[i]):3d}, "
+                f"wait={full_sol(w[i]):3d}, "
+                f"visit={full_sol(tw[i]) + full_sol(w[i]):3d}, "
+                f"[{E[u]:3d}, {L[u]:3d}] "
                 , end=""
             )
-            if full_sol(t[i]) - L[u] > 0:
+            if full_sol(tw[i] + w[i]) - L[u] > 0 or full_sol(tw[i] + w[i]) - E[u] < 0:
                 print("VIOLATION!")
             else:
                 print("")
@@ -117,3 +142,4 @@ var_count = sol.info["var_count"]
 term_count = sol.info["term_count"]
 print("var_count = ", var_count)
 print("term_count = ", term_count)
+

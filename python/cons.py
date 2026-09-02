@@ -1,33 +1,26 @@
 import pyqbpp as qbpp
 
-x = qbpp.var("x")
-y = qbpp.var("y")
-z = qbpp.var("z")
+x = qbpp.var("x", shape=(5, 5))
+y = qbpp.var("y", shape=5, between=(0,10))
 
-f = x + y
-g = y + z
+constraint = qbpp.expr()
+for i in range(5):
+    sum_row = 0
+    for j in range(5):
+        sum_row += x[i][j]
+    constraint += (sum_row - y[i] == 0)
 
-one_cons = qbpp.cons(f + g == 2)
-two_cons = qbpp.cons(f == 1) + qbpp.cons(g == 1)
+f = constraint
 
-bad_sol = qbpp.Sol(x + y + z).set({
-    x: 1,
-    y: 1,
-    z: 0,
-})
+ml = {x[i][i]: 0 for i in range(5)}
+g = qbpp.replace(f, ml)
+f = qbpp.simplify_as_binary(f)
+g = qbpp.simplify_as_binary(g)
 
-print("x =", bad_sol[x])
-print("y =", bad_sol[y])
-print("z =", bad_sol[z])
+solver = qbpp.EasySolver(g)
+sol = solver.search()
 
-print()
-print("=== one_cons ===")
-print("energy =", bad_sol(one_cons))
-print("cons =", one_cons.cons(bad_sol))
-print("violations =", one_cons.violations(bad_sol))
+full_sol = qbpp.Sol(f).set(sol, ml)
+full_sol.comp_energy()
 
-print()
-print("=== two_cons ===")
-print("energy =", bad_sol(two_cons))
-print("cons =", two_cons.cons(bad_sol))
-print("violations =", two_cons.violations(bad_sol))
+print(full_sol(f))
