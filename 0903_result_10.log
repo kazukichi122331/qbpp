@@ -1,0 +1,220 @@
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=0, [0, 33]
+i=2, u=10, tw=0, w=0, [14, 124]
+i=3, u=2, tw=0, w=1, [0, 117]
+i=4, u=8, tw=1, w=0, [0, 83]
+i=5, u=4, tw=1, w=16, [0, 158]
+i=6, u=1, tw=17, w=14, [0, 133]
+i=7, u=5, tw=31, w=0, [0, 90]
+i=8, u=6, tw=31, w=42, [69, 153]
+i=9, u=3, tw=73, w=47, [156, 260]
+i=10, u=7, tw=120, w=25, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=0, [0, 33]
+i=2, u=10, tw=0, w=0, [14, 124]
+i=3, u=2, tw=0, w=32, [0, 117]
+i=4, u=8, tw=32, w=0, [0, 83]
+i=5, u=4, tw=32, w=0, [0, 158]
+i=6, u=1, tw=32, w=1, [0, 133]
+i=7, u=5, tw=33, w=0, [0, 90]
+i=8, u=6, tw=33, w=24, [69, 153]
+i=9, u=3, tw=57, w=57, [156, 260]
+i=10, u=7, tw=114, w=41, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=0, [0, 33]
+i=2, u=10, tw=0, w=0, [14, 124]
+i=3, u=2, tw=0, w=18, [0, 117]
+i=4, u=8, tw=18, w=0, [0, 83]
+i=5, u=4, tw=18, w=2, [0, 158]
+i=6, u=1, tw=20, w=10, [0, 133]
+i=7, u=5, tw=30, w=0, [0, 90]
+i=8, u=6, tw=30, w=6, [69, 153]
+i=9, u=3, tw=36, w=58, [156, 260]
+i=10, u=7, tw=94, w=50, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=0, [0, 33]
+i=2, u=10, tw=0, w=16, [14, 124]
+i=3, u=2, tw=16, w=0, [0, 117]
+i=4, u=8, tw=16, w=0, [0, 83]
+i=5, u=4, tw=16, w=1, [0, 158]
+i=6, u=1, tw=17, w=1, [0, 133]
+i=7, u=5, tw=18, w=0, [0, 90]
+i=8, u=6, tw=18, w=43, [69, 153]
+i=9, u=3, tw=61, w=53, [156, 260]
+i=10, u=7, tw=114, w=58, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=1, [0, 33]
+i=2, u=10, tw=1, w=16, [14, 124]
+i=3, u=2, tw=17, w=0, [0, 117]
+i=4, u=8, tw=17, w=1, [0, 83]
+i=5, u=4, tw=18, w=2, [0, 158]
+i=6, u=1, tw=20, w=8, [0, 133]
+i=7, u=5, tw=28, w=0, [0, 90]
+i=8, u=6, tw=28, w=37, [69, 153]
+i=9, u=3, tw=65, w=83, [156, 260]
+i=10, u=7, tw=148, w=0, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=2, [0, 33]
+i=2, u=10, tw=2, w=8, [14, 124]
+i=3, u=2, tw=10, w=1, [0, 117]
+i=4, u=8, tw=11, w=0, [0, 83]
+i=5, u=4, tw=11, w=0, [0, 158]
+i=6, u=1, tw=11, w=5, [0, 133]
+i=7, u=5, tw=16, w=19, [0, 90]
+i=8, u=6, tw=35, w=0, [69, 153]
+i=9, u=3, tw=35, w=98, [156, 260]
+i=10, u=7, tw=133, w=50, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=0, [0, 33]
+i=2, u=10, tw=0, w=0, [14, 124]
+i=3, u=2, tw=0, w=0, [0, 117]
+i=4, u=8, tw=0, w=0, [0, 83]
+i=5, u=4, tw=0, w=0, [0, 158]
+i=6, u=1, tw=0, w=4, [0, 133]
+i=7, u=5, tw=4, w=16, [0, 90]
+i=8, u=6, tw=20, w=4, [69, 153]
+i=9, u=3, tw=24, w=94, [156, 260]
+i=10, u=7, tw=118, w=25, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=0, [0, 33]
+i=2, u=10, tw=0, w=0, [14, 124]
+i=3, u=2, tw=0, w=1, [0, 117]
+i=4, u=8, tw=1, w=4, [0, 83]
+i=5, u=4, tw=5, w=8, [0, 158]
+i=6, u=1, tw=13, w=0, [0, 133]
+i=7, u=5, tw=13, w=0, [0, 90]
+i=8, u=6, tw=13, w=1, [69, 153]
+i=9, u=3, tw=14, w=93, [156, 260]
+i=10, u=7, tw=107, w=32, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=5, [0, 33]
+i=2, u=10, tw=5, w=0, [14, 124]
+i=3, u=2, tw=5, w=0, [0, 117]
+i=4, u=8, tw=5, w=2, [0, 83]
+i=5, u=4, tw=7, w=0, [0, 158]
+i=6, u=1, tw=7, w=10, [0, 133]
+i=7, u=5, tw=17, w=1, [0, 90]
+i=8, u=6, tw=18, w=16, [69, 153]
+i=9, u=3, tw=34, w=78, [156, 260]
+i=10, u=7, tw=112, w=21, [221, 280]
+var_count: 170
+term_count: 980
+N=11 solve now...(60.0 sec)
+
+----------result(60.0 sec)----------
+energy =  133
+objective =  133
+constarint =  0
+row_constraint =  0
+col_constraint =  0
+time_constraint =  0
+i=0, u=0, tw=0, w=0, [0, 405]
+i=1, u=9, tw=0, w=0, [0, 33]
+i=2, u=10, tw=0, w=0, [14, 124]
+i=3, u=2, tw=0, w=0, [0, 117]
+i=4, u=8, tw=0, w=0, [0, 83]
+i=5, u=4, tw=0, w=0, [0, 158]
+i=6, u=1, tw=0, w=16, [0, 133]
+i=7, u=5, tw=16, w=16, [0, 90]
+i=8, u=6, tw=32, w=50, [69, 153]
+i=9, u=3, tw=82, w=18, [156, 260]
+i=10, u=7, tw=100, w=69, [221, 280]
+var_count: 170
+term_count: 980

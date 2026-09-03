@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 
+
 def recover_coordinates(c):
     N = len(c)
 
@@ -50,8 +51,6 @@ def recover_coordinates(c):
 def plot_tour(
     nodes,
     tour,
-    ready_times,
-    wait_times,
     arrival_times,
     due_times,
     travel_time,
@@ -107,21 +106,38 @@ def plot_tour(
         )
 
         # 到着時刻と締切時刻
-        plt.text(
-            px,
-            py - 2.0,
-            f"{arrival_times[i]}+{wait_times[i]}\n[{ready_times[i]}, {due_times[i]}]",
-            fontsize=10,
-            color="blue",
-            ha="center",
-            va="top",
-            bbox=dict(
-                facecolor="white",
-                alpha=0.8,
-                edgecolor="none"
-            ),
-            zorder=4
-        )
+        if arrival_times[i] - due_times[i] > 0:
+            plt.text(
+                px,
+                py - 2.0,
+                f"{arrival_times[i]}\n[0, {due_times[i]}]",
+                fontsize=10,
+                color="blue",
+                ha="center",
+                va="top",
+                bbox=dict(
+                    facecolor="white",
+                    alpha=0.8,
+                    edgecolor="none"
+                ),
+                zorder=4
+            )
+        else:
+            plt.text(
+                px,
+                py - 2.0,
+                f"{arrival_times[i]}",
+                fontsize=10,
+                color="blue",
+                ha="center",
+                va="top",
+                bbox=dict(
+                    facecolor="white",
+                    alpha=0.8,
+                    edgecolor="none"
+                ),
+                zorder=4
+            )
 
 
     # 赤い矢印で巡回路を描画

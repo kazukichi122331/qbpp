@@ -1,4 +1,5 @@
-with open("Dumas/n20w100.001.txt", "r") as f:
+dumas = "Dumas/n40w100.001.txt"
+with open(dumas, "r") as f:
     # 1行目：顧客数
     N = int(f.readline().strip())
 

@@ -1,10 +1,10 @@
 import pyqbpp as qbpp
 from datetime import datetime
-from dist_matrix import N, c, L, E
+from dist_matrix import N, c, L, E, dumas
 from tsptw_plot import plot_tour, recover_coordinates
 
 TIME = 60.0
-LOOP = 1
+LOOP = 10
 
 x = qbpp.var("x", shape=(N,N))
 
@@ -67,14 +67,18 @@ g = qbpp.replace(f, ml)
 f = qbpp.simplify_as_binary(f)
 g = qbpp.simplify_as_binary(g)
 
+saved_energy = []
 for loop in range(LOOP):
     print(f"----------solve {loop+1}----------")
+    filename = "tsptw_" + datetime.now().strftime("%m%d%H%M")
+    print(f"{dumas} {filename}")
     solver = qbpp.ABS3Solver(g)
     sol = solver.search(time_limit=TIME)
     full_sol = qbpp.Sol(f).set(sol, ml)
-    print("")
 
-    print("energy = ", full_sol(f))
+    energy = full_sol(f)
+    saved_energy.append(energy)
+    print("energy = ", energy)
     print("objective = ", full_sol(objective))
     print("constraint = ", f.cons(full_sol))
     for i in range(N):
@@ -94,7 +98,9 @@ for loop in range(LOOP):
                 tour.append(u)
                 break
     tour.append(0)
-
+    if len(tour) != N+1:
+        print("cannot plot!")
+        continue
 
     arrival_times = [0] * N
     wait_times = [0] * N
@@ -108,7 +114,6 @@ for loop in range(LOOP):
     ready_times = E
     due_times = L
     travel_time = c
-    filename = "tsptw_" + datetime.now().strftime("%m%d%H%M")
 
     plot_tour(
         nodes,
@@ -120,6 +125,15 @@ for loop in range(LOOP):
         travel_time,
         filename
     )
-    print(tour)
-    print(arrival_times)
-    print(wait_times)
+
+    for i in range(N):
+        print(f"{tour[i]:3d} ", end="")
+    print("")
+    for i in range(N):
+        print(f"{full_sol(tw[i]):3d} ", end="")
+    print("")
+    for i in range(N):
+        print(f"{full_sol(w[i]):3d} ", end="")
+    print("")
+
+print(saved_energy)
