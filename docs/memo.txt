@@ -1,0 +1,38 @@
+z_current/order_tsptw.py で定式化されるQUBO問題の新しい定式化を考えています。
+各頂点について離散時間を考え、各時間で頂点が独立した別のものとします。
+このとき、同一の頂点の別の時間における重複訪問にペナルティを課すことで、別の頂点に分割した問題を解消します。
+時間を離散的に分割する方法を以下に示します。
+各頂点はtime window [l,r)を持ちます。
+このときすべてのl,rを一つの配列にまとめてsort,uniqueし、イベントの起きる時間を唯一で抽出します。
+各イベント時間について、time windowが有効な頂点を列挙します。
+1イベントごとの列挙はO(klog N)時間、合計でO(N klog N)時間でできるはずです。kはそのイベント時間で有効なタイムウィンドウを持つ頂点の数です。
+このとき、ある時間tにおける頂点vに訪問したことを示すバイナリ変数をx_{tv}で表現し、qubo定式化できませんか。
+距離と前後関係をどのように扱うかという点を明確にしたいです。
+
+z_current/tsptw_plot.pyを参考にしてtime_tsptw.pyに描画するプログラムを追加してください。
+
+time_tsptw.pyがどのような定式化か詳しく説明してください。
+またこの定式化の残っている課題を教えてください。
+
+課題1の解決策を考えてください。
+
+src/order_tsptw.pyでは以下のようなバイナリ変数を使ってTSP with time windowを定式化しています。
+x[i][u] = 1 <=> i番目に顧客uを訪れる
+ソースコードを調べて、修正点、改善点を見つけてnew_order_tsptw.pyに保存してください。
+保存ができたら実行はせずに修正箇所を説明してください。
+
+今のnew_order_tsptw.pyでは以下のようなエラーが起きてしまいます。修正してください。
+  File "/home/kazuki/qbpp/src/new_order_tsptw.py", line 295, in main
+    row_constraint += qbpp.cons(row_sums[i], equal=1)
+                      ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kazuki/qbpp/.venv/lib/python3.14/site-packages/pyqbpp/_nb_dispatch.py", line 518, in cons
+    raise TypeError(
+        f"cons(): expected an expression body, got {type(e)}")
+TypeError: cons(): expected an expression body, got <class 'pyqbpp_nb._nb_c32e64m0._ExprRef'>
+
+src/new_order_tsptw.pyとsrc/time_tsptw_travelはどちらもTSP with time windowをQUBOで定式化しているソースコードです。
+違いは、以下のバイナリ変数の表現です。
+src/new_order_tsptw.py：x[i][u]=1 <=> i番目に顧客uを訪れる
+src/time_tsptw_travel.py：x[t][u]=1 <=> 時刻tに顧客uを訪れる
+この二つの定式化をDumasのインスタンスを使って、比較したいです。
+docs/tsptw_result.mdに結果を保存してください。表形式で比較してください。どのような書き方でも構いません。
