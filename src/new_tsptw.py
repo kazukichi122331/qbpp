@@ -109,10 +109,10 @@ import pyqbpp as qbpp
 
 try:                                        # python -m src.new_order_tsptw
     from src.dist_matrix import N, c, L, E
-    from src.tsptw_plot import plot_tour, recover_coordinates
+    from plot_tsptw import plot_tour, recover_coordinates
 except ImportError:                         # python src/new_order_tsptw.py
     from dist_matrix import N, c, L, E
-    from tsptw_plot import plot_tour, recover_coordinates
+    from plot_tsptw import plot_tour, recover_coordinates
 
 DEFAULT_TIME = 5.0
 PLOT = os.environ.get("TSPTW_PLOT", "1") != "0"

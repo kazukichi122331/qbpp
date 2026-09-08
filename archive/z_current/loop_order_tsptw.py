@@ -1,7 +1,7 @@
 import pyqbpp as qbpp
 from datetime import datetime
 from src.dist_matrix import N, c, L, E, dumas
-from src.tsptw_plot import plot_tour, recover_coordinates
+from plot_tsptw import plot_tour, recover_coordinates
 
 TIME = 60.0
 LOOP = 10

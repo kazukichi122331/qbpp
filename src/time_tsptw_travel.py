@@ -36,7 +36,7 @@ import sys
 import pyqbpp as qbpp
 from datetime import datetime
 from src.dist_matrix import N, c, L, E
-from src.tsptw_plot import plot_tour, recover_coordinates
+from plot_tsptw import plot_tour, recover_coordinates
 
 # 既定は従来どおり 60 秒。ベンチマークでは引数か TSPTW_TIME で上書きする。
 TIME = float(sys.argv[1]) if len(sys.argv) > 1 else float(os.environ.get("TSPTW_TIME", 60.0))
