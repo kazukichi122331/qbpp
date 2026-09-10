@@ -6,8 +6,8 @@
 
 | | |
 |---|---|
-| 順序型 | [src/new_tsptw.py](../src/new_tsptw.py) — `x[i][u]=1 ⇔ i 番目に顧客 u を訪れる` |
-| 時間展開型 | [src/time_tsptw_travel.py](../src/time_tsptw_travel.py) — `x[t][u]=1 ⇔ 時刻 t に顧客 u を訪れる` |
+| 順序型 | [src/order_start.py](../src/order_start.py) — `x[i][u]=1 ⇔ i 番目に顧客 u を訪れる` |
+| 時間展開型 | [src/time_travel.py](../src/time_travel.py) — `x[t][u]=1 ⇔ 時刻 t に顧客 u を訪れる` |
 
 すべての `travel time` は QUBO のエネルギーではなく、**復元したツアーを最早開始スケジュールで直接シミュレートして再計算した値**。実行可能性（全顧客をちょうど 1 回・時間枠内・depot 帰着期限内）も同じ検証で判定している。
 
@@ -323,12 +323,16 @@ N=10〜20 では 0〜2 個で済むが、N=60 以上では数十個が未訪問�
 ## 7. 再現方法
 
 ```bash
-# 対象インスタンスは環境変数 TSPTW_INSTANCE で指定（src/dist_matrix.py が参照）
-TSPTW_INSTANCE=instances/Dumas/n40w40.001.txt TSPTW_PLOT=0 \
-  .venv/bin/python -m src.new_tsptw 30
-TSPTW_INSTANCE=instances/Dumas/n40w40.001.txt TSPTW_PLOT=0 \
-  .venv/bin/python -m src.time_tsptw_travel 30
+.venv/bin/python src/order_start.py 30 -i instances/Dumas/n40w40.001.txt --no-plot
+.venv/bin/python src/time_travel.py  30 -i instances/Dumas/n40w40.001.txt --no-plot
 ```
 
-`TSPTW_PLOT=0` で描画を抑止する（`recover_coordinates()` が N の大きいインスタンスで非常に重いため）。既定値は従来どおり `instances/Dumas/n40w100.001.txt` / 描画あり。
+`--no-plot` で描画を抑止する（`recover_coordinates()` が N の大きいインスタンスで非常に重いため）。既定値は `instances/Dumas/n40w100.001.txt` / 描画あり。
+
+> このベンチマークを取った時点では、定式化ごとに実行方法と引数がばらばらだった
+> （当時は `TSPTW_INSTANCE=... python -m src.new_order_tsptw 30` のような呼び方）。
+> 2026-09-10 の整理でファイル名と CLI を統一したので、上のコマンドは
+> 現在の名前・オプションに読み替えてある。**モデル自体は当時と同一**
+> （変数数・項数・ペナルティ係数が一致することを確認済み。
+> [docs/src_refactor_20260910.md](src_refactor_20260910.md)）。
 
