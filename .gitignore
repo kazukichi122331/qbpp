@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# 仮想環境
+.venv/
+
+# 削除候補置き場（中身を確認したら手で消す。git には載せない）
+/remove/
+
+# plot_tsptw.py が毎回上書きする「最新の実行結果」のコピー。
+# 時刻入りの results/tsptw_*_MMDDHHMM.png が本体なので追跡しない。
+/results/tsptw.png

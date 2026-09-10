@@ -1,0 +1,12 @@
+# Python 3.14 / .venv 前提
+#   python3.14 -m venv .venv
+#   .venv/bin/pip install -r requirements.txt
+#
+# pyqbpp は QUBO++ の Python フロントエンド。研究室配布の wheel を使う場合は
+# 下の行を実際の取得元に書き換えること（PyPI から入らない場合がある）。
+pyqbpp==2026.9.1
+
+# plot_tsptw.py（描画・距離行列からの座標復元）が使う
+matplotlib==3.10.9
+numpy==2.4.6
+scipy==1.18.1

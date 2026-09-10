@@ -15,8 +15,12 @@
 """
 import pyqbpp as qbpp
 from datetime import datetime
-from dist_matrix import N, c, L, E
-from plot_tsptw import plot_tour, recover_coordinates
+try:                                        # python -m src.time_tsptw
+    from src.dist_matrix import N, c, L, E
+    from src.plot_tsptw import plot_tour, recover_coordinates
+except ImportError:                         # python src/time_tsptw.py
+    from dist_matrix import N, c, L, E
+    from plot_tsptw import plot_tour, recover_coordinates
 
 TIME = 600.0
 

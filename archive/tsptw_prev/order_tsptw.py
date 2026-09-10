@@ -1,11 +1,7 @@
 import pyqbpp as qbpp
 from datetime import datetime
-try:                                        # python -m src.tsptw
-    from src.dist_matrix import N, c, L, E
-    from src.plot_tsptw import plot_tour, recover_coordinates
-except ImportError:                         # python src/tsptw.py
-    from dist_matrix import N, c, L, E
-    from plot_tsptw import plot_tour, recover_coordinates
+from src.dist_matrix import N, c, L, E
+from archive.tsptw_prev.tsptw_plot_no_e import plot_tour, recover_coordinates
 
 TIME = 1.0
 
@@ -51,9 +47,9 @@ objective = t[N-1] + qbpp.sum(x[N-1][u]*c[u][0] for u in range(1, N))
 #objective = tw[N-1] + w[N-1] + qbpp.sum(x[N-1][u]*c[u][0] for u in range(1, N))
 
 
-ROW_P = 5000
-COL_P = 5000
-TIME_P = 1000
+ROW_P = 50000
+COL_P = 50000
+TIME_P = 10
 f = objective + ROW_P*qbpp.cons(row_constraint) + COL_P*qbpp.cons(col_constraint) + TIME_P*time_constraint
 
 
@@ -89,22 +85,20 @@ for i in range(N):
             tour.append(u)
             break
 tour.append(0)
-filename = "tsptw_orig_" + datetime.now().strftime("%m%d%H%M")
+filename = "tsptw_no_e_" + datetime.now().strftime("%m%d%H%M")
 nodes = recover_coordinates(c)
 arrival_times = [0] * N
-wait_times = [0] * N
 for i, u in enumerate(tour[:-1]):
     arrival_times[u] = full_sol(tw[i])
-    wait_times[u] = full_sol(w[i]) if i > 0 else 0
+due_times = L
+travel_time = c
 
 plot_tour(
     nodes,
     tour,
-    E,              # ready_times
-    wait_times,
     arrival_times,
-    L,              # due_times
-    c,              # travel_time
+    due_times,
+    travel_time,
     filename
 )
 

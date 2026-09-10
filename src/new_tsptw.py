@@ -86,10 +86,10 @@ order_tsptw.py からの主な修正点 / 改善点
    結果の良し悪しを見誤らない。
 
 11.【改善】import と実行形態の整理。
-    旧版は archive/z_current/tsptw_plot_no_e.py (5 引数版 plot_tour) を
-    参照していて、src/tsptw_plot.py の 8 引数版とシグネチャが違う。
-    本版は src/tsptw_plot.py を使い、`python -m src.new_order_tsptw` でも
-    `python src/new_order_tsptw.py` でも動くように import をフォールバック。
+    旧版は archive/tsptw_prev/tsptw_plot_no_e.py (5 引数版 plot_tour) を
+    参照していて、src/plot_tsptw.py の 8 引数版とシグネチャが違う。
+    本版は src/plot_tsptw.py を使い、`python -m src.new_tsptw` でも
+    `python src/new_tsptw.py` でも動くように import をフォールバック。
     さらに全処理を main() に入れ (import しただけで解き始めない)、
     制限時間を引数で渡せるようにした。
 
@@ -107,10 +107,10 @@ from datetime import datetime
 
 import pyqbpp as qbpp
 
-try:                                        # python -m src.new_order_tsptw
+try:                                        # python -m src.new_tsptw
     from src.dist_matrix import N, c, L, E
-    from plot_tsptw import plot_tour, recover_coordinates
-except ImportError:                         # python src/new_order_tsptw.py
+    from src.plot_tsptw import plot_tour, recover_coordinates
+except ImportError:                         # python src/new_tsptw.py
     from dist_matrix import N, c, L, E
     from plot_tsptw import plot_tour, recover_coordinates
 

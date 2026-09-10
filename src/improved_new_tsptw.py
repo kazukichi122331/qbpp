@@ -186,7 +186,7 @@ import pyqbpp as qbpp
 
 try:                                        # python -m src.improved_new_tsptw
     from src.dist_matrix import N, c, L, E
-    from plot_tsptw import plot_tour, recover_coordinates
+    from src.plot_tsptw import plot_tour, recover_coordinates
 except ImportError:                         # python src/improved_new_tsptw.py
     from dist_matrix import N, c, L, E
     from plot_tsptw import plot_tour, recover_coordinates

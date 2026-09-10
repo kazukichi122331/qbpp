@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| 順序型 | [src/new_order_tsptw.py](../src/new_order_tsptw.py) — `x[i][u]=1 ⇔ i 番目に顧客 u を訪れる` |
+| 順序型 | [src/new_tsptw.py](../src/new_tsptw.py) — `x[i][u]=1 ⇔ i 番目に顧客 u を訪れる` |
 | 時間展開型 | [src/time_tsptw_travel.py](../src/time_tsptw_travel.py) — `x[t][u]=1 ⇔ 時刻 t に顧客 u を訪れる` |
 
 すべての `travel time` は QUBO のエネルギーではなく、**復元したツアーを最早開始スケジュールで直接シミュレートして再計算した値**。実行可能性（全顧客をちょうど 1 回・時間枠内・depot 帰着期限内）も同じ検証で判定している。
@@ -325,7 +325,7 @@ N=10〜20 では 0〜2 個で済むが、N=60 以上では数十個が未訪問�
 ```bash
 # 対象インスタンスは環境変数 TSPTW_INSTANCE で指定（src/dist_matrix.py が参照）
 TSPTW_INSTANCE=instances/Dumas/n40w40.001.txt TSPTW_PLOT=0 \
-  .venv/bin/python -m src.new_order_tsptw 30
+  .venv/bin/python -m src.new_tsptw 30
 TSPTW_INSTANCE=instances/Dumas/n40w40.001.txt TSPTW_PLOT=0 \
   .venv/bin/python -m src.time_tsptw_travel 30
 ```
