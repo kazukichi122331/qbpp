@@ -1,0 +1,28 @@
+QUBO++ Ver. 2026.09.08
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n40w20.001  N=41 (顧客 40)  L[0]=547  時間枠の平均幅 20.8
+HINT: この定式化はモデルが重いので 60 秒以上を推奨 (いまは 30.0 秒)
+N=41  x vars = 882  (order-based なら 1600)
+conflict terms = 17199
+penalty: ONCE=548 CONF=548
+build       = 1.015 sec (式の構築 + simplify)
+solve now...(30.0 sec)
+
+----------result(30.0 sec)----------
+energy          = 526
+objective       = 526
+once_constraint = 0
+conflict_constr = 0
+violated cons   = 0
+  return= 526 (RET var = 526)
+tour        = [0, 7, 13, 16, 37, 6, 15, 12, 39, 2, 35, 25, 4, 23, 32, 3, 38, 8, 1, 33, 18, 14, 5, 36, 10, 31, 22, 21, 26, 19, 9, 11, 29, 27, 34, 28, 24, 20, 17, 40, 30, 0]
+visited     = 40/40
+travel time = 503
+return      = 526 (limit 547)
+tw violations = 0
+feasible    = True
+var_count   = 882
+term_count  = 17426

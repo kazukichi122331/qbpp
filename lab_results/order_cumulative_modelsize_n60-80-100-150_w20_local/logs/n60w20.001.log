@@ -1,0 +1,26 @@
+QUBO++ Ver. 2026.09.01 (Latest: 2026.09.08 - update available)
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n60w20.001  N=61 (顧客 60)  L[0]=601  時間枠の平均幅 19.3
+N=61  x vars = 3721  w vars = 61 (整数, 上限 100 固定)
+ROW_P = 5000  COL_P = 5000  TIME_P = 1000 (固定値)
+build       = 4.061 sec (式の構築 + simplify)
+solve now...(1.0 sec)
+
+----------result(1.0 sec)----------
+energy          = 600000
+objective       = 300000
+row_constraint  = 60
+col_constraint  = 60
+time_constraint = 0
+violated cons   = 120
+tour        = [0, 0]
+visited     = 0/60
+travel time = 0
+return      = 0 (limit 601)
+tw violations = 0
+feasible    = False
+var_count   = 4020
+term_count  = 212880

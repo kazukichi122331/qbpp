@@ -1,0 +1,25 @@
+出力先: lab_results/order_cumulative_modelsize_n60-80-100-150_w20_local
+date        = 2026-09-16 12:36:27
+host        = onishi
+python      = Python 3.14.4  (.venv/bin/python)
+git commit  = 0fa9c80
+script      = src/order_cumulative.py
+sizes       = 60 80 100 150   width = 20   inst = 001
+time_limit  = 1s （変数数・項数だけ見るので探索はしない扱い）
+gpu         = CUDA_VISIBLE_DEVICES=0
+
+n      instance       x_vars     var_count  term_count   build      wall
+60     n60w20.001     3721       4020       212880       4.061      12.80s
+80     n80w20.001     6561       6960       505924       7.565      29.99s
+100    n100w20.001    10201      10700      990404       14.655     65.08s
+scripts/run_order_cumulative_modelsize.sh: line 111: 90526 Killed                     "$PYTHON" "$SCRIPT" "$TIME_LIMIT" -i "$inst" --no-plot -q > "$log" 2>&1
+
+中断されました（lab_results/order_cumulative_modelsize_n60-80-100-150_w20_local に途中までの結果が残っています）
+150    n150w20.001    -          -          -            -          47.69s   <- error(137)（lab_results/order_cumulative_modelsize_n60-80-100-150_w20_local/logs/n150w20.001.log を見てください）
+
+完了: lab_results/order_cumulative_modelsize_n60-80-100-150_w20_local/modelsize.csv
+n    instance     N    status      x_vars  w_vars  var_count  term_count  build_sec  wall_sec
+60   n60w20.001   61   ok          3721    61      4020       212880      4.061      12.80
+80   n80w20.001   81   ok          6561    81      6960       505924      7.565      29.99
+100  n100w20.001  101  ok          10201   101     10700      990404      14.655     65.08
+150  n150w20.001       error(137)                                                    47.69

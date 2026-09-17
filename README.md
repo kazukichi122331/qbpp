@@ -137,3 +137,5 @@ python3.14 -m venv .venv
 - 結果の図は `results/` 直下 → 古くなったら `results/archive/` へ移す。
 - 研究室の計算機の結果は `lab_results/` に、ローカルの結果は `results/` に分ける。
 - `__pycache__/`・`.venv/`・`remove/` は git に載せない（[.gitignore](.gitignore)）。
+
+$$\mathrm{expr} ;=; \sum_{\text{両立しない }(t,u),(t',v)} A[t,u]\cdot B[t',v]$$
