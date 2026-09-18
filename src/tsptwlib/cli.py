@@ -16,6 +16,7 @@
     TSPTW_ONEHOT_RATIO  --onehot-ratio
     TSPTW_AUTO_SWAP     --auto-swap
     TSPTW_BUILD_ONLY    --build-only
+    TSPTW_SLIM          --slim
 """
 import argparse
 import os
@@ -26,7 +27,7 @@ DEFAULT_TIME = 5.0
 DEFAULT_PLOT_MAX_N = 60         # recover_coordinates() は N が大きいと非常に重い
 
 # 定式化ごとに宣言する追加オプション (parse_args の supports に渡す)
-FORMULATION_OPTIONS = ("obj", "onehot_ratio")
+FORMULATION_OPTIONS = ("obj", "onehot_ratio", "slim")
 
 
 @dataclass
@@ -41,6 +42,7 @@ class Options:
     auto_swap: bool
     obj: str                    # 対応していない定式化では None
     onehot_ratio: int           # 0 なら自動 (dmax から導出)
+    slim: bool                  # 対応していない定式化では常に False
     quiet: bool
 
     def describe(self):
@@ -49,6 +51,8 @@ class Options:
             parts.append(f"obj={self.obj}")
         if self.onehot_ratio:
             parts.append(f"onehot_ratio={self.onehot_ratio}")
+        if self.slim:
+            parts.append("slim")
         if self.seed is not None:
             parts.append(f"seed={self.seed}")
         if self.auto_swap:
@@ -107,6 +111,9 @@ def parse_args(argv=None, *, default_time=DEFAULT_TIME,
                    help=("ONEHOT_P = 指定倍 * TIME_P に上書きする (0 で自動)"
                          if "onehot_ratio" in supported
                          else "(この定式化では未対応)"))
+    p.add_argument("--slim", action="store_true", default=None,
+                   help=("冗長な制約項を落とした軽い模型を使う"
+                         if "slim" in supported else "(この定式化では未対応)"))
     p.add_argument("-q", "--quiet", action="store_true", default=None,
                    help="1 行ごとの明細を出さない")
 
@@ -139,6 +146,10 @@ def parse_args(argv=None, *, default_time=DEFAULT_TIME,
     if "onehot_ratio" not in supported:
         ratio = 0
 
+    slim = ns.slim if ns.slim is not None else _env_flag("TSPTW_SLIM", False)
+    if "slim" not in supported:
+        slim = False
+
     seed = ns.seed
     if seed is None and os.environ.get("TSPTW_SEED"):
         seed = int(os.environ["TSPTW_SEED"])
@@ -157,5 +168,6 @@ def parse_args(argv=None, *, default_time=DEFAULT_TIME,
                    else _env_flag("TSPTW_AUTO_SWAP", False)),
         obj=obj,
         onehot_ratio=ratio,
+        slim=slim,
         quiet=bool(ns.quiet),
     )

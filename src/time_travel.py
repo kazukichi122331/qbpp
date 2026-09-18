@@ -10,10 +10,16 @@
   x[t][v] = 1 <=> 頂点 v のサービスを時刻 t に開始する
   b[t][v] = 1 <=> 時刻 t に頂点 v に居る（到着済み・サービス前＝待機中）
 
-  objective = t_RET - sum(b)          <- これが厳密に総移動時間
+  objective = t_RET - sum(b)          <- 総移動時間（ほぼ厳密。下記の注意）
 
 sum(b) を「最大化」する向きなので、b には上限（禁止）制約だけ与えれば
 自動的に真の待ち時間まで埋まる。下限制約や max/min の表現が不要になるのが要点。
+
+注意: この等式は衝突制約が実行可能スケジュールを一切削らないことに依存する。
+衝突制約は全頂点ペアに課すので三角不等式が要るが、Dumas はこれを満たさない
+（整数丸めのため 138 中 126 ファイルで違反）。既知最適ツアー 135 件で実測すると
+15 件で objective が真の travel より +1〜+3 大きく、1 件 (n80w60.005) では
+最適ツアーが実行不可能になる。詳細は conflict_terms()。
 
 最早開始スケジュール（canonical schedule）への正規化
 --------------------------------------------------
@@ -186,7 +192,10 @@ def main(opt):
     print_time_detail(inst, seq, sched, quiet=opt.quiet)
     print(f"  return={sched.ret:4d} (RET var = {start_t.get(ret)})")
     print_summary(inst, tour, sched, sol)
-    print("      (travel time は objective と一致すべき)")
+    print("      (travel time は objective と一致すべき。ただし全ペア制約は\n"
+          "       三角不等式に依存しており、Dumas ではこれが破れているため\n"
+          "       135 件中 15 件で objective が真の travel より +1〜+3 大きい。\n"
+          "       conflict_terms() の docstring を参照)")
 
     # ---------------- 9. 描画 ----------------
     save_plot(inst, tour, sched, PREFIX, opt)

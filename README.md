@@ -41,7 +41,7 @@ python3.14 -m venv .venv
 **必ずリポジトリのルート（このファイルがある場所）から実行する。**
 インスタンスと出力先を相対パスで持っているため。
 
-7 本の定式化はすべて同じコマンド形・同じオプションで動く。
+8 本の定式化はすべて同じコマンド形・同じオプションで動く。
 起動の書き方は 2 通りあり、どちらでも同じ:
 
 ```bash
@@ -76,13 +76,14 @@ python3.14 -m venv .venv
 | `--auto-swap` | ABS3 の one-hot 保存 swap 変異を使う | 使わない |
 | `--obj MODE` | 目的関数の書き方（`order_prefix`: travel/makespan、`order_wait`: travel/linear） | 各定式化の先頭 |
 | `--onehot-ratio R` | `ONEHOT_P = R * TIME_P` に上書き（0 なら自動。階層化ペナルティの 3 本のみ） | 0 |
+| `--slim` | 冗長な制約項を落とした軽い模型を使う（`time_occupancy` のみ） | 使わない |
 | `-q, --quiet` | 位置ごとの明細を出さない | 出す |
 
 対応していないオプションを渡すと警告が出る（黙って無視しない）。
 
 環境変数も既定値として読む（旧版との互換）。フラグを渡せばそちらが勝つ:
 `TSPTW_INSTANCE` / `TSPTW_TIME` / `TSPTW_PLOT=0` / `TSPTW_SEED` / `TSPTW_OBJ` /
-`TSPTW_ONEHOT_RATIO` / `TSPTW_AUTO_SWAP` / `TSPTW_BUILD_ONLY`。
+`TSPTW_ONEHOT_RATIO` / `TSPTW_AUTO_SWAP` / `TSPTW_BUILD_ONLY` / `TSPTW_SLIM`。
 
 ### 出力
 
@@ -98,7 +99,7 @@ python3.14 -m venv .venv
 
 ## `src/` の中身
 
-### 定式化（バイナリ変数の意味で 2 系統・7 本）
+### 定式化（バイナリ変数の意味で 2 系統・8 本）
 
 | ファイル | 系統 | 変数 | メモ |
 |---|---|---|---|
@@ -109,6 +110,7 @@ python3.14 -m venv .venv
 | `order_start_tiered.py` | 順序型・時刻のみ | `x[i][u]`, `a[i]` | ↑ のペナルティを階層化しただけ。one-hot 違反が消える |
 | `time_makespan.py` | 時間展開型 | `x[t][v]` | 帰着時刻（makespan）を最小化。総移動時間は 2 次式で書けない |
 | `time_travel.py` | 時間展開型 + 待機 | `x[t][v]`, `b[t][v]` | `makespan − Σb` が厳密に総移動時間 |
+| `time_occupancy.py` | 時間展開型・在圏 | `o[t][v]` | ↑ と厳密に同値。`x` と `b` は同じ在圏変数を `E[v]` で切っただけなので 1 族に統合した。衝突制約が 4 ブロック → 1 ブロックになる。`--slim` で冗長項を落とせる |
 
 各ファイルの先頭 docstring に、前身のどこをどう直したかが書いてある。
 系統間の比較結果は [docs/tsptw_results.md](docs/tsptw_results.md)。

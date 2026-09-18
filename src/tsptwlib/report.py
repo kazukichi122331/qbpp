@@ -118,6 +118,9 @@ def recover_time_tour(inst, x, val, nodes, lo, hi, ret_node):
         if ts:
             start_t[v] = ts[0]
 
+    # 同一地点 (c[u][v] == 0) のペアは gap が 0 なので同時刻に来うる。
+    # タプル比較が頂点番号で決着をつけるので順序は一意に決まり、
+    # 距離 0 どうしなのでどちらを先にしても travel は変わらない。
     seq = sorted((t, v) for v, t in start_t.items() if v != ret_node)
     tour = [0] + [v for _, v in seq] + [0]
     return tour, seq, start_t
