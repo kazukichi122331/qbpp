@@ -1,6 +1,6 @@
 """時間展開型 (x[t][v]) の共通部品。
 
-time_makespan.py と time_travel.py で同じだった
+time_makespan.py と time_occupancy.py で同じだった
 「最小時間差 gap」「両立しない (t,u),(t',v) の列挙」をまとめている。
 """
 import pyqbpp as qbpp

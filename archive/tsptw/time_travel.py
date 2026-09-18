@@ -1,6 +1,14 @@
 """
 時間展開型 TSPTW QUBO — 課題1（総移動時間が目的関数に書けない）の解決版。
 
+【archive】2026-09-18 に src/ から移した。後継は src/time_occupancy.py で、
+x と b を在圏変数 o の 1 族に統合したもの。生成される QUBO は多項式として
+完全に一致する（Dumas 9 件で項・係数とも差分ゼロ、定義域の前提は全 138 件で
+検証）ので、こちらは「なぜ b を導入したか」の導出を残すための参照用。
+tsptwlib は src/ にあるため、移動後もそのまま実行できる:
+
+    .venv/bin/python archive/tsptw/time_travel.py 60 -i instances/Dumas/n40w20.001.txt --no-plot
+
 考え方
 ------
   総移動時間 = 帰着時刻 - 総待ち時間        （サービス時間は定数）
@@ -40,8 +48,9 @@ import os
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-# ↑ src/ を探索パスに入れる。python src/x.py でも python -m src.x でも動く。
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "..", "..", "src"))
+# ↑ tsptwlib は src/ にある。archive に移したあともルート起点で足して動かす。
 
 import pyqbpp as qbpp
 

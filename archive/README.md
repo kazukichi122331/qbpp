@@ -8,6 +8,7 @@
 |---|---|---|
 | `tsp/` | TSP の各種定式化：`dfj.py`, `mtz*.py`, `dl*.py`, `order.py`, `sd.py`, 座標生成 `nodes.py` / `big_nodes.py`, 描画 `plot_tour.py` | TSPTW に移行したため |
 | `tsptw/` | TSPTW の旧版。`order_tsptw.py`、距離行列入力版 `tsptw_dist_matrix/` | `tsptw_prev/` に引き継がれた |
+| `tsptw/time_travel.py` | 時間展開型・総移動時間。`x[t][v]`（サービス開始）と `b[t][v]`（待機）の 2 変数族 | `src/time_occupancy.py` に統合したため（2026-09-18）。x と b は同じ在圏変数を `E[v]` で切っただけで、生成される QUBO は多項式として完全に一致する（Dumas 9 件で項・係数とも差分ゼロ、定義域の前提は全 138 件で検証）。「なぜ b を導入したか」の導出を残すために保存。`tsptwlib` を src/ 起点で import するので移動後もそのまま動く |
 | `tsptw/old/` | さらに前の世代。時刻ノード列挙版 `time_nodes.py` 系、`tsptw_leq/`（≤ 制約版）、`tsptw_double.py`, `tsptw_no_t.py`, `tsptw_tour_only.py` など試作 | （未記入）|
 | `tsptw_prev/` | `src/` に書き直す直前まで使っていた TSPTW コード。`order_tsptw.py` とその `_customer` / `_no_e` 変種、ループ実行版、描画 `plot.py` / `tsptw_plot_no_e.py`。**旧フォルダ名 `z_current/`** | `src/order_cumulative.py` 以降として書き直したため（O(N⁴) 構築・描画 API の刷新）|
 | `cvrp/` | CVRP：`dl.py`, `mtz.py`, `run.py`, 描画 `plot_tour.py`, 図 `results/` | TSPTW に集中するため |

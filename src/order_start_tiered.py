@@ -163,7 +163,8 @@ one-hot は完全に直ったが、N >= 40 かつ時間枠が広い (w40 以上)
 | n150w40 | 未訪問 82, 時間枠 0 | 未訪問 **0**, 時間枠 140 |
 
 つまり「順列にはなったが、時間枠に合う順列を 10 秒では見つけられない」状態で、
-docs/tsptw_results.md の時間展開型 (src/time_travel.py) の失敗の形に
+docs/tsptw_results.md の時間展開型 (当時の src/time_travel.py、現在は
+archive/tsptw/time_travel.py。後継は src/time_occupancy.py) の失敗の形に
 近づいた。上の比の走査どおり、**one-hot と時間枠を同時に 0 にする比は
 存在しなかった**ので、これはペナルティ調整では解決しない。次の一手としては
 

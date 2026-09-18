@@ -20,7 +20,7 @@
 | `src/new_tsptw.py` | [src/order_start.py](../src/order_start.py) | `x[i][u]` + `a[i]`、ペナルティ一律 |
 | `src/improved_new_tsptw.py` | [src/order_start_tiered.py](../src/order_start_tiered.py) | ↑ のペナルティを階層化 |
 | `src/time_tsptw.py` | [src/time_makespan.py](../src/time_makespan.py) | `x[t][v]`、makespan 最小化 |
-| `src/time_tsptw_travel.py` | [src/time_travel.py](../src/time_travel.py) | `x[t][v]` + `b[t][v]`、総移動時間 |
+| `src/time_tsptw_travel.py` | [src/time_travel.py](../archive/tsptw/time_travel.py) | `x[t][v]` + `b[t][v]`、総移動時間 |
 | `src/plot_tsptw.py` | [src/tsptwlib/plot.py](../src/tsptwlib/plot.py) | 描画（共通ライブラリへ） |
 | `src/dist_matrix.py` | [src/tsptwlib/instance.py](../src/tsptwlib/instance.py) | インスタンス読み込み（**関数化**） |
 

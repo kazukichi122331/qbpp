@@ -206,7 +206,7 @@ one-hot から時間枠に移っただけで、実行可能解には届いてい
     src/order_cumulative.py                本版のもと。累積式・枝刈りなし。
     src/order_start_tiered.py   時刻変数 a[i] のみ（w を持たない）順序型。
                                 ペナルティ階層化の分析はこちらに詳しい。
-    src/time_travel.py    時間展開型 x[t][u]。
+    src/time_occupancy.py       時間展開型 o[t][u]。
     docs/tsptw_results.md       順序型 vs 時間展開型のベンチマーク。
 """
 import os
