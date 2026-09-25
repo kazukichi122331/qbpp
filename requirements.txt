@@ -4,7 +4,7 @@
 #
 # pyqbpp は QUBO++ の Python フロントエンド。研究室配布の wheel を使う場合は
 # 下の行を実際の取得元に書き換えること（PyPI から入らない場合がある）。
-pyqbpp==2026.9.1
+pyqbpp==2026.9.25
 
 # plot_tsptw.py（描画・距離行列からの座標復元）が使う
 matplotlib==3.10.9

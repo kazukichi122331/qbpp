@@ -146,3 +146,5 @@ scripts/run_time_makespan_a100.sh、scripts/run_time_makespan_width_a100.shと�
 ・ABS3Solverを用いる。
 ・10回実験後、平均エネルギー、最小エネルギー、制約違反回数、変数数、項数を出力する。
 ・30秒*10回が終了したら1分ほど時間を空けて次のインスタンスに移る。
+
+time_occupancy_target_energy.pyではtarget_energyを最適解に設定して実行したいです。

@@ -264,6 +264,8 @@ def solve(f, ml, opt, *, build_sec=0.0):
 
     solver = qbpp.ABS3Solver(g)
     search_kw = {"time_limit": opt.time_limit}
+    if opt.target_energy is not None:
+        search_kw["target_energy"] = float(opt.target_energy)
     if opt.seed is not None:
         search_kw["seed"] = int(opt.seed)
     if opt.auto_swap:

@@ -38,6 +38,7 @@ class Options:
     plot: bool
     plot_max_n: int
     seed: int                   # None ならソルバ既定
+    target_energy: float        # None なら指定なし。到達したら探索を打ち切る
     build_only: bool
     auto_swap: bool
     obj: str                    # 対応していない定式化では None
@@ -55,6 +56,8 @@ class Options:
             parts.append("slim")
         if self.seed is not None:
             parts.append(f"seed={self.seed}")
+        if self.target_energy is not None:
+            parts.append(f"target_energy={self.target_energy:g}")
         if self.auto_swap:
             parts.append("auto_swap")
         if not self.plot:
@@ -89,6 +92,9 @@ def parse_args(argv=None, *, default_time=DEFAULT_TIME,
     )
     p.add_argument("time_pos", nargs="?", type=float, default=None,
                    metavar="TIME", help="制限時間 (秒)")
+    p.add_argument("--target-energy", "--target_energy", dest="target_energy",
+                   type=float, default=None,
+                   help="このエネルギー (既知の最適値など) に達したら探索を打ち切る")
     p.add_argument("-t", "--time", type=float, default=None,
                    help="制限時間 (秒)。位置引数 TIME と同じ")
     p.add_argument("-i", "--instance", default=None,
@@ -162,6 +168,7 @@ def parse_args(argv=None, *, default_time=DEFAULT_TIME,
         plot_max_n=(ns.plot_max_n if ns.plot_max_n is not None
                     else DEFAULT_PLOT_MAX_N),
         seed=seed,
+        target_energy=ns.target_energy,
         build_only=(ns.build_only if ns.build_only is not None
                     else _env_flag("TSPTW_BUILD_ONLY", False)),
         auto_swap=(ns.auto_swap if ns.auto_swap is not None
