@@ -253,6 +253,11 @@ def main(opt, m):
 
     f, sol, val = solve(f, None, opt, build_sec=time.perf_counter() - t_build)
     if sol is None:                             # --build-only
+        # モデルサイズの比較用。QUBO 化後の数はソルバに渡さなくても取れるので、
+        # 探索を回さずに大きさだけ比べられる
+        # (scripts/count_model_size.py の解析的な数え上げと突き合わせている)。
+        mdl = qbpp.Model(f)
+        print(f"qubo vars = {mdl.var_count}  qubo terms = {mdl.term_count()}")
         return
 
     print_energy(f, val, opt,

@@ -11,6 +11,7 @@
     bounds     順序型の定義域・枝刈り・上下界
     qubo       one-hot / leg / 固定辞書 / ペナルティ係数 / 探索
     timeindex  時間展開型の gap と衝突列挙
+    prune      顧客ごとの時刻の定義域・アーク・前後関係の枝刈り (先行型)
     report     解の復元・検証・表示・描画
     plot       描画そのもの (旧 src/plot_tsptw.py を移動)
 """
@@ -59,6 +60,7 @@ from .report import (
     schedule_from_starts,
     simulate,
 )
+from .prune import precedence, prune_time_windows, shortest_paths
 from .timeindex import conflict_terms, make_gap, make_vars
 
 __all__ = [
@@ -75,6 +77,8 @@ __all__ = [
     "COEFF_MAX", "as_expr", "build_legs", "dmax_order", "fix_map",
     "onehot_constraints", "penalty_weights", "solve", "start_vars",
     "time_window_sums", "wait_vars",
+    # prune
+    "precedence", "prune_time_windows", "shortest_paths",
     # timeindex
     "conflict_terms", "make_gap", "make_vars",
     # report
