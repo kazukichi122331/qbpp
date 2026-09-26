@@ -148,3 +148,12 @@ scripts/run_time_makespan_a100.sh、scripts/run_time_makespan_width_a100.shと�
 ・30秒*10回が終了したら1分ほど時間を空けて次のインスタンスに移る。
 
 time_occupancy_target_energy.pyではtarget_energyを最適解に設定して実行したいです。
+
+sol.tts()を使用して、求解時間を表示するようにしてください。
+
+run_time_occupancy_a100.shとrun_time_occupancy_width_a100.shでtarget_energyを指定し、ttsを表示できるようにしてください。
+
+time_occupancy_multi.pyのインスタンスごとの変数数、項数を確認したいので、適当にインスタンスを選んで表にまとめてください。
+
+大きすぎるインスタンスで実行してしまったため途中でvscodeとの接続が切れてしまいました。
+途中結果でよいので表にまとめてください。

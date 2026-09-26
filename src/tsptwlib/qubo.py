@@ -276,5 +276,7 @@ def solve(f, ml, opt, *, build_sec=0.0):
 
     print(f"solve now...({opt.time_limit} sec)")
     sol = solver.search(**search_kw)
+    # tts: 最良解 (target_energy 指定時はそこへの到達) を見つけた時刻 [sec]
+    print(f"TTS         = {sol.tts:.3f} sec (最良解を見つけた時刻)")
     val = qbpp.Sol(f).set(sol, ml) if ml else sol
     return f, sol, val
