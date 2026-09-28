@@ -64,7 +64,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import pyqbpp as qbpp
 
-from tsptwlib import (conflict_terms, load_instance, make_gap, make_vars,
+from tsptwlib import (colocated_terms, conflict_terms, load_instance,
+                      make_gap, make_vars,
                       parse_args, print_energy, print_summary,
                       print_time_detail, recover_time_tour, save_plot,
                       schedule_from_starts, solve)
@@ -139,6 +140,12 @@ def main(opt):
                                                   o, olo, ohi)
     print(f"conflict terms = {n_terms}{'  (slim)' if opt.slim else ''}")
 
+    # 同一地点ペア (c = 0) は gap = 0 で上の項が 1 つも無いので、在圏の重なりを
+    # 「受け渡し」だけに絞る項を別に足す（無いと待ちが二重に数えられ、
+    # objective が真の travel より小さく出る。colocated_terms() の docstring）。
+    colocated_constraint, n_col = colocated_terms(inst, cust, o, olo, svc, ohi)
+    print(f"colocated terms = {n_col}")
+
     # ---------------- 6. 連続性: 待機しているなら次の時刻もそこに居る ------
     # t+1 が svc[v] に届けばそこが区間の終端（= サービス開始）。
     # これが無いと「移動中に v を通過した」だけで Σo を稼げてしまう。
@@ -176,6 +183,7 @@ def main(opt):
          + P_RET * qbpp.cons(once_ret)
          + P_CUST * qbpp.cons(once_cust)
          + P_CONF * qbpp.cons(conflict_constraint)
+         + P_CONF * qbpp.cons(colocated_constraint)
          + P_CONT * qbpp.cons(contiguity_constraint))
     print(f"penalty: RET={P_RET} CUST={P_CUST} CONF={P_CONF} CONT={P_CONT}")
 
@@ -189,6 +197,7 @@ def main(opt):
                  total_wait=total_wait,
                  once_constraint=once_constraint,
                  conflict_constr=conflict_constraint,
+                 colocated=colocated_constraint,
                  contiguity=contiguity_constraint)
 
     # ---------------- 9. 解の展開 ----------------
@@ -200,10 +209,10 @@ def main(opt):
     print_time_detail(inst, seq, sched, quiet=opt.quiet)
     print(f"  return={sched.ret:4d} (RET var = {start_t.get(ret)})")
     print_summary(inst, tour, sched, sol)
-    print("      (travel time は objective と一致すべき。ただし全ペア制約は\n"
-          "       三角不等式に依存しており、Dumas ではこれが破れているため\n"
-          "       135 件中 15 件で objective が真の travel より +1〜+3 大きい。\n"
-          "       conflict_terms() の docstring を参照)")
+    print("      (制約違反がなければ objective >= travel time。等号が既定で、\n"
+          "       大きくなるのは (1) ソルバが時刻を詰め切れず移動中に遊んでいる\n"
+          "       (2) 全ペア制約が三角不等式の破れで余分に効いている\n"
+          "       (conflict_terms() の docstring) とき。評価は travel time で行う)")
 
     # ---------------- 10. 描画 ----------------
     save_plot(inst, tour, sched, PREFIX, opt)

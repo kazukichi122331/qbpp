@@ -37,6 +37,8 @@
 #   TIME_LIMIT  1 回のソルバ制限時間（秒）        (既定 30)
 #   COOLDOWN    インスタンス間の待ち時間（秒）    (既定 60)
 #   RUN_TIMEOUT 1 回の上限（秒）。0 で無制限      (既定 0)
+#   LICENSE_WAIT    ライセンスが取れなかったとき再実行までの待ち（秒） (既定 300)
+#   LICENSE_RETRIES そのときの再実行回数の上限                        (既定 5)
 #   TARGET      target_energy の決め方            (既定 best)
 #                 best    … 既知最良ツアーの makespan（BEST_FILE の Permutation から計算）
 #                 travel  … 既知最良の総移動時間（Cost 列）。makespan の下界なので
@@ -46,6 +48,15 @@
 #   BEST_FILE   既知最良値の表                    (既定 instances/Dumas/Dumas-best-known-traveltime.txt)
 #   CUDA_VISIBLE_DEVICES  使う GPU 番号            (既定 7)
 #   OUTDIR      出力先                            (既定 lab_results/time_makespan_a100_<条件>_<日時>)
+#
+# 到達・実行可能の判定（2026-09-28 以降）:
+#   reached / feasible は QUBO のエネルギーではなく、ログの検算値で決める。
+#   feasible はツアーを最早開始で辿り直した実行可能性、value は検算値
+#   （このスクリプトでは最早開始の帰着時刻、ログの "return" 行）で、
+#   reached = (feasible かつ value <= target)。エネルギーで見た到達
+#   （ソルバが打ち切った条件）は energy_reached に別に残す。
+#   エネルギーは実行可能解でも検算値と一致するとは限らない（ソルバが時刻を
+#   詰め切れていないと大きく出る）ので、解の良し悪しは value で見ること。
 #
 # 出力:
 #   $OUTDIR/runs.csv     1 行 = 1 実行（生の計測値。target_energy / reached / tts を含む）
@@ -64,6 +75,8 @@ RUNS=${RUNS:-10}
 TIME_LIMIT=${TIME_LIMIT:-30}
 COOLDOWN=${COOLDOWN:-60}
 RUN_TIMEOUT=${RUN_TIMEOUT:-0}
+LICENSE_WAIT=${LICENSE_WAIT:-300}
+LICENSE_RETRIES=${LICENSE_RETRIES:-5}
 TARGET=${TARGET:-best}
 BEST_FILE=${BEST_FILE:-instances/Dumas/Dumas-best-known-traveltime.txt}
 
@@ -147,8 +160,8 @@ echo "出力先: $OUTDIR"
 sed -n '1,10p' "$OUTDIR/env.txt"
 echo
 
-echo "n,instance,run,seed,status,target_energy,energy,reached,tts,objective,violated_cons,tw_violations,feasible,var_count,term_count,build_sec,wall_sec" > "$RUNS_CSV"
-echo "n,instance,runs_ok,target_energy,reached_count,tts_mean,tts_min,tts_max,energy_mean,energy_min,violated_cons_mean,violated_cons_min,tw_violations_mean,feasible_count,var_count,term_count,build_sec_mean,wall_sec_mean" > "$SUMMARY_CSV"
+echo "n,instance,run,seed,status,target_energy,energy,reached,tts,objective,violated_cons,tw_violations,feasible,var_count,term_count,build_sec,wall_sec,value,energy_reached" > "$RUNS_CSV"
+echo "n,instance,runs_ok,target_energy,reached_count,tts_mean,tts_min,tts_max,energy_mean,energy_min,violated_cons_mean,violated_cons_min,tw_violations_mean,feasible_count,var_count,term_count,build_sec_mean,wall_sec_mean,value_mean,value_min" > "$SUMMARY_CSV"
 
 # ログから "見出し = 値" の値を 1 つ取り出す（最初に一致した行の 1 トークン目）
 field() {                       # field <log> <行頭の見出し>
@@ -197,16 +210,31 @@ for n in $SIZES; do
         seed=$run
 
         # 1 回 = 1 プロセス。終われば GPU のメモリもコンテキストも必ず解放される。
-        t0=$(date +%s.%N)
-        if [[ $RUN_TIMEOUT -gt 0 ]]; then
-            timeout "$RUN_TIMEOUT" "$PYTHON" "$SCRIPT" "$TIME_LIMIT" \
-                -i "$inst" --seed "$seed" "${target_opt[@]}" --no-plot -q > "$log" 2>&1
-        else
-            "$PYTHON" "$SCRIPT" "$TIME_LIMIT" \
-                -i "$inst" --seed "$seed" "${target_opt[@]}" --no-plot -q > "$log" 2>&1
-        fi
-        rc=$?
-        t1=$(date +%s.%N)
+        # QUBO++ のフローティングライセンスが使用中だと無償枠 (100 変数) で起動して
+        # 落ちる (2026-09-28 の計測で 3 回)。そのときは LICENSE_WAIT 秒待って
+        # その 1 回だけやり直す。落ちたログは *.licfailN.log として残す。
+        lic_try=0
+        while :; do
+            t0=$(date +%s.%N)
+            if [[ $RUN_TIMEOUT -gt 0 ]]; then
+                timeout "$RUN_TIMEOUT" "$PYTHON" "$SCRIPT" "$TIME_LIMIT" \
+                    -i "$inst" --seed "$seed" "${target_opt[@]}" --no-plot -q > "$log" 2>&1
+            else
+                "$PYTHON" "$SCRIPT" "$TIME_LIMIT" \
+                    -i "$inst" --seed "$seed" "${target_opt[@]}" --no-plot -q > "$log" 2>&1
+            fi
+            rc=$?
+            t1=$(date +%s.%N)
+            if [[ $rc -ne 0 ]] && (( lic_try < LICENSE_RETRIES )) && ! (( interrupted )) \
+                && grep -q -e "License is in use" -e "Variable limit exceeded" "$log"; then
+                lic_try=$((lic_try + 1))
+                mv "$log" "${log%.log}.licfail${lic_try}.log"
+                echo "  run $run: ライセンスが取れなかったので ${LICENSE_WAIT} 秒後に再実行します (${lic_try}/${LICENSE_RETRIES})"
+                sleep "$LICENSE_WAIT"
+                continue
+            fi
+            break
+        done
         wall=$(awk -v a="$t0" -v b="$t1" 'BEGIN { printf "%.2f", b - a }')
 
         if [[ $rc -eq 0 ]]; then status=ok
@@ -223,15 +251,20 @@ for n in $SIZES; do
         terms=$(field "$log" "term_count")
         build=$(field "$log" "build")
         tts=$(field "$log" "TTS")
-        # reached: target_energy に到達したか（1/0）。target なしなら空。
+        value=$(field "$log" "return")     # 検算値（ツアーを最早開始で辿り直したもの）
+        # reached: 検算で実行可能かつ value <= target（1/0）。target なしなら空。
+        # energy_reached: エネルギーで見た到達（ソルバが打ち切った条件）。
         reached=""
+        energy_reached=""
         if [[ -n $target && -n $energy ]]; then
-            reached=$(awk -v e="$energy" -v t="$target" 'BEGIN { print (e + 0 <= t + 0) ? 1 : 0 }')
+            energy_reached=$(awk -v e="$energy" -v t="$target" 'BEGIN { print (e + 0 <= t + 0) ? 1 : 0 }')
+            reached=$(awk -v f="$feasible" -v x="$value" -v t="$target" \
+                'BEGIN { print (f == "True" && x != "" && x + 0 <= t + 0) ? 1 : 0 }')
         fi
 
-        echo "$n,$inst_name,$run,$seed,$status,$target,$energy,$reached,$tts,$objective,$vcons,$twv,$feasible,$vars,$terms,$build,$wall" >> "$RUNS_CSV"
-        printf '  run %2d/%d  %-8s energy=%-12s reached=%-2s tts=%-8s violated=%-4s tw=%-4s feasible=%-5s vars=%-8s terms=%-9s build=%-8s wall=%ss\n' \
-            "$run" "$RUNS" "$status" "${energy:--}" "${reached:--}" "${tts:--}" "${vcons:--}" "${twv:--}" \
+        echo "$n,$inst_name,$run,$seed,$status,$target,$energy,$reached,$tts,$objective,$vcons,$twv,$feasible,$vars,$terms,$build,$wall,$value,$energy_reached" >> "$RUNS_CSV"
+        printf '  run %2d/%d  %-8s energy=%-12s value=%-8s reached=%-2s tts=%-8s violated=%-4s tw=%-4s feasible=%-5s vars=%-8s terms=%-9s build=%-8s wall=%ss\n' \
+            "$run" "$RUNS" "$status" "${energy:--}" "${value:--}" "${reached:--}" "${tts:--}" "${vcons:--}" "${twv:--}" \
             "${feasible:--}" "${vars:--}" "${terms:--}" "${build:--}" "$wall"
     done
 
@@ -251,25 +284,31 @@ for n in $SIZES; do
             }
             v = $11 + 0; vs += v; if (k == 1 || v < vmin) vmin = v
             tws += $12 + 0
-            if ($13 == "True") feas++
+            if ($13 == "True") {
+                feas++
+                x = $18 + 0; xs += x; if (feas == 1 || x < xmin) xmin = x
+            }
             vars = $14; terms = $15
             bs += $16 + 0; ws += $17 + 0
         }
         END {
             if (k == 0) {
-                print n "," inst ",0," target ",,,,,,,,,,,,,," >> out
+                print n "," inst ",0," target ",,,,,,,,,,,,,,,," >> out
                 printf "  -> 集計できる成功実行なし\n"
                 exit
             }
             if (r > 0) { tmean = sprintf("%.3f", ts/r); tmn = sprintf("%.3f", tmin); tmx = sprintf("%.3f", tmax) }
             else       { tmean = ""; tmn = ""; tmx = "" }
             rc = (target == "") ? "" : r + 0
-            printf "%s,%s,%d,%s,%s,%s,%s,%s,%.2f,%.0f,%.2f,%.0f,%.2f,%d,%s,%s,%.3f,%.2f\n",
+            if (feas > 0) { xmean = sprintf("%.2f", xs/feas); xmn = sprintf("%d", xmin) }
+            else          { xmean = ""; xmn = "" }
+            printf "%s,%s,%d,%s,%s,%s,%s,%s,%.2f,%.0f,%.2f,%.0f,%.2f,%d,%s,%s,%.3f,%.2f,%s,%s\n",
                    n, inst, k, target, rc, tmean, tmn, tmx,
-                   es/k, emin, vs/k, vmin, tws/k, feas, vars, terms, bs/k, ws/k >> out
+                   es/k, emin, vs/k, vmin, tws/k, feas, vars, terms, bs/k, ws/k,
+                   xmean, xmn >> out
             printf "  -> %s  平均energy=%.2f  最小energy=%.0f  平均違反=%.2f  " \
-                   "実行可能解=%d/%d  変数=%s  項=%s\n",
-                   inst, es/k, emin, vs/k, feas, k, vars, terms
+                   "実行可能解=%d/%d  最良value=%s  変数=%s  項=%s\n",
+                   inst, es/k, emin, vs/k, feas, k, (xmn == "" ? "-" : xmn), vars, terms
             if (target != "")
                 printf "     target=%s  到達=%d/%d  平均TTS=%s  最小TTS=%s  最大TTS=%s\n",
                        target, r, k, (tmean == "" ? "-" : tmean " s"),

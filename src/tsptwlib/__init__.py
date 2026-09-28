@@ -55,13 +55,15 @@ from .report import (
     print_summary,
     print_time_detail,
     recover_order_tour,
+    order_ties,
     recover_time_tour,
     save_plot,
     schedule_from_starts,
     simulate,
+    verify_tour,
 )
 from .prune import precedence, prune_time_windows, shortest_paths
-from .timeindex import conflict_terms, make_gap, make_vars
+from .timeindex import colocated_terms, conflict_terms, make_gap, make_vars
 
 __all__ = [
     # cli
@@ -80,11 +82,11 @@ __all__ = [
     # prune
     "precedence", "prune_time_windows", "shortest_paths",
     # timeindex
-    "conflict_terms", "make_gap", "make_vars",
+    "colocated_terms", "conflict_terms", "make_gap", "make_vars",
     # report
     "Schedule", "print_energy", "print_order_detail", "print_summary",
-    "print_time_detail", "recover_order_tour", "recover_time_tour",
-    "save_plot", "schedule_from_starts", "simulate",
+    "print_time_detail", "order_ties", "recover_order_tour", "recover_time_tour",
+    "save_plot", "schedule_from_starts", "simulate", "verify_tour",
     # plot
     "plot_tour", "recover_coordinates",
 ]

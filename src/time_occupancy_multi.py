@@ -79,9 +79,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import pyqbpp as qbpp
 
-from tsptwlib import (conflict_terms, load_instance, make_gap, parse_args,
-                      print_energy, print_time_detail, save_plot,
-                      schedule_from_starts, solve)
+from tsptwlib import (colocated_terms, conflict_terms, load_instance, make_gap,
+                      order_ties, parse_args, print_energy, print_time_detail,
+                      save_plot, schedule_from_starts, simulate, solve)
 
 PREFIX = "tsptw_time_occupancy_multi"   # 図のファイル名の先頭
 RECOMMENDED_TIME = 60.0                 # これより短いと解の骨格すら出にくい
@@ -210,6 +210,17 @@ def main(opt, m):
         n_terms += nb
     print(f"conflict terms = {n_terms}{'  (slim)' if opt.slim else ''}")
 
+    # 同一地点ペア (c = 0) の在圏の重なりを「受け渡し」だけに絞る（車両ごと）。
+    # time_occupancy.py と同じ理由（colocated_terms() の docstring）。
+    colocated_constraint = qbpp.expr()
+    n_col = 0
+    for k in veh:
+        ok = vehicle_view(o, nodes, olo, ohi, k)
+        block, nb = colocated_terms(inst, cust, ok, olo, svc, ohi)
+        colocated_constraint += block
+        n_col += nb
+    print(f"colocated terms = {n_col}")
+
     # ---------------- 6. 連続性: 待機しているなら次の時刻もそこに居る ------
     # t+1 が svc[v] に届けばそこが区間の終端（= サービス開始）。
     # これが無いと「移動中に v を通過した」だけで Σo を稼げてしまう。
@@ -248,6 +259,7 @@ def main(opt, m):
          + P_RET * qbpp.cons(once_ret)
          + P_CUST * qbpp.cons(once_cust)
          + P_CONF * qbpp.cons(conflict_constraint)
+         + P_CONF * qbpp.cons(colocated_constraint)
          + P_CONT * qbpp.cons(contiguity_constraint))
     print(f"penalty: RET={P_RET} CUST={P_CUST} CONF={P_CONF} CONT={P_CONT}")
 
@@ -266,10 +278,11 @@ def main(opt, m):
                  total_wait=total_wait,
                  once_constraint=once_constraint,
                  conflict_constr=conflict_constraint,
+                 colocated=colocated_constraint,
                  contiguity=contiguity_constraint)
 
     # ---------------- 9. 解の展開 ----------------
-    routes, ret_t = recover_routes(o, val, cust, ret, veh, svc, ohi)
+    routes, ret_t = recover_routes(inst, o, val, cust, ret, veh, svc, ohi)
     scheds = {}
     for k in veh:
         seq = routes[k]
@@ -282,10 +295,10 @@ def main(opt, m):
               f"(RET var = {rv})")
 
     print_multi_summary(inst, routes, scheds, ret_t, sol)
-    print("      (total travel は objective と一致すべき。ただし全ペア制約は\n"
-          "       三角不等式に依存しており、Dumas ではこれが破れているため\n"
-          "       単一車両版でも 135 件中 15 件で objective が真の travel より\n"
-          "       +1〜+3 大きい。conflict_terms() の docstring を参照)")
+    print("      (制約違反がなければ objective >= total travel。大きくなるのは\n"
+          "       ソルバが時刻を詰め切れていないときと、全ペア制約が三角不等式の\n"
+          "       破れで余分に効くとき (conflict_terms() の docstring)。\n"
+          "       評価は total travel で行う)")
 
     # ---------------- 10. 描画 ----------------
     # plot_tour は単一ツアー前提。m >= 2 は描けないので m == 1 のときだけ。
@@ -296,7 +309,7 @@ def main(opt, m):
         print("skip plot   = m >= 2 (plot_tour が単一ツアー前提のため)")
 
 
-def recover_routes(o, val, cust, ret, veh, svc, ohi):
+def recover_routes(inst, o, val, cust, ret, veh, svc, ohi):
     """o[t][i][k] から車両ごとの [(t, i), ...]（時刻順）と RET 時刻を返す。
 
     顧客の重複訪問・未訪問はここで報告する（制約A の検算）。
@@ -314,9 +327,9 @@ def recover_routes(o, val, cust, ret, veh, svc, ohi):
         for t, k in hits:
             routes[k].append((t, i))
     # 同一地点 (c[u][v] == 0) のペアは gap が 0 なので同時刻に来うる。
-    # タプル比較が頂点番号で決着をつけ、距離 0 どうしなので travel は不変。
+    # 他の点への距離は同じとは限らないので、並びは order_ties() で決める。
     for k in veh:
-        routes[k].sort()
+        routes[k] = order_ties(inst, sorted(routes[k]))
 
     ret_t = {k: [t for t in range(svc[ret], ohi[ret] + 1)
                  if val(o[t, ret, k]) == 1] for k in veh}
@@ -327,22 +340,31 @@ def recover_routes(o, val, cust, ret, veh, svc, ohi):
 
 
 def print_multi_summary(inst, routes, scheds, ret_t, sol):
-    """全車両をまとめた要約。QUBO のエネルギーとは独立に検算する。"""
+    """全車両をまとめた要約。QUBO のエネルギーとは独立に検算する。
+
+    feasible / total travel / return は、各車両のルートを最早開始で辿り直した
+    値（tsptwlib.verify_tour() と同じ基準）。scheds はモデル側の時刻で、
+    「ソルバの時刻の辻褄が合っているか」は model times の行に分けて出す。
+    """
     E, L, N = inst.E, inst.L, inst.N
     visited = [i for k in routes for _, i in routes[k]]
     dup = len(visited) != len(set(visited))
-    tw_violations = 0
-    for k, seq in routes.items():
-        sched = scheds[k]
-        for t, i in seq:
-            if not (E[i] <= t <= L[i]) or t < sched.arrival[i]:
-                tw_violations += 1
-    over = [k for k, sd in scheds.items() if sd.ret > L[0]]
-    total_travel = sum(sd.travel for sd in scheds.values())
-    ret_ok = all(len(ts) == 1 and ts[0] == scheds[k].ret
-                 for k, ts in ret_t.items())
+    chks = {k: simulate(inst, [0] + [i for _, i in routes[k]] + [0])
+            for k in routes}
+    tw_violations = sum(1 for k, seq in routes.items() for _, i in seq
+                        if chks[k].start[i] > L[i])
+    over = [k for k, ch in chks.items() if ch.ret > L[0]]
+    total_travel = sum(ch.travel for ch in chks.values())
     feasible = (not dup and len(set(visited)) == N - 1
                 and tw_violations == 0 and not over)
+
+    # モデル側の時刻（ソルバが選んだ開始時刻）の辻褄
+    early = sum(1 for k, seq in routes.items() for t, i in seq
+                if t < scheds[k].arrival[i])
+    late = sum(1 for k, seq in routes.items() for t, i in seq
+               if not (E[i] <= t <= L[i]))
+    ret_ok = all(len(ts) == 1 and ts[0] == scheds[k].ret
+                 for k, ts in ret_t.items())
 
     print("\n=== summary ===")
     for k in sorted(routes):
@@ -350,14 +372,17 @@ def print_multi_summary(inst, routes, scheds, ret_t, sol):
     print(f"visited     = {len(set(visited))}/{N - 1}"
           f"{'  (重複あり)' if dup else ''}")
     print("total travel =", total_travel)
-    print("max travel  =", max((sd.travel for sd in scheds.values()),
+    print("max travel  =", max((ch.travel for ch in chks.values()),
                                default=0))
-    print(f"return      = {[scheds[k].ret for k in sorted(scheds)]} "
-          f"(limit {L[0]})"
+    print(f"return      = {[chks[k].ret for k in sorted(chks)]} "
+          f"(limit {L[0]}, 最早開始)"
           f"{'  VIOLATION! ' + str(over) if over else ''}")
     print("tw violations =", tw_violations)
-    print(f"RET var == 実際の帰着 = {ret_ok}")
     print("feasible    =", feasible)
+    ok = early == 0 and late == 0
+    print(f"model times = {'ok' if ok else 'INCONSISTENT'} "
+          f"(ソルバの時刻: 到着前の開始 {early} / 時間枠外 {late})")
+    print(f"RET var == モデルの帰着 = {ret_ok}")
     if sol is not None:
         print("var_count   =", sol.info["var_count"])
         print("term_count  =", sol.info["term_count"])

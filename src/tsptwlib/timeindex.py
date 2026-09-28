@@ -11,10 +11,17 @@ def make_gap(inst, s, ret_node):
 
     ret_node は「depot への帰着」を表す仮想ノード。帰着より後には何も来ない。
 
-    c[u][v] == 0 の同一地点ペアでは gap も 0 になり、両者が同時刻に居ることを
-    許す。これは正しい: 距離 0 なのだから移動に時間は要らず、どちらを先に
-    数えても travel は変わらない。ツアーの復元は recover_time_tour() の
-    sorted((t, v)) が頂点番号で決着をつける。
+    c[u][v] == 0 の同一地点ペアでは gap も 0 になり、衝突の禁止窓が空になる。
+    サービス開始時刻だけを持つ time_makespan.py ではこれで正しい（距離 0 なので
+    同時刻に両方を開始してよく、どちらの順に並べてもモデルの時刻がそのまま
+    実行可能なスケジュールになる）。
+    在圏（待機を含む）を持つ time_occupancy*.py では足りない。禁止窓が空だと
+    2 頂点に同時に「居る」ことができ、同時待機で待ちが二重に数えられたり、
+    片方の待機の途中にもう片方が挟まったりして、目的関数が真の travel より
+    小さく出る。Dumas の同一地点ペアは座標の丸めで c = 0 になっただけで、
+    他の点への距離は 1 ほど違うことが多い（213 組中 147 組）ので、
+    どちらの点から出たとみなすかでも travel がずれる。
+    これは colocated_terms() で別に禁止する（gap は 0 のまま）。
     ここに下限 1 を入れる (旧実装) と同一地点ペアに架空の 1 が挿入され、
     それが下流の全頂点に伝播して目的関数を過大評価する。既知最適ツアー 135 件
     のうち 54 件で objective が真の travel とずれ、3 件では最適ツアーが
@@ -69,6 +76,42 @@ def conflict_terms(nodes, gap, A, Alo, Ahi, B, Blo, Bhi):
                 for tp in range(lo, hi + 1):
                     expr += A[t, u] * B[tp, v]
                     n_terms += 1
+    return expr, n_terms
+
+
+def colocated_terms(inst, cust, o, olo, svc, ohi):
+    """同一地点ペア (c[u][v] == 0) の在圏の重なりを禁止する項と、その項数。
+
+    在圏型 (o[t][v] = 1 <=> 時刻 t に v に居る) 専用。[olo[v], svc[v]) が待機、
+    [svc[v], ohi[v]] がサービス域。gap = 0 のペアには conflict_terms() が
+    1 項も作らないので、許してよい重なりを「受け渡し」だけに絞る:
+    片方が時刻 t に出発（サービス）し、もう片方が同じ t に到着する。
+
+      (i)  両方が同じ t で待機        o[t][u] * o[t][v]        (t < svc[u], svc[v])
+           同時に 2 か所で待つことはできない。待ちが二重に数えられる。
+      (ii) v の待機の途中に u が居る   o[t][u] * o[t-1][v]      (t-1, t < svc[v])
+           v が t-1 に待機していれば連続性で t にも v に居り、t も待機スロット
+           なら t+1 にも居る。そこに u が挟まるのは v の滞在の内側で、
+           受け渡しではない。
+
+    どちらも物理的に正しいスケジュールは切らない（同じツアーを「u で待って
+    から v に受け渡す」形でも表せ、目的関数は真の travel と一致する）。
+    消えるのは、同じ時間を 2 頂点に数える幻の状態だけ。
+    """
+    c = inst.c
+    zero = [(u, v) for u in cust for v in cust if u != v and c[u][v] == 0]
+    expr = qbpp.expr()
+    n_terms = 0
+    for u, v in zero:
+        if u < v:                                      # (i) は順序なしで 1 回
+            for t in range(max(olo[u], olo[v]), min(svc[u], svc[v])):
+                if (t, u) in o and (t, v) in o:
+                    expr += o[t, u] * o[t, v]
+                    n_terms += 1
+        for t in range(max(olo[u], olo[v] + 1), min(ohi[u], svc[v] - 1) + 1):
+            if (t - 1, v) in o:                        # (ii)
+                expr += o[t, u] * o[t - 1, v]
+                n_terms += 1
     return expr, n_terms
 
 

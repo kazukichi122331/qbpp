@@ -105,6 +105,38 @@ def recover_order_tour(inst, x, val, allowed=None):
     return tour, picked
 
 
+def order_ties(inst, seq):
+    """同時刻に開始した頂点の並びを、総移動時間が最小になるように決める。
+
+    seq は [(t, v), ...] の時刻順。同一地点ペア (c = 0) は gap が 0 なので
+    同じ t に開始しうるが、Dumas では c = 0 でも他の点への距離が 1 ほど違う
+    ことが多く、頂点番号で並べると travel が 1 ずれる。同時刻のまとまりごとに
+    順列を試し、前後のまとまりとのつながりまで含めて DP で最小化する
+    （まとまりはせいぜい数頂点なので順列で足りる）。
+    時刻が 1 つずつ違うなら何もしない。
+    """
+    from itertools import groupby, permutations
+    c = inst.c
+    groups = [[v for _, v in g] for _, g in groupby(seq, key=lambda p: p[0])]
+    if all(len(g) == 1 for g in groups):
+        return list(seq)
+    times = [t for t, _ in groupby(seq, key=lambda p: p[0])]
+
+    # dp[last] = (コスト, それまでの並び)。last は直前のまとまりの最後の頂点
+    dp = {0: (0, [])}
+    for g in groups:
+        nxt = {}
+        for perm in permutations(g):
+            inner = sum(c[a][b] for a, b in zip(perm, perm[1:]))
+            for last, (cost, path) in dp.items():
+                cand = cost + c[last][perm[0]] + inner
+                if perm[-1] not in nxt or cand < nxt[perm[-1]][0]:
+                    nxt[perm[-1]] = (cand, path + [list(perm)])
+        dp = nxt
+    best_path = min(dp.items(), key=lambda kv: kv[1][0] + c[kv[0]][0])[1][1]
+    return [(t, v) for t, g in zip(times, best_path) for v in g]
+
+
 def recover_time_tour(inst, x, val, nodes, lo, hi, ret_node):
     """時間展開型: x[t][v] からツアーを復元する。
 
@@ -119,9 +151,9 @@ def recover_time_tour(inst, x, val, nodes, lo, hi, ret_node):
             start_t[v] = ts[0]
 
     # 同一地点 (c[u][v] == 0) のペアは gap が 0 なので同時刻に来うる。
-    # タプル比較が頂点番号で決着をつけるので順序は一意に決まり、
-    # 距離 0 どうしなのでどちらを先にしても travel は変わらない。
-    seq = sorted((t, v) for v, t in start_t.items() if v != ret_node)
+    # 他の点への距離は同じとは限らないので、並びは order_ties() で決める。
+    seq = order_ties(inst, sorted((t, v) for v, t in start_t.items()
+                                  if v != ret_node))
     tour = [0] + [v for _, v in seq] + [0]
     return tour, seq, start_t
 
@@ -179,29 +211,61 @@ def print_time_detail(inst, seq, sched, quiet=False):
               f"wait={t - arrive:4d} [{E[v]:4d},{L[v]:4d}]{flag}")
 
 
-def print_summary(inst, tour, sched, sol):
-    """ツアーの要約。全定式化で同じ書式にしてあるので結果を並べて比べられる。"""
+def verify_tour(inst, tour):
+    """ツアーそのものの実行可能性と値を、最早開始スケジュールで検算する。
+
+    ソルバの時刻は使わない。時間展開型でも順序型でも同じ基準で判定するための
+    独立した検算で、runs.csv の feasible / travel time / return はこれに拠る。
+    返り値は dict: visited, dup, travel, ret, tw_violations, feasible, sched。
+    """
     L, N = inst.L, inst.N
     visited = tour[1:-1]
     dup = len(visited) != len(set(visited))
-    tw_violations = sum(1 for u in visited
-                        if sched.start[u] is None or sched.start[u] > L[u]
-                        or sched.start[u] < inst.E[u])
+    chk = simulate(inst, tour)
+    # 最早開始なので start >= max(到着, E) は常に成り立つ。破れうるのは L 側だけ
+    tw_violations = sum(1 for u in visited if chk.start[u] > L[u])
     feasible = (not dup and len(set(visited)) == N - 1
-                and tw_violations == 0 and sched.ret <= L[0])
+                and tw_violations == 0 and chk.ret <= L[0])
+    return {"visited": len(set(visited)), "dup": dup, "travel": chk.travel,
+            "ret": chk.ret, "tw_violations": tw_violations,
+            "feasible": feasible, "sched": chk}
+
+
+def print_summary(inst, tour, sched, sol):
+    """ツアーの要約。全定式化で同じ書式にしてあるので結果を並べて比べられる。
+
+    feasible / travel time / return は verify_tour() の検算値（ツアーを最早開始で
+    辿り直したもの）。sched はモデル側の時刻で、検算とは独立に
+    「ソルバの時刻が物理的に辻褄が合っているか」だけを別の行で報告する。
+    時間展開型は schedule_from_starts() がソルバの開始時刻をそのまま使うので、
+    衝突制約が破れると到着前にサービスを始める頂点が出る（順序型は常に 0）。
+    """
+    N, L = inst.N, inst.L
+    chk = verify_tour(inst, tour)
+    visited = tour[1:-1]
+    early = sum(1 for u in visited
+                if sched.start[u] is not None
+                and sched.start[u] < sched.arrival[u])
+    late = sum(1 for u in visited
+               if sched.start[u] is None or sched.start[u] > L[u]
+               or sched.start[u] < inst.E[u])
 
     print("tour        =", tour)
-    print(f"visited     = {len(set(visited))}/{N - 1}"
-          f"{'  (重複あり)' if dup else ''}")
-    print("travel time =", sched.travel)
-    print(f"return      = {sched.ret} (limit {L[0]})"
-          f"{'  VIOLATION!' if sched.ret > L[0] else ''}")
-    print("tw violations =", tw_violations)
-    print("feasible    =", feasible)
+    print(f"visited     = {chk['visited']}/{N - 1}"
+          f"{'  (重複あり)' if chk['dup'] else ''}")
+    print("travel time =", chk["travel"])
+    print(f"return      = {chk['ret']} (limit {L[0]}, 最早開始)"
+          f"{'  VIOLATION!' if chk['ret'] > L[0] else ''}")
+    print("tw violations =", chk["tw_violations"])
+    print("feasible    =", chk["feasible"])
+    ok = early == 0 and late == 0 and sched.ret <= L[0]
+    print(f"model times = {'ok' if ok else 'INCONSISTENT'} "
+          f"(ソルバの時刻: 到着前の開始 {early} / 時間枠外 {late} / "
+          f"帰着 {sched.ret})")
     if sol is not None:
         print("var_count   =", sol.info["var_count"])
         print("term_count  =", sol.info["term_count"])
-    return feasible
+    return chk["feasible"]
 
 
 # --------------------------------------------------------------------------

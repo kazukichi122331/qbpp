@@ -6,6 +6,7 @@ n100 を m=3 で「実際に構築」するとメモリが持たないので、�
 
     make_vars_multi()      -> 変数
     conflict_terms()       -> 衝突項
+    colocated_terms()      -> 同一地点ペアの項
     6. 連続性のループ      -> 連続性項
 
 と 1 対 1 に対応させてある（小さい例で実際の構築と突き合わせ済み。
@@ -94,12 +95,27 @@ def count(inst, m, *, single=False, slim=False):
         for t in range(olo[v], min(svc[v], ohi[v] + 1)):
             cont += 2 if t + 1 <= ohi[v] else 1
 
+    # 同一地点ペア (c = 0): colocated_terms() と同じ数え方
+    col = 0
+    for u in cust:
+        for v in cust:
+            if u == v or c[u][v] != 0:
+                continue
+            if u < v:
+                for t in range(max(olo[u], olo[v]), min(svc[u], svc[v])):
+                    if t <= ohi[u] and t <= ohi[v]:
+                        col += 1
+            for t in range(max(olo[u], olo[v] + 1), min(ohi[u], svc[v] - 1) + 1):
+                if t - 1 <= ohi[v]:
+                    col += 1
+
     return {
         "vars": m * sum(size.values()),
         "wait_vars": m * n_wait,
         "ret_vars": m * size[ret],
         "conflict": m * conf,
         "contiguity": m * cont,
+        "colocated": m * col,
         "horizon": L[0],
     }
 

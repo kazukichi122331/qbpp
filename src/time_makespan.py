@@ -117,6 +117,8 @@ def main(opt):
     print_time_detail(inst, seq, sched, quiet=opt.quiet)
     print(f"  return={sched.ret:4d} (RET var = {start_t.get(ret)})")
     print_summary(inst, tour, sched, sol)
+    print("      (制約違反がなければモデルの時刻はそのまま実行可能なスケジュール\n"
+          "       なので objective >= return（最早開始）。評価は return で行う)")
 
     # ---------------- 8. 描画 ----------------
     save_plot(inst, tour, sched, PREFIX, opt)
