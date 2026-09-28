@@ -1,0 +1,6 @@
+QUBO++ Ver. 2026.09.25
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+License is in use (available in 294s)
+Expires at: 2027/03/31 23:59:59
+Variable Limit: 100/100 (CPU/GPU)
+qbpp: Variable limit exceeded (100, used 100; integer variables count by their bit width). Please activate your license: qbpp-license -a

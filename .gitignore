@@ -11,3 +11,4 @@ __pycache__/
 # plot_tsptw.py が毎回上書きする「最新の実行結果」のコピー。
 # 時刻入りの results/tsptw_*_MMDDHHMM.png が本体なので追跡しない。
 /results/tsptw.png
+

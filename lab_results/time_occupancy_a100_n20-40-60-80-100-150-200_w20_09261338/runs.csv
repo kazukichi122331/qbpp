@@ -1,0 +1,3 @@
+n,instance,run,seed,status,target_energy,energy,reached,tts,objective,violated_cons,tw_violations,feasible,var_count,term_count,build_sec,wall_sec
+20,n20w20.001,1,1,error(134),378,,,,,,,,,,,35.57
+20,n20w20.001,2,2,error(143),378,,,,,,,,,,,8.20
