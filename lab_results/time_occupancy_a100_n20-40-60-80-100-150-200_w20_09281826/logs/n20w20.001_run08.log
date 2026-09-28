@@ -1,0 +1,39 @@
+QUBO++ Ver. 2026.09.25
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n20w20.001  N=21 (顧客 20)  L[0]=408  時間枠の平均幅 16.8
+HINT: この定式化はモデルが重いので 60 秒以上を推奨 (いまは 30.0 秒)
+N=21  o vars = 338  (待機 39 / サービス 299)
+conflict terms = 3747
+colocated terms = 0
+penalty: RET=409 CUST=229 CONF=115 CONT=115
+build       = 3.378 sec (式の構築 + simplify)
+solve now...(30.0 sec)
+TTS         = 0.141 sec (最良解を見つけた時刻)
+
+----------result(30.0 sec)----------
+energy          = 378
+objective       = 378
+makespan        = 387
+total_wait      = 9
+once_constraint = 0
+conflict_constr = 0
+colocated       = 0
+contiguity      = 0
+violated cons   = 0
+  return= 387 (RET var = 387)
+tour        = [0, 16, 9, 19, 17, 18, 10, 5, 15, 1, 11, 12, 6, 13, 7, 2, 4, 8, 20, 3, 14, 0]
+visited     = 20/20
+travel time = 378
+return      = 387 (limit 408, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 387)
+var_count   = 338
+term_count  = 4010
+      (制約違反がなければ objective >= travel time。等号が既定で、
+       大きくなるのは (1) ソルバが時刻を詰め切れず移動中に遊んでいる
+       (2) 全ペア制約が三角不等式の破れで余分に効いている
+       (conflict_terms() の docstring) とき。評価は travel time で行う)

@@ -1,0 +1,39 @@
+QUBO++ Ver. 2026.09.25
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n80w20.001  N=81 (顧客 80)  L[0]=740  時間枠の平均幅 21.4
+HINT: この定式化はモデルが重いので 60 秒以上を推奨 (いまは 30.0 秒)
+N=81  o vars = 2514  (待機 767 / サービス 1747)
+conflict terms = 108196
+colocated terms = 43
+penalty: RET=741 CUST=261 CONF=131 CONT=131
+build       = 2.267 sec (式の構築 + simplify)
+solve now...(30.0 sec)
+TTS         = 7.626 sec (最良解を見つけた時刻)
+
+----------result(30.0 sec)----------
+energy          = 616
+objective       = 616
+makespan        = 729
+total_wait      = 113
+once_constraint = 0
+conflict_constr = 0
+colocated       = 0
+contiguity      = 0
+violated cons   = 0
+  return= 729 (RET var = 729)
+tour        = [0, 17, 37, 39, 29, 58, 31, 34, 53, 64, 77, 19, 79, 50, 9, 38, 2, 33, 1, 6, 48, 8, 3, 74, 66, 54, 49, 14, 15, 5, 7, 55, 73, 44, 56, 76, 22, 30, 71, 24, 35, 25, 60, 62, 47, 20, 32, 21, 61, 13, 18, 4, 65, 52, 41, 46, 16, 28, 67, 68, 59, 43, 40, 23, 72, 57, 78, 36, 12, 45, 51, 27, 70, 26, 42, 11, 10, 69, 75, 80, 63, 0]
+visited     = 80/80
+travel time = 616
+return      = 729 (limit 740, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 729)
+var_count   = 2514
+term_count  = 105783
+      (制約違反がなければ objective >= travel time。等号が既定で、
+       大きくなるのは (1) ソルバが時刻を詰め切れず移動中に遊んでいる
+       (2) 全ペア制約が三角不等式の破れで余分に効いている
+       (conflict_terms() の docstring) とき。評価は travel time で行う)

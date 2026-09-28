@@ -1,0 +1,39 @@
+QUBO++ Ver. 2026.09.25
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n200w20.001  N=201 (顧客 200)  L[0]=1154  時間枠の平均幅 20.1
+HINT: この定式化はモデルが重いので 60 秒以上を推奨 (いまは 30.0 秒)
+N=201  o vars = 5660  (待機 1501 / サービス 4159)
+conflict terms = 292700
+colocated terms = 21
+penalty: RET=1155 CUST=241 CONF=121 CONT=121
+build       = 1.499 sec (式の構築 + simplify)
+solve now...(30.0 sec)
+TTS         = 28.565 sec (最良解を見つけた時刻)
+
+----------result(30.0 sec)----------
+energy          = 1148
+objective       = 1027
+makespan        = 1140
+total_wait      = 113
+once_constraint = 0
+conflict_constr = 1
+colocated       = 0
+contiguity      = 0
+violated cons   = 1
+  return=1140 (RET var = 1140)
+tour        = [0, 106, 60, 24, 34, 25, 23, 173, 134, 135, 84, 74, 96, 37, 109, 127, 49, 15, 116, 184, 129, 197, 1, 20, 114, 138, 76, 143, 112, 107, 130, 183, 136, 59, 50, 55, 46, 53, 97, 104, 89, 41, 8, 9, 172, 51, 43, 18, 73, 56, 193, 2, 128, 113, 95, 86, 186, 105, 156, 171, 58, 64, 108, 27, 87, 61, 29, 22, 99, 119, 52, 182, 117, 158, 36, 166, 196, 123, 67, 47, 11, 6, 78, 159, 30, 126, 147, 81, 31, 195, 168, 38, 75, 177, 63, 148, 174, 122, 102, 199, 33, 66, 190, 32, 118, 16, 139, 68, 179, 188, 90, 111, 180, 77, 48, 167, 194, 13, 100, 132, 7, 69, 94, 110, 93, 181, 72, 10, 146, 71, 83, 140, 157, 3, 121, 79, 162, 176, 82, 80, 137, 120, 150, 101, 17, 65, 152, 103, 88, 142, 164, 125, 45, 151, 198, 54, 19, 12, 26, 161, 153, 192, 169, 175, 57, 91, 165, 70, 4, 131, 163, 14, 154, 39, 85, 187, 178, 21, 115, 145, 40, 42, 149, 144, 189, 35, 44, 62, 170, 98, 141, 92, 191, 124, 133, 185, 160, 155, 5, 200, 28, 0]
+visited     = 200/200
+travel time = 1038
+return      = 1143 (limit 1154, 最早開始)
+tw violations = 5
+feasible    = False
+model times = INCONSISTENT (ソルバの時刻: 到着前の開始 1 / 時間枠外 0 / 帰着 1140)
+var_count   = 5660
+term_count  = 280769
+      (制約違反がなければ objective >= travel time。等号が既定で、
+       大きくなるのは (1) ソルバが時刻を詰め切れず移動中に遊んでいる
+       (2) 全ペア制約が三角不等式の破れで余分に効いている
+       (conflict_terms() の docstring) とき。評価は travel time で行う)

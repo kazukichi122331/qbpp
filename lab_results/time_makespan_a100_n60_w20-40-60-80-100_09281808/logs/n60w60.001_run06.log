@@ -1,0 +1,32 @@
+QUBO++ Ver. 2026.09.25
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n60w60.001  N=61 (顧客 60)  L[0]=748  時間枠の平均幅 54.4
+HINT: この定式化はモデルが重いので 60 秒以上を推奨 (いまは 30.0 秒)
+N=61  x vars = 3226  (order-based なら 3600)
+conflict terms = 272197
+penalty: ONCE=749 CONF=749
+build       = 3.021 sec (式の構築 + simplify)
+solve now...(30.0 sec)
+TTS         = 0.556 sec (最良解を見つけた時刻)
+
+----------result(30.0 sec)----------
+energy          = 722
+objective       = 722
+once_constraint = 0
+conflict_constr = 0
+violated cons   = 0
+  return= 722 (RET var = 722)
+tour        = [0, 49, 26, 8, 39, 16, 7, 46, 34, 52, 2, 19, 20, 25, 33, 14, 29, 12, 53, 56, 38, 45, 27, 37, 30, 28, 47, 42, 32, 1, 40, 18, 22, 4, 11, 35, 17, 51, 21, 48, 9, 44, 31, 24, 5, 43, 54, 36, 58, 50, 15, 3, 10, 41, 59, 57, 55, 23, 60, 13, 6, 0]
+visited     = 60/60
+travel time = 623
+return      = 722 (limit 748, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 722)
+var_count   = 3226
+term_count  = 266016
+      (制約違反がなければモデルの時刻はそのまま実行可能なスケジュール
+       なので objective >= return（最早開始）。評価は return で行う)
