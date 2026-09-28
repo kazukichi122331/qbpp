@@ -159,3 +159,17 @@ time_occupancy_multi.pyのインスタンスごとの変数数、項数を確認
 途中結果でよいので表にまとめてください。
 
 scripts/run_time_makespan_a100.sh,scripts/run_time_makespan_width_a100.shをscripts/run_time_occupancy_a100.shを参考にtarget_energyを追加し、TTSを見れるようにしてください。
+
+scripts/run_time_makespan_a100.sh,scripts/run_time_makespan_width_a100.sh,scripts/run_time_occupancy_a100.sh,scripts/run_time_occupancy_width_a100.sh,これらを順番に実行するshファイルを作成してください。一つのshファイルが終わると1分間隔を空けて実行する。実行できなかった場合は再度一分後に実行する。もし、shファイルより適切な方法があれば教えてください。
+
+makespanのshファイルとoccupancyのshファイル、実験している条件、インスタンスに違いがあれば揃えてください。多いほうに揃えてください。
+また、以下の結果が得られるか確認してください。
+・平均エネルギー
+・最小エネルギー
+・最適解到達回数
+・平均TTS
+・制約違反回数
+・変数数
+・項数
+
+docs/reorganize_20260910.md,README.mdを参考にファイル整理をお願いします。削除するファイルがあればこちらで削除するのでremoveディレクトリにまとめておいてください。

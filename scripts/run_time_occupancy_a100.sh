@@ -11,8 +11,8 @@
 #   scripts/run_time_occupancy_width_a100.sh が同じ中身を呼ぶ。
 #
 #   条件は run_time_makespan_a100.sh と揃えてある（GPU 7・10 回 × 30 秒・
-#   COOLDOWN 60 秒・ABS3Solver・seed 1〜10）。違いは n200 を足した点だけで、
-#   time_makespan 側に n200 の結果はない。--slim は付けない（衝突項は full）。
+#   COOLDOWN 60 秒・ABS3Solver・seed 1〜10・n20〜n200）。--slim は付けない
+#   （衝突項は full）。
 #
 #   既定では target_energy を Dumas の既知最良値（Dumas-best-known-traveltime.txt
 #   の Cost 列）に設定し、到達した時刻 TTS を記録する。実行可能解のエネルギーは
@@ -73,7 +73,7 @@ STAMP=$(date +%m%d%H%M)
 TAG="n$(echo "$SIZES" | tr ' ' '-')_w$(echo "$WIDTHS" | tr ' ' '-')"
 OUTDIR=${OUTDIR:-lab_results/time_occupancy_a100_${TAG}_$STAMP}
 
-SCRIPT=${SCRIPT:-src/time_occupancy_target_energy.py}
+SCRIPT=${SCRIPT:-src/time_occupancy.py}
 
 # --- リポジトリのルートから実行しているか確認（相対パスを持っているため） ---
 if [[ ! -f $SCRIPT || ! -d instances/Dumas ]]; then
