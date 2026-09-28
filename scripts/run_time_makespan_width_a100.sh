@@ -17,6 +17,9 @@
 #
 # 本体と同じ環境変数（RUNS / TIME_LIMIT / COOLDOWN / INST_ID / OUTDIR ...）が
 # そのまま効く。SIZES / WIDTHS も前置きすれば上書きできる。
+# target_energy も本体と同じく既定で既知最良ツアーの makespan に設定され、TTS が
+# runs.csv / summary.csv に記録される（TARGET=none で無効、TARGET=travel で
+# 既知最良の総移動時間、TARGET=<数値> で固定値）。
 # =============================================================================
 set -u
 

@@ -157,3 +157,5 @@ time_occupancy_multi.pyのインスタンスごとの変数数、項数を確認
 
 大きすぎるインスタンスで実行してしまったため途中でvscodeとの接続が切れてしまいました。
 途中結果でよいので表にまとめてください。
+
+scripts/run_time_makespan_a100.sh,scripts/run_time_makespan_width_a100.shをscripts/run_time_occupancy_a100.shを参考にtarget_energyを追加し、TTSを見れるようにしてください。
