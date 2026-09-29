@@ -1,7 +1,8 @@
 """時間展開型 (x[t][v]) の共通部品。
 
 time_makespan.py と time_occupancy.py で同じだった
-「最小時間差 gap」「両立しない (t,u),(t',v) の列挙」をまとめている。
+「最小時間差 gap」「両立しない (t,u),(t',v) の列挙」「到着時刻の下界」を
+まとめている。
 """
 import pyqbpp as qbpp
 
@@ -113,6 +114,34 @@ def colocated_terms(inst, cust, o, olo, svc, ohi):
                 expr += o[t, u] * o[t - 1, v]
                 n_terms += 1
     return expr, n_terms
+
+
+def arrival_lower_bounds(inst, s, cust):
+    """顧客 v への到着時刻の下界 arr[v] を、先行関係の不動点で求める。
+
+    L[u] < E[v] なら u は必ず v に先行するので、v には
+    max(E[u], arr[u]) + s[u] + c[u][v] より前には着けない。これを変化が
+    無くなるまで伝播させる（初期値は depot 直行 c[0][v]）。
+    サービス開始の下界は max(E[v], arr[v]) で、時刻の定義域が桁違いに縮む。
+
+    u -> v を直行と見なしているので、三角不等式が破れていると理屈上は
+    行き過ぎうる（time_makespan.py の lo と同じ注意）。
+    """
+    N, c, E, L = inst.N, inst.c, inst.E, inst.L
+    arr = {v: c[0][v] for v in cust}
+    must_before = {v: [u for u in cust if u != v and L[u] < E[v]] for v in cust}
+    for _ in range(N + 5):
+        changed = False
+        for v in cust:
+            lb = c[0][v]
+            for u in must_before[v]:
+                lb = max(lb, max(E[u], arr[u]) + s[u] + c[u][v])
+            if lb > arr[v]:
+                arr[v] = lb
+                changed = True
+        if not changed:
+            break
+    return arr
 
 
 def make_vars(name, lo, hi, keys):

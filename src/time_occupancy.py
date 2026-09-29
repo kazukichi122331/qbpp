@@ -64,8 +64,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import pyqbpp as qbpp
 
-from tsptwlib import (colocated_terms, conflict_terms, load_instance,
-                      make_gap, make_vars,
+from tsptwlib import (arrival_lower_bounds, colocated_terms, conflict_terms,
+                      load_instance, make_gap, make_vars,
                       parse_args, print_energy, print_summary,
                       print_time_detail, recover_time_tour, save_plot,
                       schedule_from_starts, solve)
@@ -93,19 +93,7 @@ def main(opt):
 
     # ---------------- 1. 到着時刻下界の前処理（不動点） ----------------
     # L[u] < E[v] なら u は必ず v に先行する。これで在圏の定義域が桁違いに縮む。
-    arr = {v: c[0][v] for v in cust}
-    must_before = {v: [u for u in cust if u != v and L[u] < E[v]] for v in cust}
-    for _ in range(N + 5):
-        changed = False
-        for v in cust:
-            lb = c[0][v]
-            for u in must_before[v]:
-                lb = max(lb, max(E[u], arr[u]) + s[u] + c[u][v])
-            if lb > arr[v]:
-                arr[v] = lb
-                changed = True
-        if not changed:
-            break
+    arr = arrival_lower_bounds(inst, s, cust)
 
     # ---------------- 2. 定義域 = 待機域 ∪ サービス域（ひとつながり） ------
     # svc[v] がその境界。[olo[v], svc[v]) が待機、[svc[v], ohi[v]] がサービス。

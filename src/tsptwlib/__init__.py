@@ -10,7 +10,7 @@
     instance   インスタンスの読み込み
     bounds     順序型の定義域・枝刈り・上下界
     qubo       one-hot / leg / 固定辞書 / ペナルティ係数 / 探索
-    timeindex  時間展開型の gap と衝突列挙
+    timeindex  時間展開型の gap・衝突列挙・到着時刻下界
     prune      顧客ごとの時刻の定義域・アーク・前後関係の枝刈り (先行型)
     report     解の復元・検証・表示・描画
     plot       描画そのもの (旧 src/plot_tsptw.py を移動)
@@ -63,7 +63,8 @@ from .report import (
     verify_tour,
 )
 from .prune import precedence, prune_time_windows, shortest_paths
-from .timeindex import colocated_terms, conflict_terms, make_gap, make_vars
+from .timeindex import (arrival_lower_bounds, colocated_terms, conflict_terms,
+                        make_gap, make_vars)
 
 __all__ = [
     # cli
@@ -82,7 +83,8 @@ __all__ = [
     # prune
     "precedence", "prune_time_windows", "shortest_paths",
     # timeindex
-    "colocated_terms", "conflict_terms", "make_gap", "make_vars",
+    "arrival_lower_bounds", "colocated_terms", "conflict_terms", "make_gap",
+    "make_vars",
     # report
     "Schedule", "print_energy", "print_order_detail", "print_summary",
     "print_time_detail", "order_ties", "recover_order_tour", "recover_time_tour",

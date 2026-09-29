@@ -32,10 +32,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import pyqbpp as qbpp
 
-from tsptwlib import (conflict_terms, load_instance, make_gap, make_vars,
-                      parse_args, print_energy, print_summary,
-                      print_time_detail, recover_time_tour, save_plot,
-                      schedule_from_starts, solve)
+from tsptwlib import (arrival_lower_bounds, conflict_terms, load_instance,
+                      make_gap, make_vars, parse_args, print_energy,
+                      print_summary, print_time_detail, recover_time_tour,
+                      save_plot, schedule_from_starts, solve)
 
 PREFIX = "tsptw_time_makespan"          # 図のファイル名の先頭
 RECOMMENDED_TIME = 60.0                 # これより短いと解の骨格すら出にくい
@@ -59,13 +59,17 @@ def main(opt):
 
     # ---------------- 1. 時刻ドメインの枝刈り ----------------
     # lo[v]: v のサービス開始可能な最早時刻
+    #        到着下界 arr[v] は depot 直行 c[0][v] から出発し、L[u] < E[v]
+    #        （u は必ず v に先行）を不動点まで伝播させたもの。time_occupancy.py
+    #        のサービス域の下端 svc[v] と同じ値になる。
     #        三角不等式が成り立てば、誰よりも早く v に着けるのは depot から
     #        直行した場合。Dumas は整数丸めのため厳密には成り立たず、98/138
     #        ファイルで 2 ホップの方が短い頂点がある（= この枝刈りは理屈上
     #        行き過ぎている）。ただし既知最適ツアー 135 件で実際に効いてしまう
     #        頂点は 0 個だったので、実害はないものとしてそのまま使う。
     # hi[v]: そこから depot に帰着できる最遅時刻
-    lo = {v: max(E[v], c[0][v]) for v in range(1, N)}
+    arr = arrival_lower_bounds(inst, s, list(range(1, N)))
+    lo = {v: max(E[v], arr[v]) for v in range(1, N)}
     hi = {v: min(L[v], depot_l - s[v] - c[v][0]) for v in range(1, N)}
     lo[ret] = max(lo[v] + s[v] + c[v][0] for v in range(1, N))
     hi[ret] = depot_l
