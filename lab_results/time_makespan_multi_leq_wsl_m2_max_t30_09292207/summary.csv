@@ -1,0 +1,5 @@
+n,instance,vehicles,obj,runs_ok,feasible_count,value_mean,value_min,total_travel_mean,total_travel_min,energy_mean,energy_min,violated_cons_mean,tw_violations_mean,tts_mean,var_count,term_count,build_sec_mean,wall_sec_mean
+20,n20w20.001,2,max,10,10,375.00,375,436.60,407,375.00,375,0.00,0.00,0.051,1476,121276,1.135,32.88
+60,n60w20.001,2,max,10,10,577.00,577,714.50,680,577.00,577,0.00,0.00,0.160,3600,653372,1.169,32.77
+100,n100w20.001,2,max,10,10,827.00,827,982.90,930,827.00,827,0.00,0.00,0.022,5754,1560544,1.444,32.80
+60,n60w60.001,2,max,7,7,705.00,705,909.71,869,705.00,705,0.00,0.00,0.335,7862,2176298,1.546,33.75

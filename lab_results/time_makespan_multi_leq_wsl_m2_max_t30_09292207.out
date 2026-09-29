@@ -1,0 +1,71 @@
+出力先: lab_results/time_makespan_multi_leq_wsl_m2_max_t30_09292207
+date        = 2026-09-29 22:07:53
+host        = onishi
+python      = Python 3.14.4  (.venv/bin/python)
+git commit  = 024e025
+script      = src/time_makespan_multi_leq.py
+insts       = n20w20.001 n60w20.001 n100w20.001 n60w60.001 n60w100.001
+vehicles    = 2   obj = max
+runs        = 10    time_limit = 30.0s   cooldown = 0s
+gpu         = CUDA_VISIBLE_DEVICES=0
+notify      = off
+
+================ n20w20.001  m=2 obj=max  10 回 × 30.0 秒 ================
+  run  1/10  ok       energy=375        value=375    travel=415    used=2  feasible=True  violated=0    tw=0    tts=0.019    wall=32.79s
+  run  2/10  ok       energy=375        value=375    travel=483    used=2  feasible=True  violated=0    tw=0    tts=0.067    wall=33.87s
+  run  3/10  ok       energy=375        value=375    travel=425    used=2  feasible=True  violated=0    tw=0    tts=0.069    wall=32.82s
+  run  4/10  ok       energy=375        value=375    travel=418    used=2  feasible=True  violated=0    tw=0    tts=0.012    wall=32.73s
+  run  5/10  ok       energy=375        value=375    travel=426    used=2  feasible=True  violated=0    tw=0    tts=0.014    wall=32.73s
+  run  6/10  ok       energy=375        value=375    travel=445    used=2  feasible=True  violated=0    tw=0    tts=0.062    wall=32.82s
+  run  7/10  ok       energy=375        value=375    travel=450    used=2  feasible=True  violated=0    tw=0    tts=0.061    wall=32.68s
+  run  8/10  ok       energy=375        value=375    travel=461    used=2  feasible=True  violated=0    tw=0    tts=0.068    wall=32.89s
+  run  9/10  ok       energy=375        value=375    travel=436    used=2  feasible=True  violated=0    tw=0    tts=0.068    wall=32.69s
+  run 10/10  ok       energy=375        value=375    travel=407    used=2  feasible=True  violated=0    tw=0    tts=0.066    wall=32.81s
+  -> n20w20.001  実行可能解=10/10  平均value=375.00  最良value=375  平均違反=0.00  変数=1476  項=121276
+
+================ n60w20.001  m=2 obj=max  10 回 × 30.0 秒 ================
+  run  1/10  ok       energy=577        value=577    travel=680    used=2  feasible=True  violated=0    tw=0    tts=0.152    wall=32.70s
+  run  2/10  ok       energy=577        value=577    travel=681    used=2  feasible=True  violated=0    tw=0    tts=0.155    wall=32.80s
+  run  3/10  ok       energy=577        value=577    travel=683    used=2  feasible=True  violated=0    tw=0    tts=0.153    wall=32.81s
+  run  4/10  ok       energy=577        value=577    travel=733    used=2  feasible=True  violated=0    tw=0    tts=0.141    wall=32.80s
+  run  5/10  ok       energy=577        value=577    travel=736    used=2  feasible=True  violated=0    tw=0    tts=0.161    wall=32.75s
+  run  6/10  ok       energy=577        value=577    travel=729    used=2  feasible=True  violated=0    tw=0    tts=0.166    wall=32.72s
+  run  7/10  ok       energy=577        value=577    travel=737    used=2  feasible=True  violated=0    tw=0    tts=0.169    wall=32.80s
+  run  8/10  ok       energy=577        value=577    travel=738    used=2  feasible=True  violated=0    tw=0    tts=0.174    wall=32.71s
+  run  9/10  ok       energy=577        value=577    travel=709    used=2  feasible=True  violated=0    tw=0    tts=0.167    wall=32.77s
+  run 10/10  ok       energy=577        value=577    travel=719    used=2  feasible=True  violated=0    tw=0    tts=0.166    wall=32.79s
+  -> n60w20.001  実行可能解=10/10  平均value=577.00  最良value=577  平均違反=0.00  変数=3600  項=653372
+
+================ n100w20.001  m=2 obj=max  10 回 × 30.0 秒 ================
+  run  1/10  ok       energy=827        value=827    travel=930    used=2  feasible=True  violated=0    tw=0    tts=0.020    wall=32.88s
+  run  2/10  ok       energy=827        value=827    travel=952    used=2  feasible=True  violated=0    tw=0    tts=0.018    wall=32.88s
+  run  3/10  ok       energy=827        value=827    travel=961    used=2  feasible=True  violated=0    tw=0    tts=0.036    wall=32.92s
+  run  4/10  ok       energy=827        value=827    travel=1057   used=2  feasible=True  violated=0    tw=0    tts=0.017    wall=32.76s
+  run  5/10  ok       energy=827        value=827    travel=939    used=2  feasible=True  violated=0    tw=0    tts=0.019    wall=32.79s
+  run  6/10  ok       energy=827        value=827    travel=1008   used=2  feasible=True  violated=0    tw=0    tts=0.017    wall=32.79s
+  run  7/10  ok       energy=827        value=827    travel=1001   used=2  feasible=True  violated=0    tw=0    tts=0.017    wall=32.68s
+  run  8/10  ok       energy=827        value=827    travel=961    used=2  feasible=True  violated=0    tw=0    tts=0.027    wall=32.74s
+  run  9/10  ok       energy=827        value=827    travel=1040   used=2  feasible=True  violated=0    tw=0    tts=0.023    wall=32.72s
+  run 10/10  ok       energy=827        value=827    travel=980    used=2  feasible=True  violated=0    tw=0    tts=0.024    wall=32.80s
+  -> n100w20.001  実行可能解=10/10  平均value=827.00  最良value=827  平均違反=0.00  変数=5754  項=1560544
+
+================ n60w60.001  m=2 obj=max  10 回 × 30.0 秒 ================
+  run  1/10  ok       energy=705        value=705    travel=894    used=2  feasible=True  violated=0    tw=0    tts=0.345    wall=33.72s
+  run  2/10  ok       energy=705        value=705    travel=937    used=2  feasible=True  violated=0    tw=0    tts=0.332    wall=33.76s
+  run  3/10  ok       energy=705        value=705    travel=885    used=2  feasible=True  violated=0    tw=0    tts=0.347    wall=33.72s
+  run  4/10  ok       energy=705        value=705    travel=869    used=2  feasible=True  violated=0    tw=0    tts=0.353    wall=33.95s
+  run  5/10  ok       energy=705        value=705    travel=913    used=2  feasible=True  violated=0    tw=0    tts=0.347    wall=33.74s
+  run  6/10  ok       energy=705        value=705    travel=931    used=2  feasible=True  violated=0    tw=0    tts=0.313    wall=33.71s
+  run  7/10  ok       energy=705        value=705    travel=939    used=2  feasible=True  violated=0    tw=0    tts=0.311    wall=33.68s
+Terminated                 "$PYTHON" "$SCRIPT" "$TIME_LIMIT" -i "$inst" -m "$VEHICLES" "${obj_opt[@]}" --seed "$seed" --no-plot -q > "$log" 2>&1
+
+中断されました（lab_results/time_makespan_multi_leq_wsl_m2_max_t30_09292207 に途中までの結果が残っています）
+  run  8/10  error(143) energy=-          value=-      travel=-      used=-  feasible=-     violated=-    tw=-    tts=-        wall=30.67s
+  -> n60w60.001  実行可能解=7/7  平均value=705.00  最良value=705  平均違反=0.00  変数=7862  項=2176298
+
+完了: lab_results/time_makespan_multi_leq_wsl_m2_max_t30_09292207/runs.csv / lab_results/time_makespan_multi_leq_wsl_m2_max_t30_09292207/summary.csv
+n    instance     vehicles  obj  runs_ok  feasible_count  value_mean  value_min  total_travel_mean  total_travel_min  energy_mean  energy_min  violated_cons_mean  tw_violations_mean  tts_mean  var_count  term_count  build_sec_mean  wall_sec_mean
+20   n20w20.001   2         max  10       10              375.00      375        436.60             407               375.00       375         0.00                0.00                0.051     1476       121276      1.135           32.88
+60   n60w20.001   2         max  10       10              577.00      577        714.50             680               577.00       577         0.00                0.00                0.160     3600       653372      1.169           32.77
+100  n100w20.001  2         max  10       10              827.00      827        982.90             930               827.00       827         0.00                0.00                0.022     5754       1560544     1.444           32.80
+60   n60w60.001   2         max  7        7               705.00      705        909.71             869               705.00       705         0.00                0.00                0.335     7862       2176298     1.546           33.75

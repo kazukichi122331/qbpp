@@ -1,0 +1,49 @@
+QUBO++ Ver. 2026.09.25
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n60w20.001  N=61 (顧客 60)  L[0]=601  時間枠の平均幅 19.3
+vehicles    = 2
+objective   = max (帰着時刻の最大値, 不等式制約版)
+HINT: この定式化はモデルが重いので 60 秒以上を推奨 (いまは 30.0 秒)
+N=61  m=2  x vars = 3600
+conflict terms = 654726
+Z in [577, 601] (integer)  ret<=Z cons = 2
+penalty: ONCE=602 CONF=602 ZMAX=602
+build       = 1.118 sec (式の構築 + simplify)
+solve now...(30.0 sec)
+TTS         = 0.152 sec (最良解を見つけた時刻)
+
+----------result(30.0 sec)----------
+energy          = 577
+objective       = 577
+ret_total       = 1133
+once_constraint = 0
+conflict_constr = 0
+zmax_constr     = 0
+violated cons   = 0
+
+--- vehicle 0 --- (30 顧客)
+  travel= 334 return= 577 (RET var = 577)
+
+--- vehicle 1 --- (30 顧客)
+  travel= 346 return= 556 (RET var = 556)
+
+=== summary ===
+route[0]    = [0, 6, 48, 38, 51, 9, 15, 42, 22, 7, 4, 52, 50, 46, 18, 16, 23, 21, 2, 28, 29, 27, 45, 57, 35, 54, 37, 55, 14, 60, 53, 0]
+route[1]    = [0, 12, 19, 56, 34, 17, 58, 32, 59, 25, 13, 5, 44, 30, 47, 31, 10, 41, 11, 39, 43, 26, 8, 33, 3, 1, 49, 24, 20, 36, 40, 0]
+visited     = 60/60
+total travel = 680
+max travel  = 346
+return      = [577, 556] (limit 601, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0)
+RET var == モデルの帰着 = True
+var_count   = 3600
+term_count  = 653372
+max return  = 577 (最早開始。Z = 577 以下になるはず)
+used vehicles = 2/2
+      (最遅以外の車両の RET は Z 以下のどこでも目的が変わらないので、
+       「RET var == モデルの帰着」は False になりうる)
