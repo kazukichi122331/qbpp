@@ -1,0 +1,132 @@
+[2026-09-28 23:29:41] 通知: 有効 (https://ntfy.sh)
+[2026-09-28 23:29:41] 開始 occupancy n100-150-200_w20_t300
+出力先: lab_results/time_occupancy_a100_n100-150-200_w20_t300_09282329
+date        = 2026-09-28 23:29:41
+host        = a100x8
+python      = Python 3.14.4  (.venv/bin/python)
+git commit  = e7f1d5f
+script      = src/time_occupancy.py
+sizes       = 100 150 200   widths = 20   inst = 001
+runs        = 10    time_limit = 300s   cooldown = 60s
+target      = best  (instances/Dumas/Dumas-best-known-traveltime.txt)
+gpu         = CUDA_VISIBLE_DEVICES=7
+--- nvidia-smi ---
+
+================ n100w20.001  (n=100 w=20)  10 回 × 300 秒  target=738 ================
+  run  1/10  ok       energy=738          value=738      reached=1  tts=10.044   violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=3.777    wall=23.74s
+  run  2/10  ok       energy=738          value=738      reached=1  tts=7.742    violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=1.189    wall=17.10s
+  run  3/10  ok       energy=738          value=738      reached=1  tts=7.826    violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=1.177    wall=16.05s
+  run  4/10  ok       energy=738          value=738      reached=1  tts=33.806   violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=3.533    wall=53.53s
+  run  5/10  ok       energy=738          value=738      reached=1  tts=23.029   violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=1.090    wall=35.27s
+  run  6/10  ok       energy=738          value=738      reached=1  tts=3.260    violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=1.103    wall=14.23s
+  run  7/10  ok       energy=738          value=738      reached=1  tts=2.838    violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=1.172    wall=10.12s
+  run  8/10  ok       energy=738          value=738      reached=1  tts=22.344   violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=1.169    wall=30.89s
+  run  9/10  ok       energy=738          value=738      reached=1  tts=7.508    violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=3.811    wall=20.75s
+  run 10/10  ok       energy=738          value=738      reached=1  tts=24.152   violated=0    tw=0    feasible=True  vars=2706     terms=87713     build=4.153    wall=35.03s
+  -> n100w20.001  平均energy=738.00  最小energy=738  平均違反=0.00  実行可能解=10/10  最良value=738  変数=2706  項=87713
+     target=738  到達=10/10  平均TTS=14.255 s  最小TTS=2.838 s  最大TTS=33.806 s
+
+  (GPU を 60 秒明け渡します)
+
+================ n150w20.001  (n=150 w=20)  10 回 × 300 秒  target=925 ================
+  run  1/10  ok       energy=1047         value=924      reached=0  tts=61.234   violated=1    tw=1    feasible=False vars=4263     terms=177792    build=2.928    wall=307.23s
+  run  2/10  ok       energy=925          value=925      reached=1  tts=123.709  violated=0    tw=0    feasible=True  vars=4263     terms=177792    build=3.369    wall=147.66s
+  run  3/10  ok       energy=925          value=925      reached=1  tts=65.390   violated=0    tw=0    feasible=True  vars=4263     terms=177792    build=3.620    wall=80.53s
+  run  4/10  ok       energy=925          value=925      reached=1  tts=50.175   violated=0    tw=0    feasible=True  vars=4263     terms=177792    build=3.990    wall=58.58s
+  run  5/10  ok       energy=926          value=926      reached=0  tts=31.199   violated=0    tw=0    feasible=True  vars=4263     terms=177792    build=3.234    wall=311.71s
+  run  6/10  ok       energy=1047         value=924      reached=0  tts=249.548  violated=1    tw=1    feasible=False vars=4263     terms=177792    build=1.373    wall=307.18s
+  run  7/10  ok       energy=925          value=925      reached=1  tts=19.565   violated=0    tw=0    feasible=True  vars=4263     terms=177792    build=3.959    wall=30.91s
+  run  8/10  ok       energy=925          value=925      reached=1  tts=41.037   violated=0    tw=0    feasible=True  vars=4263     terms=177792    build=4.026    wall=52.99s
+  run  9/10  ok       energy=925          value=925      reached=1  tts=202.150  violated=0    tw=0    feasible=True  vars=4263     terms=177792    build=1.957    wall=209.78s
+  run 10/10  ok       energy=925          value=925      reached=1  tts=96.141   violated=0    tw=0    feasible=True  vars=4263     terms=177792    build=3.385    wall=112.60s
+  -> n150w20.001  平均energy=949.50  最小energy=925  平均違反=0.20  実行可能解=8/10  最良value=925  変数=4263  項=177792
+     target=925  到達=7/10  平均TTS=85.452 s  最小TTS=19.565 s  最大TTS=202.150 s
+
+  (GPU を 60 秒明け渡します)
+
+================ n200w20.001  (n=200 w=20)  10 回 × 300 秒  target=1019 ================
+  run  1/10  ok       energy=1021         value=1021     reached=0  tts=131.124  violated=0    tw=0    feasible=True  vars=5660     terms=280769    build=3.460    wall=309.80s
+  run  2/10  ok       energy=1128         value=1021     reached=0  tts=131.573  violated=1    tw=5    feasible=False vars=5660     terms=280769    build=4.097    wall=309.99s
+  run  3/10  ok       energy=1132         value=1025     reached=0  tts=221.072  violated=1    tw=5    feasible=False vars=5660     terms=280769    build=3.861    wall=308.15s
+  run  4/10  ok       energy=1134         value=1024     reached=0  tts=42.163   violated=1    tw=1    feasible=False vars=5660     terms=280769    build=3.460    wall=309.92s
+  run  5/10  ok       energy=1025         value=1023     reached=0  tts=253.413  violated=0    tw=0    feasible=True  vars=5660     terms=280769    build=4.283    wall=308.35s
+  run  6/10  ok       energy=1132         value=1025     reached=0  tts=245.405  violated=1    tw=5    feasible=False vars=5660     terms=280769    build=3.491    wall=309.36s
+  run  7/10  ok       energy=1129         value=1022     reached=0  tts=260.700  violated=1    tw=5    feasible=False vars=5660     terms=280769    build=3.438    wall=307.50s
+  run  8/10  ok       energy=1145         value=1026     reached=0  tts=191.864  violated=1    tw=1    feasible=False vars=5660     terms=280769    build=3.474    wall=308.45s
+  run  9/10  ok       energy=1128         value=1021     reached=0  tts=93.467   violated=1    tw=5    feasible=False vars=5660     terms=280769    build=3.640    wall=308.68s
+  run 10/10  ok       energy=1024         value=1022     reached=0  tts=152.613  violated=0    tw=0    feasible=True  vars=5660     terms=280769    build=3.720    wall=309.08s
+  -> n200w20.001  平均energy=1099.80  最小energy=1021  平均違反=0.70  実行可能解=3/10  最良value=1021  変数=5660  項=280769
+     target=1019  到達=0/10  平均TTS=-  最小TTS=-  最大TTS=-
+
+完了: lab_results/time_occupancy_a100_n100-150-200_w20_t300_09282329/runs.csv / lab_results/time_occupancy_a100_n100-150-200_w20_t300_09282329/summary.csv
+n    instance     runs_ok  target_energy  reached_count  tts_mean  tts_min  tts_max  energy_mean  energy_min  violated_cons_mean  violated_cons_min  tw_violations_mean  feasible_count  var_count  term_count  build_sec_mean  wall_sec_mean  value_mean  value_min
+100  n100w20.001  10       738            10             14.255    2.838    33.806   738.00       738         0.00                0                  0.00                10              2706       87713       2.217           25.67          738.00      738
+150  n150w20.001  10       925            7              85.452    19.565   202.150  949.50       925         0.20                0                  0.20                8               4263       177792      3.184           161.92         925.12      925
+200  n200w20.001  10       1019           0                                          1099.80      1021        0.70                0                  2.70                3               5660       280769      3.692           308.93         1022.00     1021
+[2026-09-29 00:54:28] 終了 occupancy n100-150-200_w20_t300 (rc=0)
+[2026-09-29 00:54:29] 次のスイープまで 60 秒待ちます
+[2026-09-29 00:55:29] 開始 occupancy n60_w60-80-100_t300
+出力先: lab_results/time_occupancy_a100_n60_w60-80-100_t300_09290055
+date        = 2026-09-29 00:55:29
+host        = a100x8
+python      = Python 3.14.4  (.venv/bin/python)
+git commit  = e7f1d5f
+script      = src/time_occupancy.py
+sizes       = 60   widths = 60 80 100   inst = 001
+runs        = 10    time_limit = 300s   cooldown = 60s
+target      = best  (instances/Dumas/Dumas-best-known-traveltime.txt)
+gpu         = CUDA_VISIBLE_DEVICES=7
+--- nvidia-smi ---
+
+================ n60w60.001  (n=60 w=60)  10 回 × 300 秒  target=609 ================
+  run  1/10  ok       energy=614          value=613      reached=0  tts=282.860  violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=1.374    wall=306.05s
+  run  2/10  ok       energy=614          value=613      reached=0  tts=209.466  violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=3.499    wall=309.99s
+  run  3/10  ok       energy=614          value=613      reached=0  tts=171.135  violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=4.038    wall=308.62s
+  run  4/10  ok       energy=614          value=613      reached=0  tts=132.111  violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=3.369    wall=311.98s
+  run  5/10  ok       energy=614          value=613      reached=0  tts=189.801  violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=4.075    wall=311.33s
+  run  6/10  ok       energy=613          value=613      reached=0  tts=274.342  violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=4.063    wall=313.01s
+  run  7/10  ok       energy=613          value=613      reached=0  tts=154.245  violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=2.792    wall=307.81s
+  run  8/10  ok       energy=613          value=613      reached=0  tts=276.725  violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=1.253    wall=308.87s
+  run  9/10  ok       energy=614          value=613      reached=0  tts=46.271   violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=1.295    wall=305.31s
+  run 10/10  ok       energy=614          value=613      reached=0  tts=75.785   violated=0    tw=0    feasible=True  vars=4004     terms=481163    build=3.464    wall=309.35s
+  -> n60w60.001  平均energy=613.70  最小energy=613  平均違反=0.00  実行可能解=10/10  最良value=613  変数=4004  項=481163
+     target=609  到達=0/10  平均TTS=-  最小TTS=-  最大TTS=-
+
+  (GPU を 60 秒明け渡します)
+
+================ n60w80.001  (n=60 w=80)  10 回 × 300 秒  target=458 ================
+  run  1/10  ok       energy=465          value=465      reached=0  tts=208.259  violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=3.011    wall=306.67s
+  run  2/10  ok       energy=460          value=460      reached=0  tts=87.525   violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=4.342    wall=310.69s
+  run  3/10  ok       energy=463          value=463      reached=0  tts=61.685   violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=5.137    wall=309.67s
+  run  4/10  ok       energy=462          value=462      reached=0  tts=19.563   violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=4.438    wall=310.40s
+  run  5/10  ok       energy=466          value=466      reached=0  tts=92.401   violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=4.049    wall=308.92s
+  run  6/10  ok       energy=463          value=463      reached=0  tts=131.283  violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=4.232    wall=310.37s
+  run  7/10  ok       energy=459          value=459      reached=0  tts=257.426  violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=4.149    wall=308.81s
+  run  8/10  ok       energy=463          value=463      reached=0  tts=55.660   violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=4.103    wall=309.88s
+  run  9/10  ok       energy=467          value=467      reached=0  tts=39.012   violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=4.309    wall=308.77s
+  run 10/10  ok       energy=466          value=466      reached=0  tts=84.193   violated=0    tw=0    feasible=True  vars=6741     terms=1500607   build=4.303    wall=308.02s
+  -> n60w80.001  平均energy=463.40  最小energy=459  平均違反=0.00  実行可能解=10/10  最良value=459  変数=6741  項=1500607
+     target=458  到達=0/10  平均TTS=-  最小TTS=-  最大TTS=-
+
+  (GPU を 60 秒明け渡します)
+
+================ n60w100.001  (n=60 w=100)  10 回 × 300 秒  target=515 ================
+  run  1/10  ok       energy=620          value=542      reached=0  tts=278.667  violated=1    tw=5    feasible=False vars=7366     terms=2504029   build=4.085    wall=311.78s
+  run  2/10  ok       energy=611          value=535      reached=0  tts=178.187  violated=1    tw=5    feasible=False vars=7366     terms=2504029   build=5.695    wall=314.58s
+  run  3/10  ok       energy=528          value=528      reached=0  tts=234.401  violated=0    tw=0    feasible=True  vars=7366     terms=2504029   build=5.741    wall=316.06s
+  run  4/10  ok       energy=622          value=541      reached=0  tts=279.381  violated=1    tw=5    feasible=False vars=7366     terms=2504029   build=5.661    wall=312.76s
+  run  5/10  ok       energy=526          value=526      reached=0  tts=204.744  violated=0    tw=0    feasible=True  vars=7366     terms=2504029   build=5.472    wall=315.46s
+  run  6/10  ok       energy=612          value=536      reached=0  tts=297.551  violated=1    tw=5    feasible=False vars=7366     terms=2504029   build=5.548    wall=314.51s
+  run  7/10  ok       energy=526          value=526      reached=0  tts=92.058   violated=0    tw=0    feasible=True  vars=7366     terms=2504029   build=5.527    wall=310.97s
+  run  8/10  ok       energy=523          value=522      reached=0  tts=276.907  violated=0    tw=0    feasible=True  vars=7366     terms=2504029   build=5.580    wall=311.54s
+  run  9/10  ok       energy=621          value=546      reached=0  tts=140.503  violated=1    tw=5    feasible=False vars=7366     terms=2504029   build=5.670    wall=311.27s
+  run 10/10  ok       energy=613          value=535      reached=0  tts=268.974  violated=1    tw=5    feasible=False vars=7366     terms=2504029   build=5.217    wall=314.29s
+  -> n60w100.001  平均energy=580.20  最小energy=523  平均違反=0.60  実行可能解=4/10  最良value=522  変数=7366  項=2504029
+     target=515  到達=0/10  平均TTS=-  最小TTS=-  最大TTS=-
+
+完了: lab_results/time_occupancy_a100_n60_w60-80-100_t300_09290055/runs.csv / lab_results/time_occupancy_a100_n60_w60-80-100_t300_09290055/summary.csv
+n   instance     runs_ok  target_energy  reached_count  tts_mean  tts_min  tts_max  energy_mean  energy_min  violated_cons_mean  violated_cons_min  tw_violations_mean  feasible_count  var_count  term_count  build_sec_mean  wall_sec_mean  value_mean  value_min
+60  n60w60.001   10       609            0                                          613.70       613         0.00                0                  0.00                10              4004       481163      2.922           309.23         613.00      613
+60  n60w80.001   10       458            0                                          463.40       459         0.00                0                  0.00                10              6741       1500607     4.207           309.22         463.40      459
+60  n60w100.001  10       515            0                                          580.20       523         0.60                0                  3.00                4               7366       2504029     5.420           313.32         525.50      522
+[2026-09-29 03:32:49] 終了 occupancy n60_w60-80-100_t300 (rc=0)

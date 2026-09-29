@@ -1,0 +1,4 @@
+n,instance,runs_ok,target_energy,reached_count,tts_mean,tts_min,tts_max,energy_mean,energy_min,violated_cons_mean,violated_cons_min,tw_violations_mean,feasible_count,var_count,term_count,build_sec_mean,wall_sec_mean,value_mean,value_min
+60,n60w60.001,10,609,0,,,,613.70,613,0.00,0,0.00,10,4004,481163,2.922,309.23,613.00,613
+60,n60w80.001,10,458,0,,,,463.40,459,0.00,0,0.00,10,6741,1500607,4.207,309.22,463.40,459
+60,n60w100.001,10,515,0,,,,580.20,523,0.60,0,3.00,4,7366,2504029,5.420,313.32,525.50,522
