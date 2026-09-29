@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
-# time_makespan_multi.py (時間展開型 mTSPTW) を A100 上でまとめて計測する。
+# time_makespan_multi_leq.py (時間展開型 mTSPTW, min-max を ret_k <= Z の不等式で
+# 書く版) を A100 上でまとめて計測する。
 #
-#   車両 VEHICLES 台、目的関数 OBJ（既定 max = 帰着時刻の最大値、min-max）。
+#   車両 VEHICLES 台、目的関数は帰着時刻の最大値（min-max）。
+#   SCRIPT=src/time_makespan_multi.py にすると one-hot 版を OBJ（sum / max）で回せる。
 #   INSTS の各インスタンスを RUNS 回、1 回 TIME_LIMIT 秒。
 #   1 インスタンス分が終わるたびに COOLDOWN 秒だけ GPU を明け渡す（共用機のため）。
 #
@@ -23,14 +25,15 @@
 #   PYTHON      python 実行系                     (既定 .venv/bin/python)
 #   INSTS       インスタンス名の並び              (既定 "n20w20.001 n60w20.001 n100w20.001 n60w60.001 n60w100.001")
 #   VEHICLES    車両数                            (既定 3)
-#   OBJ         目的関数 sum / max                (既定 max)
+#   SCRIPT      計測する定式化                    (既定 src/time_makespan_multi_leq.py)
+#   OBJ         目的関数 sum / max。SCRIPT が time_makespan_multi.py のときだけ渡す (既定 max)
 #   RUNS        1 インスタンスあたりの実行回数    (既定 10)
 #   TIME_LIMIT  1 回のソルバ制限時間（秒）        (既定 30.0)
 #   COOLDOWN    インスタンス間の待ち時間（秒）    (既定 60)
 #   LICENSE_WAIT / LICENSE_RETRIES  ライセンス使用中のときの再実行 (既定 300 秒 / 5 回)
 #   CUDA_VISIBLE_DEVICES  使う GPU 番号            (既定 7)
 #   NTFY_TOPIC  ntfy.sh の通知先。未設定なら ~/.ntfy_topic の 1 行目。どちらも無ければ通知しない
-#   OUTDIR      出力先 (既定 lab_results/time_makespan_multi_a100_m<台数>_<obj>_t<秒>_<日時>)
+#   OUTDIR      出力先 (既定 lab_results/<スクリプト名>_a100_m<台数>_<obj>_t<秒>_<日時>)
 #
 # 出力:
 #   $OUTDIR/runs.csv     1 行 = 1 実行
@@ -49,11 +52,19 @@ TIME_LIMIT=${TIME_LIMIT:-30.0}
 COOLDOWN=${COOLDOWN:-60}
 LICENSE_WAIT=${LICENSE_WAIT:-300}
 LICENSE_RETRIES=${LICENSE_RETRIES:-5}
-SCRIPT=src/time_makespan_multi.py
+SCRIPT=${SCRIPT:-src/time_makespan_multi_leq.py}
+
+# leq 版は --obj を持たない（常に max）
+if [[ $(basename "$SCRIPT") == time_makespan_multi.py ]]; then
+    obj_opt=(--obj "$OBJ")
+else
+    OBJ=max
+    obj_opt=()
+fi
 
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-7}
 STAMP=$(date +%m%d%H%M)
-OUTDIR=${OUTDIR:-lab_results/time_makespan_multi_a100_m${VEHICLES}_${OBJ}_t${TIME_LIMIT%.*}_$STAMP}
+OUTDIR=${OUTDIR:-lab_results/$(basename "$SCRIPT" .py)_a100_m${VEHICLES}_${OBJ}_t${TIME_LIMIT%.*}_$STAMP}
 
 if [[ ! -f $SCRIPT || ! -d instances/Dumas ]]; then
     echo "ERROR: リポジトリのルートで実行してください（$SCRIPT が見つからない）" >&2
@@ -146,7 +157,7 @@ for inst_name in $INSTS; do
         lic_try=0
         while :; do
             t0=$(date +%s.%N)
-            "$PYTHON" "$SCRIPT" "$TIME_LIMIT" -i "$inst" -m "$VEHICLES" --obj "$OBJ" \
+            "$PYTHON" "$SCRIPT" "$TIME_LIMIT" -i "$inst" -m "$VEHICLES" "${obj_opt[@]}" \
                 --seed "$seed" --no-plot -q > "$log" 2>&1
             rc=$?
             t1=$(date +%s.%N)
@@ -215,10 +226,10 @@ for inst_name in $INSTS; do
 done
 
 if (( interrupted )); then
-    notify "a100 makespan_multi interrupted" "中断: $OUTDIR" warning
+    notify "a100 $(basename "$SCRIPT" .py) interrupted" "中断: $OUTDIR" warning
 else
     body=$(awk -F',' 'NR > 1 { printf "%s 実行可能 %s/%s 最良 %s\n", $2, $6, $5, ($8 == "" ? "-" : $8) }' "$SUMMARY_CSV")
-    notify "a100 makespan_multi done" "完了: $OUTDIR
+    notify "a100 $(basename "$SCRIPT" .py) done" "完了: $OUTDIR
 $body" white_check_mark
 fi
 

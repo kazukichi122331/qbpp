@@ -1,0 +1,189 @@
+"""時間展開型 mTSPTW QUBO (min-max) — 「ret_k <= Z」を不等式制約でそのまま書く版。
+
+    x[t][i][k] = 1 <=> 車両 k が顧客 i のサービスを時刻 t に開始する
+
+src/time_makespan_multi.py (--obj max) との関係
+-----------------------------------------------
+変数 x と制約 A, B は time_makespan_multi.py と同じ。違うのは最大値 Z の書き方だけ。
+
+  time_makespan_multi.py   Z を one-hot z[T] で持ち、「Z >= ret_k」を禁止ペア
+                               Σ_T Σ_{t > T} z[T] * x[t][RET][k]    (= 0)
+                           で書く。
+  この版                   Z をネイティブ整数変数 (integer=) で持ち、車両ごとに不等式
+                               ret_k = Σ_t t * x[t][RET][k] <= Z
+                           を qbpp.cons(..., between=(0, None)) で課す。
+
+目的関数は Z そのもの。Z を実際の最大帰着時刻より下げると不等式が破れて罰せられ、
+上げると目的関数が増えるので、最小化で Z = max_k ret_k に落ち着く。
+
+宣言制約 qbpp.cons(body, between=(0, None)) はスラック変数を作らず、ソルバが
+weight * max(0, -body)^2 を直接評価する (prec_disjunctive.py と同じ)。
+したがって違反量 d = ret_k - Z に対してペナルティは d^2 で増える。
+
+Z の定義域 [z_lo, depot_l] は time_makespan_multi.py と同じ
+    z_lo = max_v (lo[v] + s[v] + c[v][0])
+(どの顧客も誰かが回って帰るので m 台でも正当)。
+
+使い方
+------
+    python src/time_makespan_multi_leq.py 60 -i instances/Dumas/n20w20.001.txt -m 2
+
+車両数は -m / --vehicles（または環境変数 TSPTW_VEHICLES）。
+"""
+import os
+import sys
+import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# ↑ src/ を探索パスに入れる。python src/x.py でも python -m src.x でも動く。
+
+import pyqbpp as qbpp
+
+from tsptwlib import (conflict_terms, load_instance, make_gap, parse_args,
+                      print_energy, print_time_detail, save_plot,
+                      schedule_from_starts, simulate, solve)
+from time_occupancy_multi import (make_vars_multi, pop_vehicles,
+                                  print_multi_summary, recover_routes,
+                                  vehicle_view)
+
+PREFIX = "tsptw_time_makespan_multi_leq"    # 図のファイル名の先頭
+RECOMMENDED_TIME = 60.0                     # これより短いと解の骨格すら出にくい
+
+
+def main(opt, m):
+    inst = load_instance(opt.instance)
+    N, c, E, L = inst.N, inst.c, inst.E, inst.L
+    print(inst.summary())
+    print(f"vehicles    = {m}")
+    print("objective   = max (帰着時刻の最大値, 不等式制約版)")
+    if opt.time_limit < RECOMMENDED_TIME:
+        print(f"HINT: この定式化はモデルが重いので "
+              f"{RECOMMENDED_TIME:.0f} 秒以上を推奨 "
+              f"(いまは {opt.time_limit} 秒)")
+
+    s = [0] * (N + 1)               # Dumas はサービス時間なし
+    depot_l = L[0]
+    ret = N
+    cust = list(range(1, N))
+    nodes = cust + [ret]
+    veh = list(range(m))
+
+    t_build = time.perf_counter()
+
+    # ---------------- 1. 時刻ドメイン ----------------
+    # time_makespan_multi.py と同じ。RET は車両ごとに [0, depot_l]。0 = 空車。
+    lo = {v: max(E[v], c[0][v]) for v in cust}
+    hi = {v: min(L[v], depot_l - s[v] - c[v][0]) for v in cust}
+    lo[ret] = 0
+    hi[ret] = depot_l
+
+    dead = [v for v in cust if hi[v] < lo[v]]
+    if dead:
+        print(f"WARNING: 定義域が空の顧客 {dead} "
+              f"(このインスタンスは実行不可能)")
+
+    # ---------------- 2. 変数 ----------------
+    x = make_vars_multi("x", lo, hi, nodes, veh)
+    print(f"N={N}  m={m}  x vars = {len(x)}")
+
+    # ---------------- 3. 制約A ----------------
+    once_cust = qbpp.expr()
+    for v in cust:
+        once_cust += (qbpp.sum(x[t, v, k]
+                               for k in veh
+                               for t in range(lo[v], hi[v] + 1)) == 1)
+    once_ret = qbpp.expr()
+    for k in veh:
+        once_ret += (qbpp.sum(x[t, ret, k]
+                              for t in range(lo[ret], hi[ret] + 1)) == 1)
+    once_constraint = once_cust + once_ret
+
+    # ---------------- 4. 制約B: 車両ごとに 1 ブロック ----------------
+    gap = make_gap(inst, s, ret)
+    conflict_constraint = qbpp.expr()
+    n_terms = 0
+    for k in veh:
+        xk = vehicle_view(x, nodes, lo, hi, k)
+        block, nb = conflict_terms(nodes, gap, xk, lo, hi, xk, lo, hi)
+        conflict_constraint += block
+        n_terms += nb
+    print(f"conflict terms = {n_terms}")
+
+    # ---------------- 5. 目的関数: Z と不等式 ret_k <= Z ----------------
+    # 表示用の帰着時刻の和は別実体で作る (pyqbpp の演算が左辺を書き換えることがあるため)
+    ret_total = qbpp.sum(t * x[t, ret, k]
+                         for k in veh
+                         for t in range(lo[ret], hi[ret] + 1))
+    z_lo = max(lo[v] + s[v] + c[v][0] for v in cust)
+    # ネイティブ整数変数。幅 0 (z_lo == depot_l) なら pyqbpp が定数の式を返す
+    Z = qbpp.var("Z", integer=(z_lo, depot_l))
+    zmax_constraint = qbpp.expr()
+    for k in veh:
+        # body = Z - ret_k >= 0。本体は qbpp.expr() から組む (prec_disjunctive.py 参照)
+        body = qbpp.expr() + Z
+        for t in range(lo[ret], hi[ret] + 1):
+            body -= t * x[t, ret, k]
+        zmax_constraint += qbpp.cons(body, between=(0, None))
+    objective = qbpp.expr() + Z
+    print(f"Z in [{z_lo}, {depot_l}] (integer)  ret<=Z cons = {m}")
+
+    # ---------------- 6. QUBO 化 ----------------
+    # ONCE, CONF は time_makespan_multi.py と同じ depot_l + 1。
+    # ZMAX: 違反量 d >= 1 でペナルティ P*d^2、Z を下げて得する目的は高々 d なので
+    # P > 1 で足りるが、他の制約と尺度をそろえて depot_l + 1 にする。
+    ONCE_P = depot_l + 1
+    CONF_P = depot_l + 1
+    ZMAX_P = depot_l + 1
+    f = (objective
+         + ONCE_P * qbpp.cons(once_constraint)
+         + CONF_P * qbpp.cons(conflict_constraint)
+         + ZMAX_P * zmax_constraint)
+    print(f"penalty: ONCE={ONCE_P} CONF={CONF_P} ZMAX={ZMAX_P}")
+
+    f, sol, val = solve(f, None, opt, build_sec=time.perf_counter() - t_build)
+    if sol is None:                             # --build-only
+        mdl = qbpp.Model(f)
+        print(f"qubo vars = {mdl.var_count}  qubo terms = {mdl.term_count()}")
+        return
+
+    print_energy(f, val, opt,
+                 objective=objective,
+                 ret_total=ret_total,
+                 once_constraint=once_constraint,
+                 conflict_constr=conflict_constraint,
+                 zmax_constr=zmax_constraint)
+
+    # ---------------- 7. 解の展開 ----------------
+    routes, ret_t = recover_routes(inst, x, val, cust, ret, veh, lo, hi)
+    scheds = {}
+    for k in veh:
+        seq = routes[k]
+        sched = schedule_from_starts(inst, seq, s)
+        scheds[k] = sched
+        print(f"\n--- vehicle {k} --- ({len(seq)} 顧客)")
+        print_time_detail(inst, seq, sched, quiet=opt.quiet)
+        rv = ret_t[k][0] if len(ret_t[k]) == 1 else ret_t[k]
+        print(f"  travel={sched.travel:4d} return={sched.ret:4d} "
+              f"(RET var = {rv})")
+
+    print_multi_summary(inst, routes, scheds, ret_t, sol)
+    # 検算値: 各ルートを最早開始で辿り直した帰着時刻（ソルバの時刻は使わない）
+    rets = [simulate(inst, [0] + [i for _, i in routes[k]] + [0]).ret
+            for k in veh]
+    print(f"max return  = {max(rets)} (最早開始。Z = {val(Z)} 以下になるはず)")
+    print(f"used vehicles = {sum(1 for k in veh if routes[k])}/{m}")
+    print("      (最遅以外の車両の RET は Z 以下のどこでも目的が変わらないので、\n"
+          "       「RET var == モデルの帰着」は False になりうる)")
+
+    # ---------------- 8. 描画 ----------------
+    # plot_tour は単一ツアー前提。m >= 2 は描けないので m == 1 のときだけ。
+    if m == 1:
+        save_plot(inst, [0] + [v for _, v in routes[0]] + [0],
+                  scheds[0], PREFIX, opt)
+    elif opt.plot:
+        print("skip plot   = m >= 2 (plot_tour が単一ツアー前提のため)")
+
+
+if __name__ == "__main__":
+    _m, _rest = pop_vehicles()
+    main(parse_args(_rest), _m)
