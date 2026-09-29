@@ -212,3 +212,4 @@ docs/time_a100_results_0928_rerun.mdを確認すると、occupancyのほうに�
 このファイルをA100で実験します。車両は3台、n20w20,n60w20,n100w20,n60w60,n60w100で実験します。min maxで実験します。timelimit 30.0、十回実行。shファイルを作成してください。
 
 min Tとして t*o[t][RET][0]<=T,t*o[t][RET][1]<=T,...を追加するのではだめ？
+

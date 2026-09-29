@@ -1,27 +1,27 @@
-"""時間展開型 mTSPTW QUBO (min-max) — 「ret_k <= Z」を不等式制約でそのまま書く版。
+"""時間展開型 mTSPTW QUBO (min-max) — 「ret_v <= Z」を不等式制約でそのまま書く版。
 
-    x[t][i][k] = 1 <=> 車両 k が顧客 i のサービスを時刻 t に開始する
+    x[t][i][v] = 1 <=> 車両 v が顧客 i のサービスを時刻 t に開始する
 
 src/time_makespan_multi.py (--obj max) との関係
 -----------------------------------------------
 変数 x と制約 A, B は time_makespan_multi.py と同じ。違うのは最大値 Z の書き方だけ。
 
-  time_makespan_multi.py   Z を one-hot z[T] で持ち、「Z >= ret_k」を禁止ペア
-                               Σ_T Σ_{t > T} z[T] * x[t][RET][k]    (= 0)
+  time_makespan_multi.py   Z を one-hot z[T] で持ち、「Z >= ret_v」を禁止ペア
+                               Σ_T Σ_{t > T} z[T] * x[t][RET][v]    (= 0)
                            で書く。
   この版                   Z をネイティブ整数変数 (integer=) で持ち、車両ごとに不等式
-                               ret_k = Σ_t t * x[t][RET][k] <= Z
+                               ret_v = Σ_t t * x[t][RET][v] <= Z
                            を qbpp.cons(..., between=(0, None)) で課す。
 
 目的関数は Z そのもの。Z を実際の最大帰着時刻より下げると不等式が破れて罰せられ、
-上げると目的関数が増えるので、最小化で Z = max_k ret_k に落ち着く。
+上げると目的関数が増えるので、最小化で Z = max_v ret_v に落ち着く。
 
 宣言制約 qbpp.cons(body, between=(0, None)) はスラック変数を作らず、ソルバが
 weight * max(0, -body)^2 を直接評価する (prec_disjunctive.py と同じ)。
-したがって違反量 d = ret_k - Z に対してペナルティは d^2 で増える。
+したがって違反量 d = ret_v - Z に対してペナルティは d^2 で増える。
 
 Z の定義域 [z_lo, depot_l] は time_makespan_multi.py と同じ
-    z_lo = max_v (lo[v] + s[v] + c[v][0])
+    z_lo = max_i (lo[i] + s[i] + c[i][0])
 (どの顧客も誰かが回って帰るので m 台でも正当)。
 
 使い方
@@ -72,12 +72,12 @@ def main(opt, m):
 
     # ---------------- 1. 時刻ドメイン ----------------
     # time_makespan_multi.py と同じ。RET は車両ごとに [0, depot_l]。0 = 空車。
-    lo = {v: max(E[v], c[0][v]) for v in cust}
-    hi = {v: min(L[v], depot_l - s[v] - c[v][0]) for v in cust}
+    lo = {i: max(E[i], c[0][i]) for i in cust}
+    hi = {i: min(L[i], depot_l - s[i] - c[i][0]) for i in cust}
     lo[ret] = 0
     hi[ret] = depot_l
 
-    dead = [v for v in cust if hi[v] < lo[v]]
+    dead = [i for i in cust if hi[i] < lo[i]]
     if dead:
         print(f"WARNING: 定義域が空の顧客 {dead} "
               f"(このインスタンスは実行不可能)")
@@ -88,13 +88,13 @@ def main(opt, m):
 
     # ---------------- 3. 制約A ----------------
     once_cust = qbpp.expr()
-    for v in cust:
-        once_cust += (qbpp.sum(x[t, v, k]
-                               for k in veh
-                               for t in range(lo[v], hi[v] + 1)) == 1)
+    for i in cust:
+        once_cust += (qbpp.sum(x[t, i, v]
+                               for v in veh
+                               for t in range(lo[i], hi[i] + 1)) == 1)
     once_ret = qbpp.expr()
-    for k in veh:
-        once_ret += (qbpp.sum(x[t, ret, k]
+    for v in veh:
+        once_ret += (qbpp.sum(x[t, ret, v]
                               for t in range(lo[ret], hi[ret] + 1)) == 1)
     once_constraint = once_cust + once_ret
 
@@ -102,27 +102,27 @@ def main(opt, m):
     gap = make_gap(inst, s, ret)
     conflict_constraint = qbpp.expr()
     n_terms = 0
-    for k in veh:
-        xk = vehicle_view(x, nodes, lo, hi, k)
-        block, nb = conflict_terms(nodes, gap, xk, lo, hi, xk, lo, hi)
+    for v in veh:
+        xv = vehicle_view(x, nodes, lo, hi, v)
+        block, nb = conflict_terms(nodes, gap, xv, lo, hi, xv, lo, hi)
         conflict_constraint += block
         n_terms += nb
     print(f"conflict terms = {n_terms}")
 
-    # ---------------- 5. 目的関数: Z と不等式 ret_k <= Z ----------------
+    # ---------------- 5. 目的関数: Z と不等式 ret_v <= Z ----------------
     # 表示用の帰着時刻の和は別実体で作る (pyqbpp の演算が左辺を書き換えることがあるため)
-    ret_total = qbpp.sum(t * x[t, ret, k]
-                         for k in veh
+    ret_total = qbpp.sum(t * x[t, ret, v]
+                         for v in veh
                          for t in range(lo[ret], hi[ret] + 1))
-    z_lo = max(lo[v] + s[v] + c[v][0] for v in cust)
+    z_lo = max(lo[i] + s[i] + c[i][0] for i in cust)
     # ネイティブ整数変数。幅 0 (z_lo == depot_l) なら pyqbpp が定数の式を返す
     Z = qbpp.var("Z", integer=(z_lo, depot_l))
     zmax_constraint = qbpp.expr()
-    for k in veh:
-        # body = Z - ret_k >= 0。本体は qbpp.expr() から組む (prec_disjunctive.py 参照)
+    for v in veh:
+        # body = Z - ret_v >= 0。本体は qbpp.expr() から組む (prec_disjunctive.py 参照)
         body = qbpp.expr() + Z
         for t in range(lo[ret], hi[ret] + 1):
-            body -= t * x[t, ret, k]
+            body -= t * x[t, ret, v]
         zmax_constraint += qbpp.cons(body, between=(0, None))
     objective = qbpp.expr() + Z
     print(f"Z in [{z_lo}, {depot_l}] (integer)  ret<=Z cons = {m}")
@@ -156,29 +156,29 @@ def main(opt, m):
     # ---------------- 7. 解の展開 ----------------
     routes, ret_t = recover_routes(inst, x, val, cust, ret, veh, lo, hi)
     scheds = {}
-    for k in veh:
-        seq = routes[k]
+    for v in veh:
+        seq = routes[v]
         sched = schedule_from_starts(inst, seq, s)
-        scheds[k] = sched
-        print(f"\n--- vehicle {k} --- ({len(seq)} 顧客)")
+        scheds[v] = sched
+        print(f"\n--- vehicle {v} --- ({len(seq)} 顧客)")
         print_time_detail(inst, seq, sched, quiet=opt.quiet)
-        rv = ret_t[k][0] if len(ret_t[k]) == 1 else ret_t[k]
+        rv = ret_t[v][0] if len(ret_t[v]) == 1 else ret_t[v]
         print(f"  travel={sched.travel:4d} return={sched.ret:4d} "
               f"(RET var = {rv})")
 
     print_multi_summary(inst, routes, scheds, ret_t, sol)
     # 検算値: 各ルートを最早開始で辿り直した帰着時刻（ソルバの時刻は使わない）
-    rets = [simulate(inst, [0] + [i for _, i in routes[k]] + [0]).ret
-            for k in veh]
+    rets = [simulate(inst, [0] + [i for _, i in routes[v]] + [0]).ret
+            for v in veh]
     print(f"max return  = {max(rets)} (最早開始。Z = {val(Z)} 以下になるはず)")
-    print(f"used vehicles = {sum(1 for k in veh if routes[k])}/{m}")
+    print(f"used vehicles = {sum(1 for v in veh if routes[v])}/{m}")
     print("      (最遅以外の車両の RET は Z 以下のどこでも目的が変わらないので、\n"
           "       「RET var == モデルの帰着」は False になりうる)")
 
     # ---------------- 8. 描画 ----------------
     # plot_tour は単一ツアー前提。m >= 2 は描けないので m == 1 のときだけ。
     if m == 1:
-        save_plot(inst, [0] + [v for _, v in routes[0]] + [0],
+        save_plot(inst, [0] + [i for _, i in routes[0]] + [0],
                   scheds[0], PREFIX, opt)
     elif opt.plot:
         print("skip plot   = m >= 2 (plot_tour が単一ツアー前提のため)")
