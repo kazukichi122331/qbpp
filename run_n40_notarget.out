@@ -1,0 +1,28 @@
+出力先: lab_results/time_makespan_a100_n40w20_notarget_09291610
+date        = 2026-09-29 16:10:05
+host        = a100x8
+python      = Python 3.14.4  (.venv/bin/python)
+git commit  = 112d558
+script      = src/time_makespan.py
+sizes       = 40   widths = 20   inst = 001
+runs        = 10    time_limit = 30s   cooldown = 60s
+target      = none
+gpu         = CUDA_VISIBLE_DEVICES=7
+--- nvidia-smi ---
+
+================ n40w20.001  (n=40 w=20)  10 回 × 30 秒  target=- ================
+  run  1/10  ok       energy=526          value=525      reached=-  tts=2.528    violated=0    tw=0    feasible=True  vars=882      terms=17408     build=1.028    wall=33.13s
+  run  2/10  ok       energy=526          value=526      reached=-  tts=11.319   violated=0    tw=0    feasible=True  vars=882      terms=17408     build=1.017    wall=33.08s
+  run  3/10  ok       energy=526          value=525      reached=-  tts=0.802    violated=0    tw=0    feasible=True  vars=882      terms=17408     build=1.034    wall=33.07s
+  run  4/10  ok       energy=525          value=525      reached=-  tts=5.948    violated=0    tw=0    feasible=True  vars=882      terms=17408     build=0.979    wall=33.04s
+  run  5/10  ok       energy=526          value=526      reached=-  tts=1.036    violated=0    tw=0    feasible=True  vars=882      terms=17408     build=1.000    wall=33.02s
+  run  6/10  ok       energy=525          value=525      reached=-  tts=4.459    violated=0    tw=0    feasible=True  vars=882      terms=17408     build=0.998    wall=33.02s
+  run  7/10  ok       energy=525          value=525      reached=-  tts=20.548   violated=0    tw=0    feasible=True  vars=882      terms=17408     build=1.006    wall=33.05s
+  run  8/10  ok       energy=525          value=525      reached=-  tts=10.824   violated=0    tw=0    feasible=True  vars=882      terms=17408     build=1.000    wall=33.04s
+  run  9/10  ok       energy=526          value=526      reached=-  tts=8.062    violated=0    tw=0    feasible=True  vars=882      terms=17408     build=0.999    wall=33.08s
+  run 10/10  ok       energy=525          value=525      reached=-  tts=14.558   violated=0    tw=0    feasible=True  vars=882      terms=17408     build=1.019    wall=33.06s
+  -> n40w20.001  平均energy=525.50  最小energy=525  平均違反=0.00  実行可能解=10/10  最良value=525  変数=882  項=17408
+
+完了: lab_results/time_makespan_a100_n40w20_notarget_09291610/runs.csv / lab_results/time_makespan_a100_n40w20_notarget_09291610/summary.csv
+n   instance    runs_ok  target_energy  reached_count  tts_mean  tts_min  tts_max  energy_mean  energy_min  violated_cons_mean  violated_cons_min  tw_violations_mean  feasible_count  var_count  term_count  build_sec_mean  wall_sec_mean  value_mean  value_min
+40  n40w20.001  10                                                                 525.50       525         0.00                0                  0.00                10              882        17408       1.008           33.06          525.30      525
