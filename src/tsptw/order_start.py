@@ -46,7 +46,7 @@ order_tsptw.py からの主な修正点 / 改善点
    時間枠を破った方が得になる。ROW_P/COL_P = 50000 も同じくインスタンス
    非依存の当て値。
    本版は総移動時間の上界 travel_ub を計算し、全ペナルティを
-   travel_ub + 1 に統一する (時間展開版 src/time_makespan.py と同じ考え方)。
+   travel_ub + 1 に統一する (時間展開版 src/tsptw/time_makespan.py と同じ考え方)。
 
 5. 【バグ】時間枠制約の Σ_u x[i][u] E[u] / L[u] が u=1..N-1 のみで、u=0 が
    抜けていた。x[i][0] を 0 に固定した g では偶然一致するが、固定前の f では
@@ -88,8 +88,8 @@ order_tsptw.py からの主な修正点 / 改善点
 11.【改善】import と実行形態の整理。
     旧版は archive/tsptw_prev/tsptw_plot_no_e.py (5 引数版 plot_tour) を
     参照していて、src/tsptwlib/plot.py の 8 引数版とシグネチャが違う。
-    本版は src/tsptwlib/plot.py を使い、`python -m src.order_start` でも
-    `python src/order_start.py` でも動くように import をフォールバック。
+    本版は src/tsptwlib/plot.py を使い、`python -m src.tsptw.order_start` でも
+    `python src/tsptw/order_start.py` でも動くように import をフォールバック。
     さらに全処理を main() に入れ (import しただけで解き始めない)、
     制限時間を引数で渡せるようにした。
 
@@ -105,8 +105,9 @@ import os
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-# ↑ src/ を探索パスに入れる。python src/x.py でも python -m src.x でも動く。
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# ↑ src/ を探索パスに入れる (tsptwlib のため)。
+#   python src/tsptw/x.py でも python -m src.tsptw.x でも動く。
 
 import pyqbpp as qbpp
 

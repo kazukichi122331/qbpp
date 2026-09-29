@@ -62,8 +62,9 @@ import os
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-# ↑ src/ を探索パスに入れる。python src/x.py でも python -m src.x でも動く。
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# ↑ src/ を探索パスに入れる (tsptwlib のため)。
+#   python src/tsptw/x.py でも python -m src.tsptw.x でも動く。
 
 import pyqbpp as qbpp
 

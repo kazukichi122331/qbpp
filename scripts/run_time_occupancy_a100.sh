@@ -87,7 +87,7 @@ STAMP=$(date +%m%d%H%M)
 TAG="n$(echo "$SIZES" | tr ' ' '-')_w$(echo "$WIDTHS" | tr ' ' '-')"
 OUTDIR=${OUTDIR:-lab_results/time_occupancy_a100_${TAG}_$STAMP}
 
-SCRIPT=${SCRIPT:-src/time_occupancy.py}
+SCRIPT=${SCRIPT:-src/tsptw/time_occupancy.py}
 
 # --- リポジトリのルートから実行しているか確認（相対パスを持っているため） ---
 if [[ ! -f $SCRIPT || ! -d instances/Dumas ]]; then

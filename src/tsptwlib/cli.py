@@ -1,7 +1,7 @@
 """コマンドライン引数と環境変数の解釈 —— 全定式化で共通。
 
-    python src/<定式化>.py [TIME] [オプション]
-    python -m src.<定式化>  [TIME] [オプション]
+    python src/<tsptw|mtsptw>/<定式化>.py [TIME] [オプション]
+    python -m src.<tsptw|mtsptw>.<定式化>  [TIME] [オプション]
 
 どのファイルも同じ引数を受け取る。定式化が対応していないオプションを
 明示的に渡したときは、黙って無視せず警告を出す。
@@ -88,7 +88,7 @@ def parse_args(argv=None, *, default_time=DEFAULT_TIME,
 
     p = argparse.ArgumentParser(
         description="TSPTW の QUBO 定式化を 1 つ解く (共通オプション)",
-        epilog="例: python src/order_wait.py 30 -i instances/Dumas/n60w100.001.txt --no-plot",
+        epilog="例: python src/tsptw/order_wait.py 30 -i instances/Dumas/n60w100.001.txt --no-plot",
     )
     p.add_argument("time_pos", nargs="?", type=float, default=None,
                    metavar="TIME", help="制限時間 (秒)")

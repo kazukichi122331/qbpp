@@ -1,5 +1,5 @@
 """
-順序型 (order-based) TSPTW QUBO 定式化 —— src/order_start.py の改訂版。
+順序型 (order-based) TSPTW QUBO 定式化 —— src/tsptw/order_start.py の改訂版。
 
 変数・制約・目的関数は order_start.py と同一。
     x[i][u] = 1  <=>  i 番目に顧客 u を訪れる
@@ -164,7 +164,7 @@ one-hot は完全に直ったが、N >= 40 かつ時間枠が広い (w40 以上)
 
 つまり「順列にはなったが、時間枠に合う順列を 10 秒では見つけられない」状態で、
 docs/tsptw_results.md の時間展開型 (当時の src/time_travel.py、現在は
-archive/tsptw/time_travel.py。後継は src/time_occupancy.py) の失敗の形に
+archive/tsptw/time_travel.py。後継は src/tsptw/time_occupancy.py) の失敗の形に
 近づいた。上の比の走査どおり、**one-hot と時間枠を同時に 0 にする比は
 存在しなかった**ので、これはペナルティ調整では解決しない。次の一手としては
 
@@ -183,8 +183,9 @@ import os
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-# ↑ src/ を探索パスに入れる。python src/x.py でも python -m src.x でも動く。
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# ↑ src/ を探索パスに入れる (tsptwlib のため)。
+#   python src/tsptw/x.py でも python -m src.tsptw.x でも動く。
 
 import pyqbpp as qbpp
 

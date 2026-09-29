@@ -8,7 +8,7 @@ TSPTW を QUBO に定式化して `qbpp.ABS3Solver` で解く。
 
 | フォルダ | 用途 |
 |---|---|
-| `src/` | **今研究している問題のソースコード**。現行の TSPTW 定式化のみを置く |
+| `src/` | **今研究している問題のソースコード**。`tsptw/`（1 台）と `mtsptw/`（複数台）に分け、共通部品は `tsptwlib/` |
 | `instances/` | 実験に使うテストデータ。`Dumas/` は Dumas ベンチマーク（139 ファイル） |
 | `scripts/` | 実験を一括で回すシェルスクリプトと補助ツール（下の「`scripts/` の中身」） |
 | `results/` | **ローカル**で行った実験結果。直近のものを直下に、古いものは `results/archive/` へ |
@@ -46,22 +46,25 @@ python3.14 -m venv .venv
 起動の書き方は 2 通りあり、どちらでも同じ:
 
 ```bash
-.venv/bin/python src/order_wait.py 30        # ファイルを直接
-.venv/bin/python -m src.order_wait  30       # モジュールとして
+.venv/bin/python src/tsptw/order_wait.py 30        # ファイルを直接
+.venv/bin/python -m src.tsptw.order_wait  30       # モジュールとして
 ```
 
 ```bash
 # 既定インスタンス（n40w100.001）、制限時間 10 秒
-.venv/bin/python src/order_start.py 10
+.venv/bin/python src/tsptw/order_start.py 10
 
 # インスタンスを指定して、描画を切る
-.venv/bin/python src/order_wait.py 30 -i instances/Dumas/n60w100.001.txt --no-plot
+.venv/bin/python src/tsptw/order_wait.py 30 -i instances/Dumas/n60w100.001.txt --no-plot
 
 # モデルの構築時間だけ測る（探索しない）
-.venv/bin/python src/order_prefix.py --build-only
+.venv/bin/python src/tsptw/order_prefix.py --build-only
 
 # 目的関数の書き方を変える（対応している定式化のみ）
-.venv/bin/python src/order_prefix.py 10 --obj makespan
+.venv/bin/python src/tsptw/order_prefix.py 10 --obj makespan
+
+# 複数車両（mTSPTW）。車両数は -m（既定 2）
+.venv/bin/python src/mtsptw/time_makespan_multi_leq.py 30 -i instances/Dumas/n20w20.001.txt -m 2
 ```
 
 ### 共通オプション（`--help` でも出る）
@@ -102,7 +105,13 @@ python3.14 -m venv .venv
 
 ## `src/` の中身
 
-### 定式化（バイナリ変数の意味で 3 系統）
+| フォルダ | 中身 |
+|---|---|
+| `src/tsptw/` | TSPTW（車両 1 台）の定式化。デポは 0 だけで、顧客は 1..N-1（`tsptwlib.Instance` の番号づけ） |
+| `src/mtsptw/` | mTSPTW（車両 m 台）の定式化。**0 = 出発デポ、1..N = 顧客、N+1 = 帰着デポ** |
+| `src/tsptwlib/` | 両方で使う共通部品（CLI・インスタンス読み込み・探索・表示など） |
+
+### `src/tsptw/` の定式化（バイナリ変数の意味で 3 系統）
 
 | ファイル | 系統 | 変数 | メモ |
 |---|---|---|---|
@@ -113,7 +122,6 @@ python3.14 -m venv .venv
 | `order_start_tiered.py` | 順序型・時刻のみ | `x[i][u]`, `a[i]` | ↑ のペナルティを階層化しただけ。one-hot 違反が消える |
 | `time_makespan.py` | 時間展開型 | `x[t][v]` | 帰着時刻（makespan）を最小化。総移動時間は 2 次式で書けない |
 | `time_occupancy.py` | 時間展開型・在圏 | `o[t][v]` | `makespan − Σ(待機スロット)` が厳密に総移動時間。時間展開型の現行版。`--slim` で冗長な衝突項を落とせる（**非同値**なので full と混ぜて記録しない） |
-| `time_occupancy_multi.py` | 時間展開型・在圏・複数車両 | `o[t][i][k]` | `time_occupancy.py` に車両添字を足した mTSPTW 版（試作）。目的は全車両の移動時間の総和。モデルサイズは [docs/time_occupancy_multi_modelsize.md](docs/time_occupancy_multi_modelsize.md) |
 | `prec_disjunctive.py` | 先行型（選言型） | `y[u][v]`, `r[u]`, `a[u]`, `R` | 位置も時刻も添字に持たない第 3 の系統。「u が v より先か」と各顧客の時刻（整数変数）を持つ。定義域・前後関係の枝刈りは `tsptwlib/prune.py` |
 
 各ファイルの先頭 docstring に、前身のどこをどう直したかが書いてある。
@@ -125,6 +133,19 @@ python3.14 -m venv .venv
 定義域の前提は全 138 件で検証）。ただし変数の生成順が違うため、**同じシードでも同じ解には
 ならない**。過去の `time_travel` の結果と新しい `time_occupancy` の結果を 1 つの表に
 混ぜないこと。
+
+### `src/mtsptw/` の定式化
+
+| ファイル | 系統 | 変数 | メモ |
+|---|---|---|---|
+| `time_occupancy_multi.py` | 時間展開型・在圏・複数車両 | `o[t][i][k]` | `tsptw/time_occupancy.py` に車両添字を足した mTSPTW 版（試作）。目的は全車両の移動時間の総和。モデルサイズは [docs/time_occupancy_multi_modelsize.md](docs/time_occupancy_multi_modelsize.md) |
+| `time_makespan_multi.py` | 時間展開型・複数車両 | `x[t][i][v]` | `tsptw/time_makespan.py` の mTSPTW 版。`--obj sum`（帰着時刻の和）/ `--obj max`（最大値。one-hot の `z[T]`） |
+| `time_makespan_multi_leq.py` | 時間展開型・複数車両 | `x[t][i][v]`, `Z` | ↑ の max を整数変数 `Z` と不等式 `ret_v <= Z` で書いた版 |
+| `mtsptwlib.py` | 共通部品 | — | 帰着デポ N+1 を足したインスタンス（`load_minstance`）、`make_gap`、`simulate`、車両ごとの復元・要約、`-m` の解釈 |
+
+帰着デポ N+1 は、読み込み時に 0 の距離・時間枠を複製して作る（`c[i][N+1] = c[i][0]`）。
+以前は帰着を仮想ノード `RET` として持っていたが、生成される QUBO は同じ
+（n20w20.001 の m = 1, 2 で変数数・項数とも一致）。
 
 ### 共通ライブラリ `src/tsptwlib/`
 
@@ -149,6 +170,7 @@ python3.14 -m venv .venv
 | `run_time_occupancy_a100.sh` / `run_time_occupancy_width_a100.sh` | `time_occupancy.py` を同じ条件で計測 |
 | `run_all_time_a100.sh` | 上の 4 本を順番に流す（間隔・失敗時の再実行つき） |
 | `run_order_cumulative_modelsize.sh` | `order_cumulative.py` の変数数・項数だけを掃引する |
+| `run_time_makespan_multi_a100.sh` | `mtsptw/time_makespan_multi(_leq).py` を複数車両で計測 |
 | `count_model_size.py` | `time_occupancy(_multi).py` の変数数・項数を QUBO を組まずに数える |
 
 使い方と環境変数は各ファイルの先頭コメントにある。いずれもリポジトリのルートから実行する。
@@ -157,7 +179,8 @@ python3.14 -m venv .venv
 
 - `src/` には現行の定式化だけを置く。使わなくなったら `archive/<問題名>/` へ移し、
   [archive/README.md](archive/README.md) に「なぜ使わなくなったか」を 1 行足す。
-- 2 本以上の定式化で同じコードを書きそうになったら `src/tsptwlib/` に入れる。
+- 2 本以上の定式化で同じコードを書きそうになったら `src/tsptwlib/` に入れる
+  （mTSPTW だけで使うものは `src/mtsptw/mtsptwlib.py`）。
   逆に「その定式化の特徴そのもの」（ペナルティの決め方、目的関数の形）は
   定式化ファイル側に残す。
 - 結果の図は `results/` 直下 → 古くなったら `results/archive/` へ移す。

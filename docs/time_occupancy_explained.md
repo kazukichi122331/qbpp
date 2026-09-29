@@ -1,6 +1,6 @@
 # `time_occupancy.py` の解説（初学者向け）
 
-対象: [src/time_occupancy.py](../src/time_occupancy.py)
+対象: [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py)
 補助: [src/tsptwlib/timeindex.py](../src/tsptwlib/timeindex.py)（`make_gap` / `conflict_terms` / `make_vars`）、[src/tsptwlib/report.py](../src/tsptwlib/report.py)（解の復元）
 
 この文書は「QUBO で巡回路問題を解く」ことに初めて触れる人を想定している。
@@ -111,7 +111,7 @@ w = 待機スロットで o = 1、S = サービススロットで o = 1、R = �
 
 ### 3.4 なぜ「待機」まで変数にするのか
 
-サービス開始時刻だけを変数にすることもできる（実際、[time_makespan.py](../src/time_makespan.py) はそうしている）。しかしそれだと目的関数に「帰着時刻」しか使えず、待機も含めた時間（makespan）を最小化してしまう。
+サービス開始時刻だけを変数にすることもできる（実際、[time_makespan.py](../src/tsptw/time_makespan.py) はそうしている）。しかしそれだと目的関数に「帰着時刻」しか使えず、待機も含めた時間（makespan）を最小化してしまう。
 総移動時間を最小化したいなら「待った時間」を引く必要があり、そのために待っている時刻にも印を付けておく。
 待機マスが連続していれば、**待機時間はただの 1 の個数（1 次式）**で数えられる。これがこの設計の要点である。
 
@@ -440,13 +440,13 @@ feasible    = True
 
 ```bash
 # 60 秒解く
-python src/time_occupancy.py -i instances/Dumas/n20w20.001.txt -t 60
+python src/tsptw/time_occupancy.py -i instances/Dumas/n20w20.001.txt -t 60
 
 # モデルを組むだけ（変数数・項数の確認）
-python src/time_occupancy.py -i instances/Dumas/n20w20.001.txt --build-only
+python src/tsptw/time_occupancy.py -i instances/Dumas/n20w20.001.txt --build-only
 
 # 冗長な衝突項を落とした版
-python src/time_occupancy.py -i instances/Dumas/n20w20.001.txt -t 60 --slim
+python src/tsptw/time_occupancy.py -i instances/Dumas/n20w20.001.txt -t 60 --slim
 ```
 
 n20w20.001 のモデルサイズ（`--build-only` で確認）:

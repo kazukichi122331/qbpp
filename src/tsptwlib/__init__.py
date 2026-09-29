@@ -1,6 +1,6 @@
 """tsptwlib —— TSPTW の QUBO 定式化で共通に使う部品。
 
-定式化ファイル (src/order_*.py, src/time_*.py) は先頭で
+定式化ファイル (src/tsptw/*.py, src/mtsptw/*.py) は先頭で
 
     from tsptwlib import ...
 

@@ -3,7 +3,7 @@
 実行日: 2026-09-29 16:10 開始  
 実行: [scripts/run_time_makespan_a100.sh](../scripts/run_time_makespan_a100.sh)（git commit `112d558`、`TARGET=none`）  
 環境: a100x8 / NVIDIA A100 80GB PCIe（`CUDA_VISIBLE_DEVICES=7`）/ `qbpp.ABS3Solver`  
-定式化: [src/time_makespan.py](../src/time_makespan.py)（目的関数 = 帰着時刻）  
+定式化: [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py)（目的関数 = 帰着時刻）  
 条件: n = 40、w = 20、インスタンスは Dumas の `n40w20.001`。**10 回**（seed 1〜10）、制限時間 **30 秒**、実行ごとに 60 秒の間隔。**目標値を与えず**、全実行を制限時間まで走らせた
 
 前夜の計測（[time_a100_results_0928_rerun.md](time_a100_results_0928_rerun.md)）では、makespan の n40w20 で最小エネルギー 524 が 1 回しか出ず、平均 TTS も 12.29 秒と他の顧客数より長かった。この計測では目標値（525）による打ち切りをなくし、30 秒のあいだにどこまで下がるかを見た。

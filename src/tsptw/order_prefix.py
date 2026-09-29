@@ -1,5 +1,5 @@
 """
-prefix-free (差分形) TSPTW QUBO 定式化 —— src/order_cumulative.py の O(N^4) 構築を O(N^3) に。
+prefix-free (差分形) TSPTW QUBO 定式化 —— src/tsptw/order_cumulative.py の O(N^4) 構築を O(N^3) に。
 
 変数は order_cumulative.py と同じ x と w の 2 種類だけ。新しい変数は 1 つも足していない。
 
@@ -80,7 +80,7 @@ body の単項式数:
     絶対時刻を参照する制約が要る = 位置ごとに絶対時刻の入れ物が要る、
     というのが本質で、それを w に兼務させたのが 2 節。
 
-(c) **時間展開型 (src/time_makespan.py)**
+(c) **時間展開型 (src/tsptw/time_makespan.py)**
     時刻を添字にすれば時間枠は変数の定義域になり累積和が消える。
     ただし変数数が O(N·T) になり、x と w だけという今回の縛りから外れる。
 
@@ -97,17 +97,18 @@ body の単項式数:
 ==========================================================================
 4. 使い方 (オプションは全定式化で共通。詳細は README.md)
 ==========================================================================
-    python src/order_prefix.py 10                    # 10 秒探索
-    python src/order_prefix.py --build-only          # 構築時間だけ測る
-    python src/order_prefix.py 10 --obj makespan     # 目的関数を帰着時刻にする
-    python src/order_prefix.py 10 -i instances/Dumas/n60w100.001.txt
+    python src/tsptw/order_prefix.py 10                    # 10 秒探索
+    python src/tsptw/order_prefix.py --build-only          # 構築時間だけ測る
+    python src/tsptw/order_prefix.py 10 --obj makespan     # 目的関数を帰着時刻にする
+    python src/tsptw/order_prefix.py 10 -i instances/Dumas/n60w100.001.txt
 """
 import os
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-# ↑ src/ を探索パスに入れる。python src/x.py でも python -m src.x でも動く。
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# ↑ src/ を探索パスに入れる (tsptwlib のため)。
+#   python src/tsptw/x.py でも python -m src.tsptw.x でも動く。
 
 import pyqbpp as qbpp
 

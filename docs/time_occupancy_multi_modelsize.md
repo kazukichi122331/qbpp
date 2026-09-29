@@ -1,7 +1,7 @@
 # 時間展開型 mTSPTW（`time_occupancy_multi.py`）のモデルサイズ
 
 生成日: 2026-09-24
-対象: [src/time_occupancy_multi.py](../src/time_occupancy_multi.py)（`o[t][i][k]`、m 台）と、比較用の [src/time_occupancy.py](../src/time_occupancy.py)（`o[t][i]`、1 台）
+対象: [src/mtsptw/time_occupancy_multi.py](../src/mtsptw/time_occupancy_multi.py)（`o[t][i][k]`、m 台）と、比較用の [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py)（`o[t][i]`、1 台）
 インスタンス: Dumas の `.001`。n ∈ {20, 40, 60, 80, 100} × w ∈ {20, 40}、および n ∈ {20, 40} × w ∈ {60, 80, 100}（n80w100 / n100w80 / n100w100 は Dumas に存在しない）
 
 **探索はしていない。** モデルを組むところまでで、変数数と項数だけを見ている。
@@ -191,7 +191,7 @@ n が大きいほど顧客–顧客ブロックが支配的（n100 で 83〜85%�
 
 ## 5. 実際に構築できたか（実測）
 
-`python src/time_occupancy_multi.py -i <inst> -m 2 --build-only --no-plot` を `/usr/bin/time` で囲んで測った。仮想メモリ上限 26 GiB、制限時間 900 秒。実行環境は WSL2（31 GiB / Linux 6.18.33.2-microsoft-standard-WSL2）。
+`python src/mtsptw/time_occupancy_multi.py -i <inst> -m 2 --build-only --no-plot` を `/usr/bin/time` で囲んで測った。仮想メモリ上限 26 GiB、制限時間 900 秒。実行環境は WSL2（31 GiB / Linux 6.18.33.2-microsoft-standard-WSL2）。
 
 | インスタンス | 状態 | o 変数 | 衝突項 | QUBO 変数 | QUBO 項 | 構築 (秒) | 最大常駐 (MB) |
 |---|---|---:|---:|---:|---:|---:|---:|
@@ -226,7 +226,7 @@ python scripts/count_model_size.py instances/Dumas/n100w20.001.txt -m 2
 python scripts/count_model_size.py instances/Dumas/n100w20.001.txt --single
 
 # 実際に組んで QUBO 化後の数とメモリを見る
-/usr/bin/time -v python src/time_occupancy_multi.py \
+/usr/bin/time -v python src/mtsptw/time_occupancy_multi.py \
     -i instances/Dumas/n60w20.001.txt -m 2 --build-only --no-plot
 ```
 

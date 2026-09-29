@@ -8,8 +8,8 @@
 
 | 表の見出し | 定式化 | 目的関数 | 目標値 (target_energy) |
 |---|---|---|---|
-| 合計時間 | [src/time_makespan.py](../src/time_makespan.py) | 帰着時刻（makespan = 移動 + 待ち） | 既知最良ツアーを最早開始で辿ったときの帰着時刻 |
-| 移動時間 | [src/time_occupancy.py](../src/time_occupancy.py) | 総移動時間 | Dumas の既知最良値（総移動時間） |
+| 合計時間 | [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py) | 帰着時刻（makespan = 移動 + 待ち） | 既知最良ツアーを最早開始で辿ったときの帰着時刻 |
+| 移動時間 | [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py) | 総移動時間 | Dumas の既知最良値（総移動時間） |
 
 生データ（`runs.csv` / `summary.csv` / `logs/`）:
 
@@ -192,8 +192,8 @@ n40 の 2 回は、エネルギー 526 で「未到達」と記録されてい�
 
 - [src/tsptwlib/report.py](../src/tsptwlib/report.py): `verify_tour()` を追加。`print_summary()` の feasible / travel time / return を検算値にし、ソルバの時刻の食い違いは `model times` 行に分けた。`order_ties()` を追加し、`recover_time_tour()` で使う
 - [src/tsptwlib/timeindex.py](../src/tsptwlib/timeindex.py): `colocated_terms()` を追加。`make_gap()` の docstring の「同時刻に居てよい」は在圏型では誤りだったので書き直した
-- [src/time_occupancy.py](../src/time_occupancy.py) / [src/time_occupancy_multi.py](../src/time_occupancy_multi.py): `colocated_terms()` を制約に追加（重みは衝突と同じ）。multi 版は復元・要約も検算基準にした
-- [src/time_makespan.py](../src/time_makespan.py) / [src/time_makespan_multi.py](../src/time_makespan_multi.py): 表示だけ（検算値との関係の注記、multi 版の帰着時刻を最早開始の値に）
+- [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py) / [src/mtsptw/time_occupancy_multi.py](../src/mtsptw/time_occupancy_multi.py): `colocated_terms()` を制約に追加（重みは衝突と同じ）。multi 版は復元・要約も検算基準にした
+- [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py) / [src/mtsptw/time_makespan_multi.py](../src/mtsptw/time_makespan_multi.py): 表示だけ（検算値との関係の注記、multi 版の帰着時刻を最早開始の値に）
 - [scripts/run_time_occupancy_a100.sh](../scripts/run_time_occupancy_a100.sh) / [scripts/run_time_makespan_a100.sh](../scripts/run_time_makespan_a100.sh): `reached` を検算値で判定。`runs.csv` に `value`・`energy_reached`、`summary.csv` に `value_mean`・`value_min` の列を追加。QUBO++ のライセンスが取れずに落ちた実行は `LICENSE_WAIT` 秒（既定 300）待って、その 1 回だけ再実行する（最大 `LICENSE_RETRIES` 回、既定 5）
 - [scripts/count_model_size.py](../scripts/count_model_size.py): 同一地点ペアの項も数える
 

@@ -1,5 +1,5 @@
 """
-待ち時間変数型 (wait-based) TSPTW QUBO 定式化 —— src/order_cumulative.py の改訂版。
+待ち時間変数型 (wait-based) TSPTW QUBO 定式化 —— src/tsptw/order_cumulative.py の改訂版。
 
 order_cumulative.py の特徴である「早着したときの待ち時間を整数変数 w で表す」点はそのまま
 残し、N=20 で頭打ちになっていた原因（累積式・枝刈りなし・固定ペナルティ）だけを
@@ -53,7 +53,7 @@ order_cumulative.py は時刻を変数に持たず、**累積式**として書�
     N=60 で 420 ビット）。本版はインスタンスから上界を導く。
   * **ペナルティ係数が固定値** (ROW_P=COL_P=50000, TIME_P=10): 制約族どうしの
     重みのバランスが崩れており、one-hot を破る方が安くなる領域があった
-    （この現象の詳しい分析は src/order_start_tiered.py の docstring 1〜3 節）。
+    （この現象の詳しい分析は src/tsptw/order_start_tiered.py の docstring 1〜3 節）。
   * **depot 帰着期限 L[0] の制約が無い**: 最終位置から depot に戻る時刻は
     目的関数には入っていたが制約されていなかったので、期限を過ぎるツアーが
     「実行可能」として出てくる。
@@ -113,7 +113,7 @@ N >= 100 で元が取れる。N <= 60 だけを扱うなら a を外す価値が
 
 と **1 次式** (O(N) 項) になり、leg を直に足す 2 次の目的関数がまるごと消える。
 実測でも項数は大きく減る (n40w100 で 14,614 -> 1,409 項、n60w100 で
-33,618 -> 2,376 項)。時刻変数だけを持つ定式化 (src/order_start_tiered.py) は
+33,618 -> 2,376 項)。時刻変数だけを持つ定式化 (src/tsptw/order_start_tiered.py) は
 w を持たないのでこの書き換えができない。w を残したことで初めて可能になる形である。
 
 ただし **解の質は 1 次式の方が良くなかった**ので、既定は 2 次式
@@ -153,7 +153,7 @@ w を持たないのでこの書き換えができない。w を残したこと�
 
 ### (e) ペナルティの階層化
 one-hot 違反 1 回が、どんな時間制約違反よりも高くつくようにする。
-src/order_start_tiered.py で検証済みの方式をそのまま使う。
+src/tsptw/order_start_tiered.py で検証済みの方式をそのまま使う。
 
     TIME_P   = (目的関数の変域) + 1
     ONEHOT_P = TIME_P * dmax^2 + 1     (dmax = 時間制約 1 本の違反量の上界)
@@ -197,24 +197,25 @@ src/order_start_tiered.py で検証済みの方式をそのまま使う。
 
 **残っている課題**: N >= 40 かつ時間枠が広いインスタンスでは、破れる制約が
 one-hot から時間枠に移っただけで、実行可能解には届いていない。これは時刻変数
-だけを持つ src/order_start_tiered.py が 4 節で報告している壁と同じもので、
+だけを持つ src/tsptw/order_start_tiered.py が 4 節で報告している壁と同じもので、
 待ち時間変数の有無とは独立の問題である。
 
 ==========================================================================
 4. 関連ファイル
 ==========================================================================
-    src/order_cumulative.py                本版のもと。累積式・枝刈りなし。
-    src/order_start_tiered.py   時刻変数 a[i] のみ（w を持たない）順序型。
+    src/tsptw/order_cumulative.py                本版のもと。累積式・枝刈りなし。
+    src/tsptw/order_start_tiered.py   時刻変数 a[i] のみ（w を持たない）順序型。
                                 ペナルティ階層化の分析はこちらに詳しい。
-    src/time_occupancy.py       時間展開型 o[t][u]。
+    src/tsptw/time_occupancy.py       時間展開型 o[t][u]。
     docs/tsptw_results.md       順序型 vs 時間展開型のベンチマーク。
 """
 import os
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-# ↑ src/ を探索パスに入れる。python src/x.py でも python -m src.x でも動く。
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# ↑ src/ を探索パスに入れる (tsptwlib のため)。
+#   python src/tsptw/x.py でも python -m src.tsptw.x でも動く。
 
 import pyqbpp as qbpp
 

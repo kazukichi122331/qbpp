@@ -13,8 +13,8 @@
 
 | 表の見出し | 定式化 | 目的関数 | 目標値 |
 |---|---|---|---|
-| 合計時間 | [src/time_makespan.py](../src/time_makespan.py) | 帰着時刻（移動 + 待ち） | 既知最良ツアーを最早開始で辿ったときの帰着時刻 |
-| 移動時間 | [src/time_occupancy.py](../src/time_occupancy.py) | 総移動時間 | Dumas の既知最良値（総移動時間） |
+| 合計時間 | [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py) | 帰着時刻（移動 + 待ち） | 既知最良ツアーを最早開始で辿ったときの帰着時刻 |
+| 移動時間 | [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py) | 総移動時間 | Dumas の既知最良値（総移動時間） |
 
 生データ（`runs.csv` / `summary.csv` / `logs/`）:
 

@@ -14,12 +14,12 @@
 
 | 変更前 | 変更後 | 何が特徴か |
 |---|---|---|
-| `src/tsptw.py` | [src/order_cumulative.py](../src/order_cumulative.py) | `x[i][u]` + 累積式。この系統の最初の版 |
-| `src/pre_tsptw.py` | [src/order_prefix.py](../src/order_prefix.py) | `x[i][u]` + `w[i]`（差分形、Θ(N³)） |
-| `src/wait_tsptw.py` | [src/order_wait.py](../src/order_wait.py) | `x[i][u]` + `a[i]` + `w[i]` |
-| `src/new_tsptw.py` | [src/order_start.py](../src/order_start.py) | `x[i][u]` + `a[i]`、ペナルティ一律 |
-| `src/improved_new_tsptw.py` | [src/order_start_tiered.py](../src/order_start_tiered.py) | ↑ のペナルティを階層化 |
-| `src/time_tsptw.py` | [src/time_makespan.py](../src/time_makespan.py) | `x[t][v]`、makespan 最小化 |
+| `src/tsptw.py` | [src/tsptw/order_cumulative.py](../src/tsptw/order_cumulative.py) | `x[i][u]` + 累積式。この系統の最初の版 |
+| `src/pre_tsptw.py` | [src/tsptw/order_prefix.py](../src/tsptw/order_prefix.py) | `x[i][u]` + `w[i]`（差分形、Θ(N³)） |
+| `src/wait_tsptw.py` | [src/tsptw/order_wait.py](../src/tsptw/order_wait.py) | `x[i][u]` + `a[i]` + `w[i]` |
+| `src/new_tsptw.py` | [src/tsptw/order_start.py](../src/tsptw/order_start.py) | `x[i][u]` + `a[i]`、ペナルティ一律 |
+| `src/improved_new_tsptw.py` | [src/tsptw/order_start_tiered.py](../src/tsptw/order_start_tiered.py) | ↑ のペナルティを階層化 |
+| `src/time_tsptw.py` | [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py) | `x[t][v]`、makespan 最小化 |
 | `src/time_tsptw_travel.py` | [src/time_travel.py](../archive/tsptw/time_travel.py) | `x[t][v]` + `b[t][v]`、総移動時間 |
 | `src/plot_tsptw.py` | [src/tsptwlib/plot.py](../src/tsptwlib/plot.py) | 描画（共通ライブラリへ） |
 | `src/dist_matrix.py` | [src/tsptwlib/instance.py](../src/tsptwlib/instance.py) | インスタンス読み込み（**関数化**） |

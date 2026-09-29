@@ -26,7 +26,7 @@
 #
 # 環境変数で上書きできる:
 #   PYTHON      python 実行系                     (既定 .venv/bin/python)
-#   SCRIPT      対象の定式化                      (既定 src/order_cumulative.py)
+#   SCRIPT      対象の定式化                      (既定 src/tsptw/order_cumulative.py)
 #   SIZES       顧客数の並び                      (既定 "20 40 60 80 100 150")
 #   WIDTH       時間枠幅 w                        (既定 20)
 #   INST_ID     インスタンス番号                  (既定 001)
@@ -45,7 +45,7 @@
 set -u -o pipefail
 
 PYTHON=${PYTHON:-.venv/bin/python}
-SCRIPT=${SCRIPT:-src/order_cumulative.py}
+SCRIPT=${SCRIPT:-src/tsptw/order_cumulative.py}
 SIZES=${SIZES:-"20 40 60 80 100 150"}
 WIDTH=${WIDTH:-20}
 INST_ID=${INST_ID:-001}

@@ -4,7 +4,7 @@
 # 書く版) を A100 上でまとめて計測する。
 #
 #   車両 VEHICLES 台、目的関数は帰着時刻の最大値（min-max）。
-#   SCRIPT=src/time_makespan_multi.py にすると one-hot 版を OBJ（sum / max）で回せる。
+#   SCRIPT=src/mtsptw/time_makespan_multi.py にすると one-hot 版を OBJ（sum / max）で回せる。
 #   INSTS の各インスタンスを RUNS 回、1 回 TIME_LIMIT 秒。
 #   1 インスタンス分が終わるたびに COOLDOWN 秒だけ GPU を明け渡す（共用機のため）。
 #
@@ -25,7 +25,7 @@
 #   PYTHON      python 実行系                     (既定 .venv/bin/python)
 #   INSTS       インスタンス名の並び              (既定 "n20w20.001 n60w20.001 n100w20.001 n60w60.001 n60w100.001")
 #   VEHICLES    車両数                            (既定 3)
-#   SCRIPT      計測する定式化                    (既定 src/time_makespan_multi_leq.py)
+#   SCRIPT      計測する定式化                    (既定 src/mtsptw/time_makespan_multi_leq.py)
 #   OBJ         目的関数 sum / max。SCRIPT が time_makespan_multi.py のときだけ渡す (既定 max)
 #   RUNS        1 インスタンスあたりの実行回数    (既定 10)
 #   TIME_LIMIT  1 回のソルバ制限時間（秒）        (既定 30.0)
@@ -52,7 +52,7 @@ TIME_LIMIT=${TIME_LIMIT:-30.0}
 COOLDOWN=${COOLDOWN:-60}
 LICENSE_WAIT=${LICENSE_WAIT:-300}
 LICENSE_RETRIES=${LICENSE_RETRIES:-5}
-SCRIPT=${SCRIPT:-src/time_makespan_multi_leq.py}
+SCRIPT=${SCRIPT:-src/mtsptw/time_makespan_multi_leq.py}
 
 # leq 版は --obj を持たない（常に max）
 if [[ $(basename "$SCRIPT") == time_makespan_multi.py ]]; then
