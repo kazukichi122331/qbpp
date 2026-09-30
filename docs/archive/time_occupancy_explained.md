@@ -1,7 +1,7 @@
 # `time_occupancy.py` の解説（初学者向け）
 
-対象: [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py)
-補助: [src/tsptwlib/timeindex.py](../src/tsptwlib/timeindex.py)（`make_gap` / `conflict_terms` / `make_vars`）、[src/tsptwlib/report.py](../src/tsptwlib/report.py)（解の復元）
+対象: [src/tsptw/time_occupancy.py](../../src/tsptw/time_occupancy.py)
+補助: [src/tsptwlib/timeindex.py](../../src/tsptwlib/timeindex.py)（`make_gap` / `conflict_terms` / `make_vars`）、[src/tsptwlib/report.py](../../src/tsptwlib/report.py)（解の復元）
 
 この文書は「QUBO で巡回路問題を解く」ことに初めて触れる人を想定している。
 コードが**何をしているか**だけでなく、**なぜそれで正しい答えになるのか**を順に説明する。
@@ -111,7 +111,7 @@ w = 待機スロットで o = 1、S = サービススロットで o = 1、R = �
 
 ### 3.4 なぜ「待機」まで変数にするのか
 
-サービス開始時刻だけを変数にすることもできる（実際、[time_makespan.py](../src/tsptw/time_makespan.py) はそうしている）。しかしそれだと目的関数に「帰着時刻」しか使えず、待機も含めた時間（makespan）を最小化してしまう。
+サービス開始時刻だけを変数にすることもできる（実際、[time_makespan.py](../../src/tsptw/time_makespan.py) はそうしている）。しかしそれだと目的関数に「帰着時刻」しか使えず、待機も含めた時間（makespan）を最小化してしまう。
 総移動時間を最小化したいなら「待った時間」を引く必要があり、そのために待っている時刻にも印を付けておく。
 待機マスが連続していれば、**待機時間はただの 1 の個数（1 次式）**で数えられる。これがこの設計の要点である。
 
@@ -261,7 +261,7 @@ conflict_constraint, n_terms = conflict_terms(nodes, gap, o, src_lo, ohi, o, olo
 
 これがこの定式化の心臓部である。
 
-**`gap(u, v)` の定義**（[timeindex.py](../src/tsptwlib/timeindex.py)）:
+**`gap(u, v)` の定義**（[timeindex.py](../../src/tsptwlib/timeindex.py)）:
 
 | 場合 | `gap(u, v)` | 意味 |
 |---|---|---|
@@ -359,7 +359,7 @@ f = objective + P_RET * cons(once_ret) + P_CUST * cons(once_cust) + P_CONF * con
 
 **なぜ重みを大きくしすぎないのか**: 重みが極端に大きいと、エネルギーの地形が「深い谷と高い壁」になり、ソルバが 1 つの谷に閉じ込められて他のよい解に移れなくなる。必要十分な大きさにとどめるのが探索上有利である。
 
-その後の `solve()`（[qubo.py](../src/tsptwlib/qubo.py)）は、`simplify_as_binary` で `x·x = x` などの整理をしてから `ABS3Solver` で探索する。`--build-only` なら探索せずにここで終わる。
+その後の `solve()`（[qubo.py](../../src/tsptwlib/qubo.py)）は、`simplify_as_binary` で `x·x = x` などの整理をしてから `ABS3Solver` で探索する。`--build-only` なら探索せずにここで終わる。
 
 ### 5.9 解の復元（コメント「9.」）
 
@@ -421,7 +421,7 @@ feasible    = True
 
 ## 7. 前身 `time_travel.py` との関係
 
-前身の [archive/tsptw/time_travel.py](../archive/tsptw/time_travel.py) は「サービス開始 `x[t][v]`」と「待機 `b[t][v]`」という 2 種類の変数を持っていた。
+前身の [archive/tsptw/time_travel.py](../../archive/tsptw/time_travel.py) は「サービス開始 `x[t][v]`」と「待機 `b[t][v]`」という 2 種類の変数を持っていた。
 しかし `b` の時刻範囲は `[arr[v], E[v]−1]`、`x` の範囲は `[max(E[v], arr[v]), …]` で、**隙間なく隣り合い、重ならない**。つまり 2 つは「同じ在圏変数を時刻 `E[v]` で切って別の名前を付けた」だけだった。
 このファイルはそれを `o` 1 種類に戻したもので、生成される QUBO は（変数名を揃えれば）**項も係数も完全に一致**する。解ける問題も解の質も同じで、得られるのは**式の見通しのよさ**である（衝突項の生成が 4 ブロックから 1 ブロックに、連続性の「次は b か x か」の場合分けが不要に）。
 

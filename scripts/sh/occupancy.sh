@@ -8,9 +8,9 @@
 #
 #   既定は「顧客数スイープ」: n = 20/40/60/80/100/150/200、w = 20 固定。
 #   「時間窓スイープ」(n = 60 固定、w = 20〜100) は
-#   scripts/run_time_occupancy_width_a100.sh が同じ中身を呼ぶ。
+#   scripts/sh/occupancy_width.sh が同じ中身を呼ぶ。
 #
-#   条件は run_time_makespan_a100.sh と揃えてある（GPU 7・10 回 × 30 秒・
+#   条件は makespan.sh と揃えてある（GPU 7・10 回 × 30 秒・
 #   COOLDOWN 60 秒・ABS3Solver・seed 1〜10・n20〜n200）。--slim は付けない
 #   （衝突項は full）。
 #
@@ -26,9 +26,9 @@
 #
 # 使い方（リモート機に ssh したあと、リポジトリのルートで）:
 #
-#   bash scripts/run_time_occupancy_a100.sh                        # GPU 7 を使う（既定）
-#   CUDA_VISIBLE_DEVICES=3 bash scripts/run_time_occupancy_a100.sh  # 別の GPU を使う
-#   nohup bash scripts/run_time_occupancy_a100.sh > /dev/null 2>&1 &   # 放置する場合
+#   bash scripts/sh/occupancy.sh                        # GPU 7 を使う（既定）
+#   CUDA_VISIBLE_DEVICES=3 bash scripts/sh/occupancy.sh  # 別の GPU を使う
+#   nohup bash scripts/sh/occupancy.sh > /dev/null 2>&1 &   # 放置する場合
 #
 # 環境変数で上書きできる（既定値は下の DEFAULT 群）:
 #   PYTHON      python 実行系                     (既定 .venv/bin/python)
@@ -47,7 +47,7 @@
 #                 数値  … 全インスタンスにその値を使う
 #   BEST_FILE   既知最良値の表                    (既定 instances/Dumas/Dumas-best-known-traveltime.txt)
 #   CUDA_VISIBLE_DEVICES  使う GPU 番号            (既定 7)
-#   OUTDIR      出力先                            (既定 lab_results/time_occupancy_a100_<条件>_<日時>)
+#   OUTDIR      出力先                            (既定 lab_results/<日時>_<モデル>_<条件>。common.sh 参照)
 #
 # 到達・実行可能の判定（2026-09-28 以降）:
 #   reached / feasible は QUBO のエネルギーではなく、ログの検算値で決める。
@@ -83,11 +83,17 @@ BEST_FILE=${BEST_FILE:-instances/Dumas/Dumas-best-known-traveltime.txt}
 # 共用機なので GPU は 1 枚だけ使う。子プロセス（python）に必ず引き継ぐので export。
 # 別の番号にしたいときは CUDA_VISIBLE_DEVICES=3 bash scripts/... と前置きすればよい。
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-7}
-STAMP=$(date +%m%d%H%M)
-TAG="n$(echo "$SIZES" | tr ' ' '-')_w$(echo "$WIDTHS" | tr ' ' '-')"
-OUTDIR=${OUTDIR:-lab_results/time_occupancy_a100_${TAG}_$STAMP}
-
 SCRIPT=${SCRIPT:-src/tsptw/time_occupancy.py}
+
+# 出力先の名前は common.sh の result_dir で決める（既定と違う条件だけ名前に足す）
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+case $TARGET in
+    best)    target_tag= ;;
+    none|"") target_tag=notarget ;;
+    *)       target_tag=target_$TARGET ;;
+esac
+OUTDIR=${OUTDIR:-$(result_dir "$(basename "$SCRIPT" .py | sed 's/^time_//')" \
+    "$(sweep_tag "$SIZES" "$WIDTHS")" "$(time_tag "$TIME_LIMIT" 30)" "$target_tag")}
 
 # --- リポジトリのルートから実行しているか確認（相対パスを持っているため） ---
 if [[ ! -f $SCRIPT || ! -d instances/Dumas ]]; then

@@ -1,22 +1,22 @@
 # 時間展開型 TSPTW の A100 計測（2026-09-28）
 
 実行日: 2026-09-28（開始 14:21、各スイープの開始は 14:21 / 14:42 / 15:00 / 15:38）  
-実行: [scripts/run_all_time_a100.sh](../scripts/run_all_time_a100.sh)（git commit `44692cf`）  
+実行: [scripts/sh/all.sh](../../scripts/sh/all.sh)（git commit `44692cf`）  
 環境: a100x8 / NVIDIA A100 80GB PCIe（`CUDA_VISIBLE_DEVICES=7`）/ Python 3.14.4 / QUBO++ 2026.09.25 / `qbpp.ABS3Solver`  
 条件: インスタンス 1 つにつき **10 回**（seed 1〜10）、制限時間 **30 秒**、実行ごとに 60 秒の間隔  
 インスタンス: Dumas の `.001`
 
 | 表の見出し | 定式化 | 目的関数 | 目標値 (target_energy) |
 |---|---|---|---|
-| 合計時間 | [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py) | 帰着時刻（makespan = 移動 + 待ち） | 既知最良ツアーを最早開始で辿ったときの帰着時刻 |
-| 移動時間 | [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py) | 総移動時間 | Dumas の既知最良値（総移動時間） |
+| 合計時間 | [src/tsptw/time_makespan.py](../../src/tsptw/time_makespan.py) | 帰着時刻（makespan = 移動 + 待ち） | 既知最良ツアーを最早開始で辿ったときの帰着時刻 |
+| 移動時間 | [src/tsptw/time_occupancy.py](../../src/tsptw/time_occupancy.py) | 総移動時間 | Dumas の既知最良値（総移動時間） |
 
 生データ（`runs.csv` / `summary.csv` / `logs/`）:
 
-- [lab_results/time_makespan_a100_n20-40-60-80-100-150-200_w20_09281421/](../lab_results/time_makespan_a100_n20-40-60-80-100-150-200_w20_09281421/)
-- [lab_results/time_makespan_a100_n60_w20-40-60-80-100_09281442/](../lab_results/time_makespan_a100_n60_w20-40-60-80-100_09281442/)
-- [lab_results/time_occupancy_a100_n20-40-60-80-100-150-200_w20_09281500/](../lab_results/time_occupancy_a100_n20-40-60-80-100-150-200_w20_09281500/)
-- [lab_results/time_occupancy_a100_n60_w20-40-60-80-100_09281538/](../lab_results/time_occupancy_a100_n60_w20-40-60-80-100_09281538/)
+- [lab_results/archive/0928-1421_makespan_nsweep/](../../lab_results/archive/0928-1421_makespan_nsweep/)
+- [lab_results/archive/0928-1442_makespan_wsweep/](../../lab_results/archive/0928-1442_makespan_wsweep/)
+- [lab_results/archive/0928-1500_occupancy_nsweep/](../../lab_results/archive/0928-1500_occupancy_nsweep/)
+- [lab_results/archive/0928-1538_occupancy_wsweep/](../../lab_results/archive/0928-1538_occupancy_wsweep/)
 
 > **注意（2026-09-28 追記）**: この計測のあと、評価とモデルの両方でずれが見つかり修正した（第 6 節）。
 > 第 1・2 節の表は `runs.csv` の値（エネルギー基準）そのままで、**到達と実行可能性は第 6 節の検算値で読むこと。**
@@ -92,9 +92,9 @@
 
 `runs.csv` の `feasible` 列は、計測時点の `print_summary()` の判定で、開始時刻が時間枠 [E, L] に入っているかしか見ていない。時間展開型はソルバが選んだ開始時刻をそのまま使う（`schedule_from_starts`）ので、**衝突制約が破れて前の顧客から間に合っていない解も `feasible = True` になる**。
 
-（この計測の後に修正済み。現在の [print_summary()](../src/tsptwlib/report.py#L234) は [verify_tour()](../src/tsptwlib/report.py#L214) で、ツアーを最早開始で辿り直した結果から feasible / travel time / return を決める。ソルバの時刻の食い違いは `model times` 行に分けて出す。今回の `runs.csv` は修正前のもの。）
+（この計測の後に修正済み。現在の [print_summary()](../../src/tsptwlib/report.py#L234) は [verify_tour()](../../src/tsptwlib/report.py#L214) で、ツアーを最早開始で辿り直した結果から feasible / travel time / return を決める。ソルバの時刻の食い違いは `model times` 行に分けて出す。今回の `runs.csv` は修正前のもの。）
 
-そこで各ログのツアーを取り出し、最早開始スケジュール（[simulate()](../src/tsptwlib/report.py#L23)）で辿り直した。条件は、全顧客をちょうど 1 回、各開始時刻 ≤ L[i]、帰着 ≤ L[0]。
+そこで各ログのツアーを取り出し、最早開始スケジュール（[simulate()](../../src/tsptwlib/report.py#L23)）で辿り直した。条件は、全顧客をちょうど 1 回、各開始時刻 ≤ L[i]、帰着 ≤ L[0]。
 
 | 表 | 条件 | 実行数 | 記録上 feasible | 検算で実行可能 | 検算での最良移動時間 | 既知最良 |
 |---|---|---:|---:|---:|---:|---:|
@@ -122,10 +122,10 @@
 
 ```bash
 # A100 上で（リポジトリのルートで）
-CUDA_VISIBLE_DEVICES=7 nohup bash scripts/run_all_time_a100.sh > run_all.out 2>&1 &
+CUDA_VISIBLE_DEVICES=7 nohup bash scripts/sh/all.sh > run_all.out 2>&1 &
 ```
 
-表は各ディレクトリの `runs.csv` から集計した。第 3 節の検算は、各 `logs/*.log` の `tour = [...]` 行を [simulate()](../src/tsptwlib/report.py#L23) に通して行った。
+表は各ディレクトリの `runs.csv` から集計した。第 3 節の検算は、各 `logs/*.log` の `tour = [...]` 行を [simulate()](../../src/tsptwlib/report.py#L23) に通して行った。
 
 ## 6. 修正後の再評価（ずれの一覧と、0928 の結果の読み直し）
 
@@ -190,10 +190,10 @@ n40 の 2 回は、エネルギー 526 で「未到達」と記録されてい�
 
 コミット `3d46a0e`（ブランチ `fix/time-verify-colocated`）。
 
-- [src/tsptwlib/report.py](../src/tsptwlib/report.py): `verify_tour()` を追加。`print_summary()` の feasible / travel time / return を検算値にし、ソルバの時刻の食い違いは `model times` 行に分けた。`order_ties()` を追加し、`recover_time_tour()` で使う
-- [src/tsptwlib/timeindex.py](../src/tsptwlib/timeindex.py): `colocated_terms()` を追加。`make_gap()` の docstring の「同時刻に居てよい」は在圏型では誤りだったので書き直した
-- [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py) / [src/mtsptw/time_occupancy_multi.py](../src/mtsptw/time_occupancy_multi.py): `colocated_terms()` を制約に追加（重みは衝突と同じ）。multi 版は復元・要約も検算基準にした
-- [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py) / [src/mtsptw/time_makespan_multi.py](../src/mtsptw/time_makespan_multi.py): 表示だけ（検算値との関係の注記、multi 版の帰着時刻を最早開始の値に）
-- [scripts/run_time_occupancy_a100.sh](../scripts/run_time_occupancy_a100.sh) / [scripts/run_time_makespan_a100.sh](../scripts/run_time_makespan_a100.sh): `reached` を検算値で判定。`runs.csv` に `value`・`energy_reached`、`summary.csv` に `value_mean`・`value_min` の列を追加。QUBO++ のライセンスが取れずに落ちた実行は `LICENSE_WAIT` 秒（既定 300）待って、その 1 回だけ再実行する（最大 `LICENSE_RETRIES` 回、既定 5）
-- [scripts/count_model_size.py](../scripts/count_model_size.py): 同一地点ペアの項も数える
+- [src/tsptwlib/report.py](../../src/tsptwlib/report.py): `verify_tour()` を追加。`print_summary()` の feasible / travel time / return を検算値にし、ソルバの時刻の食い違いは `model times` 行に分けた。`order_ties()` を追加し、`recover_time_tour()` で使う
+- [src/tsptwlib/timeindex.py](../../src/tsptwlib/timeindex.py): `colocated_terms()` を追加。`make_gap()` の docstring の「同時刻に居てよい」は在圏型では誤りだったので書き直した
+- [src/tsptw/time_occupancy.py](../../src/tsptw/time_occupancy.py) / [src/mtsptw/time_occupancy_multi.py](../../src/mtsptw/time_occupancy_multi.py): `colocated_terms()` を制約に追加（重みは衝突と同じ）。multi 版は復元・要約も検算基準にした
+- [src/tsptw/time_makespan.py](../../src/tsptw/time_makespan.py) / [src/mtsptw/time_makespan_multi.py](../../src/mtsptw/time_makespan_multi.py): 表示だけ（検算値との関係の注記、multi 版の帰着時刻を最早開始の値に）
+- [scripts/sh/occupancy.sh](../../scripts/sh/occupancy.sh) / [scripts/sh/makespan.sh](../../scripts/sh/makespan.sh): `reached` を検算値で判定。`runs.csv` に `value`・`energy_reached`、`summary.csv` に `value_mean`・`value_min` の列を追加。QUBO++ のライセンスが取れずに落ちた実行は `LICENSE_WAIT` 秒（既定 300）待って、その 1 回だけ再実行する（最大 `LICENSE_RETRIES` 回、既定 5）
+- [scripts/python/count_model_size.py](../../scripts/python/count_model_size.py): 同一地点ペアの項も数える
 

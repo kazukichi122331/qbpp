@@ -1,14 +1,14 @@
 # makespan 型の A100 計測：n40w20 を目標値なしで 30 秒（2026-09-29）
 
 実行日: 2026-09-29 16:10 開始  
-実行: [scripts/run_time_makespan_a100.sh](../scripts/run_time_makespan_a100.sh)（git commit `112d558`、`TARGET=none`）  
+実行: [scripts/sh/makespan.sh](../../scripts/sh/makespan.sh)（git commit `112d558`、`TARGET=none`）  
 環境: a100x8 / NVIDIA A100 80GB PCIe（`CUDA_VISIBLE_DEVICES=7`）/ `qbpp.ABS3Solver`  
-定式化: [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py)（目的関数 = 帰着時刻）  
+定式化: [src/tsptw/time_makespan.py](../../src/tsptw/time_makespan.py)（目的関数 = 帰着時刻）  
 条件: n = 40、w = 20、インスタンスは Dumas の `n40w20.001`。**10 回**（seed 1〜10）、制限時間 **30 秒**、実行ごとに 60 秒の間隔。**目標値を与えず**、全実行を制限時間まで走らせた
 
 前夜の計測（[time_a100_results_0928_rerun.md](time_a100_results_0928_rerun.md)）では、makespan の n40w20 で最小エネルギー 524 が 1 回しか出ず、平均 TTS も 12.29 秒と他の顧客数より長かった。この計測では目標値（525）による打ち切りをなくし、30 秒のあいだにどこまで下がるかを見た。
 
-生データ: [lab_results/time_makespan_a100_n40w20_notarget_09291610/](../lab_results/time_makespan_a100_n40w20_notarget_09291610/)
+生データ: [lab_results/archive/0929-1610_makespan_n40w20_notarget/](../../lab_results/archive/0929-1610_makespan_n40w20_notarget/)
 
 ## 0. 要点
 
@@ -90,8 +90,8 @@
 ```bash
 # A100 上で（リポジトリのルートで。git commit 112d558 以降）
 CUDA_VISIBLE_DEVICES=7 SIZES=40 WIDTHS=20 TARGET=none \
-  OUTDIR=lab_results/time_makespan_a100_n40w20_notarget_$(date +%m%d%H%M) \
-  nohup bash scripts/run_time_makespan_a100.sh > run_n40_notarget.out 2>&1 &
+  OUTDIR=lab_results/archive/time_makespan_a100_n40w20_notarget_$(date +%m%d%H%M) \
+  nohup bash scripts/sh/makespan.sh > run_n40_notarget.out 2>&1 &
 ```
 
 表は `runs.csv` と `logs/*.log` から集計した（エネルギーの表は `energy` / `tts` / `violated_cons` / `var_count` / `term_count`、検算の表は `feasible` / `value`、総移動時間はログの `travel time` 行）。

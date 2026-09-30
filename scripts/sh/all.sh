@@ -2,10 +2,10 @@
 # =============================================================================
 # A100 用の時間展開型 TSPTW 計測 4 本を順番に流す。
 #
-#   1. run_time_makespan_a100.sh         (makespan・顧客数スイープ)
-#   2. run_time_makespan_width_a100.sh   (makespan・時間窓スイープ)
-#   3. run_time_occupancy_a100.sh        (occupancy・顧客数スイープ)
-#   4. run_time_occupancy_width_a100.sh  (occupancy・時間窓スイープ)
+#   1. makespan.sh         (makespan・顧客数スイープ)
+#   2. makespan_width.sh   (makespan・時間窓スイープ)
+#   3. occupancy.sh        (occupancy・顧客数スイープ)
+#   4. occupancy_width.sh  (occupancy・時間窓スイープ)
 #
 #   1 本終わるごとに GAP 秒あけて次へ進む。終了コードが 0 でなければ
 #   RETRY_WAIT 秒待ってその 1 本を最初からやり直す（出力先は日時つきで別になる）。
@@ -15,9 +15,9 @@
 #
 # 使い方（リモート機に ssh したあと、リポジトリのルートで）:
 #
-#   bash scripts/run_all_time_a100.sh
-#   CUDA_VISIBLE_DEVICES=3 bash scripts/run_all_time_a100.sh   # 別の GPU を使う
-#   nohup bash scripts/run_all_time_a100.sh > run_all.out 2>&1 &   # 放置する場合
+#   bash scripts/sh/all.sh
+#   CUDA_VISIBLE_DEVICES=3 bash scripts/sh/all.sh   # 別の GPU を使う
+#   nohup bash scripts/sh/all.sh > run_all.out 2>&1 &   # 放置する場合
 #
 # 環境変数:
 #   GAP          1 本終わってから次を始めるまでの待ち（秒）   (既定 60)
@@ -35,10 +35,10 @@ RETRY_WAIT=${RETRY_WAIT:-60}
 MAX_RETRIES=${MAX_RETRIES:-0}
 
 JOBS=(
-    run_time_makespan_a100.sh
-    run_time_makespan_width_a100.sh
-    run_time_occupancy_a100.sh
-    run_time_occupancy_width_a100.sh
+    makespan.sh
+    makespan_width.sh
+    occupancy.sh
+    occupancy_width.sh
 )
 
 # Ctrl-C / kill で止めたら次のスクリプトに進まず終わる

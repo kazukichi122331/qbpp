@@ -290,7 +290,7 @@ find results -type f \( -name '*.png' -o -name '*.svg' \) -exec md5sum {} + \
 `results/` は 426 枚の図で 41 MB あり、git リポジトリの大半を占めている。
 図は「解が出たかどうか」しか分からないので、**数値を別に残す**のが有効。
 
-- `lab_results/tsptw_order_vs_time_30s.json` の形式（インスタンス名・N・
+- `lab_results/archive/tsptw_order_vs_time_30s.json` の形式（インスタンス名・N・
   制限時間・変数数・項数・travel・feasible をレコードで持つ）はとても良い。
   ローカル実験でも同じ JSON を出すようにして、`results/` には
   「JSON + 代表的な図だけ」を置くと、比較表（`docs/tsptw_results.md`）を

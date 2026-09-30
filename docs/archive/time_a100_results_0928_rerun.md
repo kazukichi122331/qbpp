@@ -1,7 +1,7 @@
 # 時間展開型 TSPTW の A100 再計測（2026-09-28 夜・修正版）
 
 実行日: 2026-09-28（各スイープの開始は 17:46 / 18:08 / 18:26 / 19:02）  
-実行: [scripts/run_all_time_a100.sh](../scripts/run_all_time_a100.sh)（git commit `9eac531`）  
+実行: [scripts/sh/all.sh](../../scripts/sh/all.sh)（git commit `9eac531`）  
 環境: a100x8 / NVIDIA A100 80GB PCIe（`CUDA_VISIBLE_DEVICES=7`）/ `qbpp.ABS3Solver`  
 条件: インスタンス 1 つにつき **10 回**（seed 1〜10）、制限時間 **30 秒**、実行ごとに 60 秒の間隔。インスタンスは Dumas の `.001`
 
@@ -13,17 +13,17 @@
 
 | 表の見出し | 定式化 | 目的関数 | 目標値 |
 |---|---|---|---|
-| 合計時間 | [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py) | 帰着時刻（移動 + 待ち） | 既知最良ツアーを最早開始で辿ったときの帰着時刻 |
-| 移動時間 | [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py) | 総移動時間 | Dumas の既知最良値（総移動時間） |
+| 合計時間 | [src/tsptw/time_makespan.py](../../src/tsptw/time_makespan.py) | 帰着時刻（移動 + 待ち） | 既知最良ツアーを最早開始で辿ったときの帰着時刻 |
+| 移動時間 | [src/tsptw/time_occupancy.py](../../src/tsptw/time_occupancy.py) | 総移動時間 | Dumas の既知最良値（総移動時間） |
 
 生データ（`runs.csv` / `summary.csv` / `logs/`）:
 
-- [lab_results/time_makespan_a100_n20-40-60-80-100-150-200_w20_09281746/](../lab_results/time_makespan_a100_n20-40-60-80-100-150-200_w20_09281746/)
-- [lab_results/time_makespan_a100_n60_w20-40-60-80-100_09281808/](../lab_results/time_makespan_a100_n60_w20-40-60-80-100_09281808/)
-- [lab_results/time_occupancy_a100_n20-40-60-80-100-150-200_w20_09281826/](../lab_results/time_occupancy_a100_n20-40-60-80-100-150-200_w20_09281826/)
-- [lab_results/time_occupancy_a100_n60_w20-40-60-80-100_09281902/](../lab_results/time_occupancy_a100_n60_w20-40-60-80-100_09281902/)
+- [lab_results/archive/0928-1746_makespan_nsweep_rerun/](../../lab_results/archive/0928-1746_makespan_nsweep_rerun/)
+- [lab_results/archive/0928-1808_makespan_wsweep_rerun/](../../lab_results/archive/0928-1808_makespan_wsweep_rerun/)
+- [lab_results/archive/0928-1826_occupancy_nsweep_rerun/](../../lab_results/archive/0928-1826_occupancy_nsweep_rerun/)
+- [lab_results/archive/0928-1902_occupancy_wsweep_rerun/](../../lab_results/archive/0928-1902_occupancy_wsweep_rerun/)
 
-`lab_results/time_makespan_a100_n20-40-60-80-100-150-200_w20_09281743/` は n20 の 10 回だけで止まった中断分。3 分後に同じ条件で全体をやり直しているので（上の `09281746`）、集計には使っていない。
+`lab_results/archive/0928-1743_makespan_nsweep_rerun_aborted/` は n20 の 10 回だけで止まった中断分。3 分後に同じ条件で全体をやり直しているので（上の `09281746`）、集計には使っていない。
 
 ## 0. 要点
 
@@ -174,7 +174,7 @@ occupancy の項数は、昼の計測より同一地点ペアのぶんだけ多�
 
 ```bash
 # A100 上で（リポジトリのルートで。git commit 9eac531 以降）
-CUDA_VISIBLE_DEVICES=7 nohup bash scripts/run_all_time_a100.sh > run_all.out 2>&1 &
+CUDA_VISIBLE_DEVICES=7 nohup bash scripts/sh/all.sh > run_all.out 2>&1 &
 ```
 
 表は各ディレクトリの `runs.csv` から集計した。エネルギーの表は `energy` / `tts` / `violated_cons` / `var_count` / `term_count` 列を、検算の表は `feasible` / `reached` / `value` 列を使っている。

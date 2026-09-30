@@ -6,14 +6,14 @@
 #   時間展開型の変数は Σ_v |時間枠| なので、w を広げると変数数・項数が
 #   まっすぐ効く。その効き方をエネルギー・制約違反と並べて見るための掃引。
 #
-#   実体は scripts/run_time_makespan_a100.sh（顧客数スイープと同じ中身）。
+#   実体は scripts/sh/makespan.sh（顧客数スイープと同じ中身）。
 #   ここは SIZES / WIDTHS を差し替えて呼ぶだけ。出力の形式も同じ。
 #
 # 使い方（リモート機に ssh したあと、リポジトリのルートで）:
 #
-#   bash scripts/run_time_makespan_width_a100.sh                        # GPU 7 を使う（既定）
-#   CUDA_VISIBLE_DEVICES=3 bash scripts/run_time_makespan_width_a100.sh  # 別の GPU を使う
-#   nohup bash scripts/run_time_makespan_width_a100.sh > /dev/null 2>&1 &
+#   bash scripts/sh/makespan_width.sh                        # GPU 7 を使う（既定）
+#   CUDA_VISIBLE_DEVICES=3 bash scripts/sh/makespan_width.sh  # 別の GPU を使う
+#   nohup bash scripts/sh/makespan_width.sh > /dev/null 2>&1 &
 #
 # 本体と同じ環境変数（RUNS / TIME_LIMIT / COOLDOWN / INST_ID / OUTDIR ...）が
 # そのまま効く。SIZES / WIDTHS も前置きすれば上書きできる。
@@ -27,4 +27,4 @@ HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 SIZES=${SIZES:-"60"} \
 WIDTHS=${WIDTHS:-"20 40 60 80 100"} \
-exec bash "$HERE/run_time_makespan_a100.sh"
+exec bash "$HERE/makespan.sh"

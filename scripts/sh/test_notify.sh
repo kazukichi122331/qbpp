@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# run_time_occupancy_long_a100.sh の通知を a100 上で試す（数分で終わる）。
+# occupancy_long.sh の通知を a100 上で試す（数分で終わる）。
 #
 #   1. トピック名が読めるか（NTFY_TOPIC か ~/.ntfy_topic）
 #   2. a100 から ntfy.sh に直接送れるか（失敗したら curl のエラーをそのまま出す）
@@ -11,8 +11,8 @@
 #
 # 使い方（a100 に ssh したあと、リポジトリのルートで）:
 #
-#   bash scripts/test_notify_a100.sh             # 1〜3 を全部
-#   SKIP_RUN=1 bash scripts/test_notify_a100.sh  # 1〜2 だけ（GPU を使わない）
+#   bash scripts/sh/test_notify.sh             # 1〜3 を全部
+#   SKIP_RUN=1 bash scripts/sh/test_notify.sh  # 1〜2 だけ（GPU を使わない）
 # =============================================================================
 set -u
 
@@ -52,7 +52,7 @@ NTFY_TOPIC=$NTFY_TOPIC \
 TIME_LIMIT=5 RUNS=1 COOLDOWN=0 GAP=0 \
 SIZE_SWEEP="20" WIDTH_SWEEP="20" \
 OUT_ROOT=/tmp/occupancy_notify_test \
-    bash "$HERE/run_time_occupancy_long_a100.sh"
+    bash "$HERE/occupancy_long.sh"
 rc=$?
 echo
 echo "終了 (rc=$rc)。iPhone に通知が 3 通（sweep done ×2・all done）届いていれば成功です"

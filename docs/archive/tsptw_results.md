@@ -6,8 +6,8 @@
 
 | | |
 |---|---|
-| 順序型 | [src/tsptw/order_start.py](../src/tsptw/order_start.py) — `x[i][u]=1 ⇔ i 番目に顧客 u を訪れる` |
-| 時間展開型 | [archive/tsptw/time_travel.py](../archive/tsptw/time_travel.py) — `x[t][u]=1 ⇔ 時刻 t に顧客 u を訪れる`。測定当時は `src/time_travel.py`。2026-09-18 に archive へ移し、後継は同値の [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py) |
+| 順序型 | [src/tsptw/order_start.py](../../src/tsptw/order_start.py) — `x[i][u]=1 ⇔ i 番目に顧客 u を訪れる` |
+| 時間展開型 | [archive/tsptw/time_travel.py](../../archive/tsptw/time_travel.py) — `x[t][u]=1 ⇔ 時刻 t に顧客 u を訪れる`。測定当時は `src/time_travel.py`。2026-09-18 に archive へ移し、後継は同値の [src/tsptw/time_occupancy.py](../../src/tsptw/time_occupancy.py) |
 
 すべての `travel time` は QUBO のエネルギーではなく、**復元したツアーを最早開始スケジュールで直接シミュレートして再計算した値**。実行可能性（全顧客をちょうど 1 回・時間枠内・depot 帰着期限内）も同じ検証で判定している。
 

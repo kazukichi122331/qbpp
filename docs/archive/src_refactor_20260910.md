@@ -14,15 +14,15 @@
 
 | 変更前 | 変更後 | 何が特徴か |
 |---|---|---|
-| `src/tsptw.py` | [src/tsptw/order_cumulative.py](../src/tsptw/order_cumulative.py) | `x[i][u]` + 累積式。この系統の最初の版 |
-| `src/pre_tsptw.py` | [src/tsptw/order_prefix.py](../src/tsptw/order_prefix.py) | `x[i][u]` + `w[i]`（差分形、Θ(N³)） |
-| `src/wait_tsptw.py` | [src/tsptw/order_wait.py](../src/tsptw/order_wait.py) | `x[i][u]` + `a[i]` + `w[i]` |
-| `src/new_tsptw.py` | [src/tsptw/order_start.py](../src/tsptw/order_start.py) | `x[i][u]` + `a[i]`、ペナルティ一律 |
-| `src/improved_new_tsptw.py` | [src/tsptw/order_start_tiered.py](../src/tsptw/order_start_tiered.py) | ↑ のペナルティを階層化 |
-| `src/time_tsptw.py` | [src/tsptw/time_makespan.py](../src/tsptw/time_makespan.py) | `x[t][v]`、makespan 最小化 |
-| `src/time_tsptw_travel.py` | [src/time_travel.py](../archive/tsptw/time_travel.py) | `x[t][v]` + `b[t][v]`、総移動時間 |
-| `src/plot_tsptw.py` | [src/tsptwlib/plot.py](../src/tsptwlib/plot.py) | 描画（共通ライブラリへ） |
-| `src/dist_matrix.py` | [src/tsptwlib/instance.py](../src/tsptwlib/instance.py) | インスタンス読み込み（**関数化**） |
+| `src/tsptw.py` | [src/tsptw/order_cumulative.py](../../src/tsptw/order_cumulative.py) | `x[i][u]` + 累積式。この系統の最初の版 |
+| `src/pre_tsptw.py` | [src/tsptw/order_prefix.py](../../src/tsptw/order_prefix.py) | `x[i][u]` + `w[i]`（差分形、Θ(N³)） |
+| `src/wait_tsptw.py` | [src/tsptw/order_wait.py](../../src/tsptw/order_wait.py) | `x[i][u]` + `a[i]` + `w[i]` |
+| `src/new_tsptw.py` | [src/tsptw/order_start.py](../../src/tsptw/order_start.py) | `x[i][u]` + `a[i]`、ペナルティ一律 |
+| `src/improved_new_tsptw.py` | [src/tsptw/order_start_tiered.py](../../src/tsptw/order_start_tiered.py) | ↑ のペナルティを階層化 |
+| `src/time_tsptw.py` | [src/tsptw/time_makespan.py](../../src/tsptw/time_makespan.py) | `x[t][v]`、makespan 最小化 |
+| `src/time_tsptw_travel.py` | [src/time_travel.py](../../archive/tsptw/time_travel.py) | `x[t][v]` + `b[t][v]`、総移動時間 |
+| `src/plot_tsptw.py` | [src/tsptwlib/plot.py](../../src/tsptwlib/plot.py) | 描画（共通ライブラリへ） |
+| `src/dist_matrix.py` | [src/tsptwlib/instance.py](../../src/tsptwlib/instance.py) | インスタンス読み込み（**関数化**） |
 
 `new` / `improved` / `pre` という名前をやめたのは、次に版を作ったときに
 名前が付けられなくなるため（`new_new_...` になる）。いまは
@@ -70,7 +70,7 @@ python -m src.<定式化>  [TIME] [オプション]      # どちらでも同じ
 - 出力の書式も統一した。`build` 時間・`feasible` 判定は全ファイルで出る
   （前は `pre_tsptw.py` だけが構築時間を測っていた）。
 
-`--help` でオプション一覧が出る。詳細は [README.md](../README.md)。
+`--help` でオプション一覧が出る。詳細は [README.md](../../README.md)。
 
 ## 3. まとめた関数・定数（`src/tsptwlib/`）
 
@@ -137,7 +137,7 @@ python -m src.<定式化>  [TIME] [オプション]      # どちらでも同じ
 
 ## 6. 次にやるなら
 
-- **比較実行のスクリプト**。`lab_results/tsptw_order_vs_time_30s.json` を
+- **比較実行のスクリプト**。`lab_results/archive/tsptw_order_vs_time_30s.json` を
   作った処理がリポジトリに残っていない。CLI が揃ったので、
   「定式化 × インスタンス × シード」を回して JSON に落とすスクリプトは
   数十行で書ける（`--seed` と `-q` があるので出力も安定する）。

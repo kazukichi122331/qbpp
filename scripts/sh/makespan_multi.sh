@@ -17,9 +17,9 @@
 #
 # 使い方（a100 に ssh したあと、リポジトリのルートで）:
 #
-#   bash scripts/run_time_makespan_multi_a100.sh
-#   CUDA_VISIBLE_DEVICES=3 bash scripts/run_time_makespan_multi_a100.sh
-#   nohup bash scripts/run_time_makespan_multi_a100.sh > run_multi.out 2>&1 &
+#   bash scripts/sh/makespan_multi.sh
+#   CUDA_VISIBLE_DEVICES=3 bash scripts/sh/makespan_multi.sh
+#   nohup bash scripts/sh/makespan_multi.sh > run_multi.out 2>&1 &
 #
 # 環境変数:
 #   PYTHON      python 実行系                     (既定 .venv/bin/python)
@@ -33,7 +33,7 @@
 #   LICENSE_WAIT / LICENSE_RETRIES  ライセンス使用中のときの再実行 (既定 300 秒 / 5 回)
 #   CUDA_VISIBLE_DEVICES  使う GPU 番号            (既定 7)
 #   NTFY_TOPIC  ntfy.sh の通知先。未設定なら ~/.ntfy_topic の 1 行目。どちらも無ければ通知しない
-#   OUTDIR      出力先 (既定 lab_results/<スクリプト名>_a100_m<台数>_<obj>_t<秒>_<日時>)
+#   OUTDIR      出力先 (既定 lab_results/<日時>_multi_leq_m<台数>。common.sh 参照)
 #
 # 出力:
 #   $OUTDIR/runs.csv     1 行 = 1 実行
@@ -63,8 +63,14 @@ else
 fi
 
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-7}
-STAMP=$(date +%m%d%H%M)
-OUTDIR=${OUTDIR:-lab_results/$(basename "$SCRIPT" .py)_a100_m${VEHICLES}_${OBJ}_t${TIME_LIMIT%.*}_$STAMP}
+# 出力先の名前は common.sh の result_dir で決める（例 0930-1214_multi_leq_m2_t10）
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+case $(basename "$SCRIPT" .py) in
+    time_makespan_multi_leq) model=multi_leq ;;
+    time_makespan_multi)     model=multi_$OBJ ;;
+    *)                       model=$(basename "$SCRIPT" .py | sed 's/^time_//') ;;
+esac
+OUTDIR=${OUTDIR:-$(result_dir "$model" "m$VEHICLES" "$(time_tag "$TIME_LIMIT" 30)")}
 
 if [[ ! -f $SCRIPT || ! -d instances/Dumas ]]; then
     echo "ERROR: リポジトリのルートで実行してください（$SCRIPT が見つからない）" >&2

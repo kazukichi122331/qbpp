@@ -12,15 +12,15 @@ n100 を m=3 で「実際に構築」するとメモリが持たないので、�
 と 1 対 1 に対応させてある（小さい例で実際の構築と突き合わせ済み。
 scripts/check_count_model_size.sh を参照）。
 
-    python scripts/count_model_size.py instances/Dumas/n20w20.001.txt -m 2
-    python scripts/count_model_size.py instances/Dumas/n20w20.001.txt --single
+    python scripts/python/count_model_size.py instances/Dumas/n20w20.001.txt -m 2
+    python scripts/python/count_model_size.py instances/Dumas/n20w20.001.txt --single
 """
 import argparse
 import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                "..", "src"))
+                                "..", "..", "src"))
 
 from tsptwlib import load_instance
 

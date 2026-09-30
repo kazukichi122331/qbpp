@@ -1,12 +1,12 @@
 # 複数車両 min-max（不等式版）の A100 計測：3 台・30 秒（2026-09-29）
 
 実行日: 2026-09-29 17:06 開始  
-実行: [scripts/run_time_makespan_multi_a100.sh](../scripts/run_time_makespan_multi_a100.sh)（git commit `47cf040`、既定値のまま）  
+実行: [scripts/sh/makespan_multi.sh](../../scripts/sh/makespan_multi.sh)（git commit `47cf040`、既定値のまま）  
 環境: a100x8 / NVIDIA A100 80GB PCIe（`CUDA_VISIBLE_DEVICES=7`）/ Python 3.14.4  
-定式化: [src/mtsptw/time_makespan_multi_leq.py](../src/mtsptw/time_makespan_multi_leq.py)（目的関数 = 各車両の帰着時刻の最大値 Z。`ret_v <= Z` を `qbpp.cons(..., between=(0, None))` の不等式で課す）  
+定式化: [src/mtsptw/time_makespan_multi_leq.py](../../src/mtsptw/time_makespan_multi_leq.py)（目的関数 = 各車両の帰着時刻の最大値 Z。`ret_v <= Z` を `qbpp.cons(..., between=(0, None))` の不等式で課す）  
 条件: 車両 **3 台**、インスタンスは Dumas の `n20w20.001` / `n60w20.001` / `n100w20.001`（顧客数を変える）と `n60w60.001` / `n60w100.001`（時間枠を広げる）。各 **10 回**（seed 1〜10）、制限時間 **30 秒**、インスタンス間に 60 秒の間隔。min-max には既知最良値がないので**目標値なし**で、全実行を制限時間まで走らせた
 
-生データ: [lab_results/time_makespan_multi_leq_a100_m3_max_t30_09291706/](../lab_results/time_makespan_multi_leq_a100_m3_max_t30_09291706/)
+生データ: [lab_results/archive/0929-1706_multi_leq_m3/](../../lab_results/archive/0929-1706_multi_leq_m3/)
 
 ## 0. 要点
 
@@ -76,7 +76,7 @@
   - 車両数を 2 台に減らす（1 台あたりの顧客数が増え、下界より遅くなりやすい）
   - 目的関数を帰着時刻の和（`time_makespan_multi.py --obj sum`）にする
   - 顧客数を増やす（n150、n200）
-- one-hot 版（[src/mtsptw/time_makespan_multi.py](../src/mtsptw/time_makespan_multi.py) `--obj max`）との比較は、同じ条件で `SCRIPT=src/mtsptw/time_makespan_multi.py` を回せばできる。ただし上の理由で、今回の 5 インスタンスではどちらも下界に届いて差が出ない可能性が高い。
+- one-hot 版（[src/mtsptw/time_makespan_multi.py](../../src/mtsptw/time_makespan_multi.py) `--obj max`）との比較は、同じ条件で `SCRIPT=src/mtsptw/time_makespan_multi.py` を回せばできる。ただし上の理由で、今回の 5 インスタンスではどちらも下界に届いて差が出ない可能性が高い。
 - スクリプトの HINT は「60 秒以上を推奨」と出すが、今回の結果を見る限り、このインスタンス群では 30 秒でも十分だった。
 
 ## 5. 再現方法
@@ -84,7 +84,7 @@
 ```bash
 # A100 上で（リポジトリのルートで。git commit 47cf040 以降）
 CUDA_VISIBLE_DEVICES=7 \
-  nohup bash scripts/run_time_makespan_multi_a100.sh > run_multi.out 2>&1 &
+  nohup bash scripts/sh/makespan_multi.sh > run_multi.out 2>&1 &
 ```
 
 既定値は `VEHICLES=3`、`RUNS=10`、`TIME_LIMIT=30.0`、`COOLDOWN=60`、`INSTS="n20w20.001 n60w20.001 n100w20.001 n60w60.001 n60w100.001"`。

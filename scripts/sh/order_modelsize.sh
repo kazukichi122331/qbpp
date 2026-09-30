@@ -20,9 +20,9 @@
 #
 # 使い方（リポジトリのルートで）:
 #
-#   bash scripts/run_order_cumulative_modelsize.sh
-#   CUDA_VISIBLE_DEVICES=0 bash scripts/run_order_cumulative_modelsize.sh
-#   nohup bash scripts/run_order_cumulative_modelsize.sh > /dev/null 2>&1 &
+#   bash scripts/sh/order_modelsize.sh
+#   CUDA_VISIBLE_DEVICES=0 bash scripts/sh/order_modelsize.sh
+#   nohup bash scripts/sh/order_modelsize.sh > /dev/null 2>&1 &
 #
 # 環境変数で上書きできる:
 #   PYTHON      python 実行系                     (既定 .venv/bin/python)
@@ -33,7 +33,7 @@
 #   TIME_LIMIT  1 回のソルバ制限時間（秒）        (既定 1)
 #   RUN_TIMEOUT 1 回の上限（秒）。0 で無制限      (既定 0)
 #   CUDA_VISIBLE_DEVICES  使う GPU 番号            (既定 7。手元の WSL なら 0)
-#   OUTDIR      出力先            (既定 lab_results/order_cumulative_modelsize_<条件>_<日時>)
+#   OUTDIR      出力先            (既定 lab_results/<日時>_<スクリプト名>_modelsize_<条件>。common.sh 参照)
 #
 # 出力:
 #   $OUTDIR/modelsize.csv  1 行 = 1 インスタンス（変数数・項数・最大メモリ）
@@ -57,10 +57,10 @@ export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-7}
 # リダイレクト先がファイルだと python は出力をため込む。OOM kill されると
 # それが丸ごと消えてどこで落ちたか分からなくなるので、行ごとに吐かせる。
 export PYTHONUNBUFFERED=1
-STAMP=$(date +%m%d%H%M)
 NAME=$(basename "$SCRIPT" .py)
-TAG="n$(echo "$SIZES" | tr ' ' '-')_w${WIDTH}"
-OUTDIR=${OUTDIR:-lab_results/${NAME}_modelsize_${TAG}_$STAMP}
+# 出力先の名前は common.sh の result_dir で決める（例 1001-1200_order_cumulative_modelsize_nsweep）
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+OUTDIR=${OUTDIR:-$(result_dir "${NAME}_modelsize" "$(sweep_tag "$SIZES" "$WIDTH")")}
 
 # --- リポジトリのルートから実行しているか確認（相対パスを持っているため） ---
 if [[ ! -f $SCRIPT || ! -d instances/Dumas ]]; then

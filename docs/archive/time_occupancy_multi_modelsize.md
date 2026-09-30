@@ -1,7 +1,7 @@
 # 時間展開型 mTSPTW（`time_occupancy_multi.py`）のモデルサイズ
 
 生成日: 2026-09-24
-対象: [src/mtsptw/time_occupancy_multi.py](../src/mtsptw/time_occupancy_multi.py)（`o[t][i][k]`、m 台）と、比較用の [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py)（`o[t][i]`、1 台）
+対象: [src/mtsptw/time_occupancy_multi.py](../../src/mtsptw/time_occupancy_multi.py)（`o[t][i][k]`、m 台）と、比較用の [src/tsptw/time_occupancy.py](../../src/tsptw/time_occupancy.py)（`o[t][i]`、1 台）
 インスタンス: Dumas の `.001`。n ∈ {20, 40, 60, 80, 100} × w ∈ {20, 40}、および n ∈ {20, 40} × w ∈ {60, 80, 100}（n80w100 / n100w80 / n100w100 は Dumas に存在しない）
 
 **探索はしていない。** モデルを組むところまでで、変数数と項数だけを見ている。
@@ -17,7 +17,7 @@
 
 ## 1. 測り方
 
-数はすべて [scripts/count_model_size.py](../scripts/count_model_size.py) が**解析的に数えた**もの。QUBO を組まずに、定義域と衝突窓の大きさから閉じた形で数える。数え方は本体の `make_vars_multi()` / `conflict_terms()` / 連続性のループと 1 対 1 に対応させてある。
+数はすべて [scripts/python/count_model_size.py](../../scripts/python/count_model_size.py) が**解析的に数えた**もの。QUBO を組まずに、定義域と衝突窓の大きさから閉じた形で数える。数え方は本体の `make_vars_multi()` / `conflict_terms()` / 連続性のループと 1 対 1 に対応させてある。
 
 実測と一致することは第 5 節の表で確認した。組めた 14 件すべてで
 
@@ -222,8 +222,8 @@ n が大きいほど顧客–顧客ブロックが支配的（n100 で 83〜85%�
 
 ```bash
 # 解析的な数え上げ（QUBO を組まないので一瞬。全グリッドに使える）
-python scripts/count_model_size.py instances/Dumas/n100w20.001.txt -m 2
-python scripts/count_model_size.py instances/Dumas/n100w20.001.txt --single
+python scripts/python/count_model_size.py instances/Dumas/n100w20.001.txt -m 2
+python scripts/python/count_model_size.py instances/Dumas/n100w20.001.txt --single
 
 # 実際に組んで QUBO 化後の数とメモリを見る
 /usr/bin/time -v python src/mtsptw/time_occupancy_multi.py \

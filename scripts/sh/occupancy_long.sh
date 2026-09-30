@@ -2,7 +2,7 @@
 # =============================================================================
 # time_occupancy.py を制限時間 300 秒で計測し直す（30 秒で届かなかった条件だけ）。
 #
-#   2026-09-28 夜の計測（docs/time_a100_results_0928_rerun.md）では、occupancy 型は
+#   2026-09-28 夜の計測（docs/archive/time_a100_results_0928_rerun.md）では、occupancy 型は
 #   30 秒だと n100 以降・n60w60 以降で既知最良値に届かないことが多かった。
 #   そこで target_energy を既知最良値にしたまま、制限時間だけを 300 秒に延ばす。
 #   到達すればそこで打ち切られるので、届く実行は 300 秒待たずに終わる。
@@ -10,7 +10,7 @@
 #   1. 顧客数スイープ   n = 100/150/200、w = 20
 #   2. 時間窓スイープ   n = 60、w = 60/80/100
 #
-#   実体は scripts/run_time_occupancy_a100.sh。ここは SIZES / WIDTHS /
+#   実体は scripts/sh/occupancy.sh。ここは SIZES / WIDTHS /
 #   TIME_LIMIT / TARGET / OUTDIR を差し替えて 2 回呼ぶだけ。出力の形式も同じ。
 #   RUNS・COOLDOWN・seed（1〜10）・GPU（既定 7）は 30 秒の計測と揃えてある。
 #
@@ -19,7 +19,7 @@
 #
 # 使い方（リモート機に ssh したあと、リポジトリのルートで）:
 #
-#   CUDA_VISIBLE_DEVICES=7 nohup bash scripts/run_time_occupancy_long_a100.sh > run_long.out 2>&1 &
+#   CUDA_VISIBLE_DEVICES=7 nohup bash scripts/sh/occupancy_long.sh > run_long.out 2>&1 &
 #
 # 環境変数:
 #   TIME_LIMIT   1 回のソルバ制限時間（秒）   (既定 300)
@@ -36,8 +36,8 @@
 #   そのまま本体に引き継がれる。
 #
 # 出力先:
-#   lab_results/time_occupancy_a100_n100-150-200_w20_t300_<日時>/
-#   lab_results/time_occupancy_a100_n60_w60-80-100_t300_<日時>/
+#   lab_results/<日時>_occupancy_nsweep_t300/   （n = 100/150/200、w20）
+#   lab_results/<日時>_occupancy_wsweep_t300/   （n60、w = 60/80/100）
 # =============================================================================
 set -u
 
@@ -49,6 +49,7 @@ SIZE_SWEEP=${SIZE_SWEEP:-"100 150 200"}
 WIDTH_SWEEP=${WIDTH_SWEEP:-"60 80 100"}
 GAP=${GAP:-60}
 OUT_ROOT=${OUT_ROOT:-lab_results}
+source "$HERE/common.sh"
 
 interrupted=0
 trap 'interrupted=1; echo; echo "[$(date "+%F %T")] 中断されました"' INT TERM
@@ -88,10 +89,11 @@ summary_text() {                # summary_text <summary.csv>
 run_sweep() {
     local sizes=$1 widths=$2
     local tag="n$(echo "$sizes" | tr ' ' '-')_w$(echo "$widths" | tr ' ' '-')_t${TIME_LIMIT%.*}"
-    local outdir=$OUT_ROOT/time_occupancy_a100_${tag}_$(date +%m%d%H%M)
+    local outdir
+    outdir=$(result_dir occupancy "$(sweep_tag "$sizes" "$widths")" "$(time_tag "$TIME_LIMIT" 30)")
     log "開始 occupancy $tag"
     SIZES=$sizes WIDTHS=$widths OUTDIR=$outdir \
-        bash "$HERE/run_time_occupancy_a100.sh"
+        bash "$HERE/occupancy.sh"
     local rc=$?
     log "終了 occupancy $tag (rc=$rc)"
     if (( interrupted )); then

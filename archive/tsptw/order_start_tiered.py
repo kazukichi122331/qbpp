@@ -44,7 +44,7 @@ one-hot を 1 回破っても P·1 しかかからない。**one-hot 違反は�
     col_constraint = 4   (未訪問 2 + 重複 2、各 (Σ-1)^2 = 1)
     time_constraint = 0  (時間制約は完全充足)
 
-docs/tsptw_results.md の「未訪問 ≒ 重複、時間枠違反はほぼ 0」という
+docs/archive/tsptw_results.md の「未訪問 ≒ 重複、時間枠違反はほぼ 0」という
 全 30 インスタンスの傾向も同じ現象である。
 
 **重み不足ではなく、制約族どうしの重みのバランスが崩れていたのが原因。**
@@ -163,7 +163,7 @@ one-hot は完全に直ったが、N >= 40 かつ時間枠が広い (w40 以上)
 | n150w40 | 未訪問 82, 時間枠 0 | 未訪問 **0**, 時間枠 140 |
 
 つまり「順列にはなったが、時間枠に合う順列を 10 秒では見つけられない」状態で、
-docs/tsptw_results.md の時間展開型 (当時の src/time_travel.py、現在は
+docs/archive/tsptw_results.md の時間展開型 (当時の src/time_travel.py、現在は
 archive/tsptw/time_travel.py。後継は src/tsptw/time_occupancy.py) の失敗の形に
 近づいた。上の比の走査どおり、**one-hot と時間枠を同時に 0 にする比は
 存在しなかった**ので、これはペナルティ調整では解決しない。次の一手としては
@@ -173,7 +173,7 @@ archive/tsptw/time_travel.py。後継は src/tsptw/time_occupancy.py) の失敗�
     - 時間制約の違反量を線形にする (qbpp.relu) か、a[i] の定義域をさらに絞って
       dmax を小さくし、比の要求を下げる
 
-が考えられる。時間展開型との総合比較は docs/tsptw_results.md を本版で
+が考えられる。時間展開型との総合比較は docs/archive/tsptw_results.md を本版で
 測り直す必要がある。
 
 order_start.py からの変更点は penalty_weights() / compute_dmax() の追加と、

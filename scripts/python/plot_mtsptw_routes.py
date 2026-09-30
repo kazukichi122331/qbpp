@@ -5,14 +5,14 @@
         Z の下界 z_lo と帰着の上限 L[N+1] を縦線で示す。
 
 使い方:
-    python scripts/plot_mtsptw_routes.py <log> -i instances/Dumas/n200w20.001.txt -o out.png
+    python scripts/python/plot_mtsptw_routes.py <log> -i instances/Dumas/n200w20.001.txt -o out.png
 """
 import argparse
 import ast
 import os
 import sys
 
-_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path[:0] = [os.path.join(_ROOT, "src"), os.path.join(_ROOT, "src", "mtsptw")]
 
 import matplotlib

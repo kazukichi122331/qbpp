@@ -1,14 +1,14 @@
 # occupancy 型の A100 計測：時間窓幅スイープ・制限時間 300 秒（2026-09-29 未明）
 
 実行日: 2026-09-29 00:55 開始  
-実行: [scripts/run_time_occupancy_long_a100.sh](../scripts/run_time_occupancy_long_a100.sh)（git commit `e7f1d5f`）  
+実行: [scripts/sh/occupancy_long.sh](../../scripts/sh/occupancy_long.sh)（git commit `e7f1d5f`）  
 環境: a100x8 / NVIDIA A100 80GB PCIe（`CUDA_VISIBLE_DEVICES=7`）/ `qbpp.ABS3Solver`  
-定式化: [src/tsptw/time_occupancy.py](../src/tsptw/time_occupancy.py)（目的関数 = 総移動時間）  
+定式化: [src/tsptw/time_occupancy.py](../../src/tsptw/time_occupancy.py)（目的関数 = 総移動時間）  
 条件: n = 60、w = 60 / 80 / 100、インスタンスは Dumas の `.001`。1 インスタンスにつき **10 回**（seed 1〜10）、制限時間 **300 秒**、実行ごとに 60 秒の間隔。目標値は Dumas の既知最良値で、到達した時点で打ち切る
 
 同じ夜の 30 秒の計測（[time_a100_results_0928_rerun.md](time_a100_results_0928_rerun.md)）で到達 0 だった n60 の w60 以上を、制限時間だけ 300 秒に延ばして回し直したもの。
 
-生データ: [lab_results/time_occupancy_a100_n60_w60-80-100_t300_09290055/](../lab_results/time_occupancy_a100_n60_w60-80-100_t300_09290055/)
+生データ: [lab_results/archive/0929-0055_occupancy_wsweep_t300/](../../lab_results/archive/0929-0055_occupancy_wsweep_t300/)
 
 ## 0. 要点
 
@@ -66,7 +66,7 @@
 
 ```bash
 # A100 上で（リポジトリのルートで。git commit e7f1d5f 以降）
-CUDA_VISIBLE_DEVICES=7 nohup bash scripts/run_time_occupancy_long_a100.sh > run_long.out 2>&1 &
+CUDA_VISIBLE_DEVICES=7 nohup bash scripts/sh/occupancy_long.sh > run_long.out 2>&1 &
 ```
 
 このスクリプトは顧客数スイープ（n100/150/200）を回したあと、本計測を回す。表は `runs.csv` から集計した（エネルギーの表は `energy` / `tts` / `reached` / `violated_cons` / `var_count` / `term_count`、検算の表は `feasible` / `reached` / `value`）。

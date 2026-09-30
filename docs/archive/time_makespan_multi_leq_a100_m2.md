@@ -1,12 +1,12 @@
 # 複数車両 min-max（不等式版）の A100 計測：2 台・10 秒・n200 まで（2026-09-30）
 
 実行日: 2026-09-30 12:14 開始  
-実行: [scripts/run_time_makespan_multi_a100.sh](../scripts/run_time_makespan_multi_a100.sh)（git commit `7bceeec`）  
+実行: [scripts/sh/makespan_multi.sh](../../scripts/sh/makespan_multi.sh)（git commit `7bceeec`）  
 環境: a100x8 / NVIDIA A100 80GB PCIe（`CUDA_VISIBLE_DEVICES=7`）/ Python 3.14.4  
-定式化: [src/mtsptw/time_makespan_multi_leq.py](../src/mtsptw/time_makespan_multi_leq.py)（目的関数 = 各車両の帰着時刻の最大値 Z。`ret_v <= Z` を不等式で課す。解説は [time_makespan_multi_leq_explained.md](time_makespan_multi_leq_explained.md)）  
+定式化: [src/mtsptw/time_makespan_multi_leq.py](../../src/mtsptw/time_makespan_multi_leq.py)（目的関数 = 各車両の帰着時刻の最大値 Z。`ret_v <= Z` を不等式で課す。解説は [time_makespan_multi_leq_explained.md](time_makespan_multi_leq_explained.md)）  
 条件: 車両 **2 台**。インスタンスは Dumas の `n20w20.001` / `n60w20.001` / `n100w20.001` / `n200w20.001`（顧客数を変える）と `n60w60.001` / `n60w100.001`（時間枠を広げる）。各 **3 回**（seed 1〜3）、制限時間 **10 秒**、インスタンス間の待ち時間 60 秒。min-max には既知最良値がないので**目標値なし**とし、全実行を制限時間まで走らせた
 
-生データ: [lab_results/time_makespan_multi_leq_a100_m2_max_t10_09301214/](../lab_results/time_makespan_multi_leq_a100_m2_max_t10_09301214/)
+生データ: [lab_results/archive/0930-1214_multi_leq_m2_t10/](../../lab_results/archive/0930-1214_multi_leq_m2_t10/)
 
 ## 0. 要点
 
@@ -50,7 +50,7 @@
 
 ### 図：n200w20.001 の解（run 2、総移動時間 1468 = 3 回で最短）
 
-![n200w20.001 run 2 のルートとタイムライン](../lab_results/time_makespan_multi_leq_a100_m2_max_t10_09301214/n200w20.001_run02.png)
+![n200w20.001 run 2 のルートとタイムライン](../../lab_results/archive/0930-1214_multi_leq_m2_t10/n200w20.001_run02.png)
 
 - **左:** 2 台のルート。Dumas のファイルには座標がなく距離行列だけなので、座標は距離行列から復元した（`tsptwlib.plot.recover_coordinates`）。
 - **右:** 横軸が時刻、縦軸が各車両の訪問順。線はサービス開始時刻、淡い帯は各顧客の時間枠。
@@ -87,7 +87,7 @@
 # A100 上で（リポジトリのルートで。git commit 7bceeec 以降）
 INSTS="n20w20.001 n60w20.001 n100w20.001 n200w20.001 n60w60.001 n60w100.001" \
 VEHICLES=2 RUNS=3 TIME_LIMIT=10.0 \
-  nohup bash scripts/run_time_makespan_multi_a100.sh > run_multi.out 2>&1 &
+  nohup bash scripts/sh/makespan_multi.sh > run_multi.out 2>&1 &
 ```
 
 表は `summary.csv` / `runs.csv`（`feasible` / `value` / `tts` / `total_travel` / `var_count` / `term_count`）と `logs/*.log`（`Z in` 行、`return` 行、`--- vehicle` 行）から集計した。3 台の数値は [time_makespan_multi_leq_a100_m3.md](time_makespan_multi_leq_a100_m3.md) から取った。
@@ -95,7 +95,7 @@ VEHICLES=2 RUNS=3 TIME_LIMIT=10.0 \
 図はログ 1 本から次のように描いた（ルートはログの `route[k]` 行から読み、時刻は最早開始で辿り直している）。
 
 ```bash
-D=lab_results/time_makespan_multi_leq_a100_m2_max_t10_09301214
-python scripts/plot_mtsptw_routes.py $D/logs/n200w20.001_run02.log \
+D=lab_results/archive/0930-1214_multi_leq_m2_t10
+python scripts/python/plot_mtsptw_routes.py $D/logs/n200w20.001_run02.log \
     -i instances/Dumas/n200w20.001.txt -o $D/n200w20.001_run02.png
 ```

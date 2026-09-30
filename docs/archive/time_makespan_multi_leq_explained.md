@@ -1,8 +1,8 @@
 # `time_makespan_multi_leq.py` の解説：複数車両 min-max を不等式制約で書く時間展開型 QUBO
 
-対象: [src/mtsptw/time_makespan_multi_leq.py](../src/mtsptw/time_makespan_multi_leq.py)
-補助: [src/mtsptw/mtsptwlib.py](../src/mtsptw/mtsptwlib.py)（`load_minstance` / `make_gap` / `make_vars_multi` / `vehicle_view` / `recover_routes`）、[src/tsptwlib/timeindex.py](../src/tsptwlib/timeindex.py)（`conflict_terms`）
-兄弟版: [src/mtsptw/time_makespan_multi.py](../src/mtsptw/time_makespan_multi.py)（同じ問題を one-hot の Z で書いた版）
+対象: [src/mtsptw/time_makespan_multi_leq.py](../../src/mtsptw/time_makespan_multi_leq.py)
+補助: [src/mtsptw/mtsptwlib.py](../../src/mtsptw/mtsptwlib.py)（`load_minstance` / `make_gap` / `make_vars_multi` / `vehicle_view` / `recover_routes`）、[src/tsptwlib/timeindex.py](../../src/tsptwlib/timeindex.py)（`conflict_terms`）
+兄弟版: [src/mtsptw/time_makespan_multi.py](../../src/mtsptw/time_makespan_multi.py)（同じ問題を one-hot の Z で書いた版）
 
 ---
 
@@ -421,7 +421,7 @@ max return  = 20 (最早開始。Z = 20 以下になるはず)
 
 ### 8.1 2 台・30 秒（WSL / RTX 4060 Ti、2026-09-29）
 
-生データ: [lab_results/time_makespan_multi_leq_wsl_m2_max_t30_09292207/](../lab_results/time_makespan_multi_leq_wsl_m2_max_t30_09292207/)
+生データ: [lab_results/archive/0929-2207_multi_leq_m2_wsl/](../../lab_results/archive/0929-2207_multi_leq_m2_wsl/)
 条件: 車両 **2 台**、目的 max、各 10 回（seed 1〜10）、制限時間 30 秒、目標値なし（全実行を制限時間まで走らせる）。git commit `024e025`（当時のパスは `src/time_makespan_multi_leq.py`。定式化は現在と同じ）。
 n60w60.001 は run 8 の途中で中断したため 7 回分、n60w100.001 は未実行。
 
@@ -472,8 +472,8 @@ n60w60.001 は run 8 の途中で中断したため 7 回分、n60w100.001 は�
 
 # 8.1 節の計測（WSL, GPU 0）
 VEHICLES=2 COOLDOWN=0 CUDA_VISIBLE_DEVICES=0 \
-  OUTDIR=lab_results/time_makespan_multi_leq_wsl_m2_max_t30_$(date +%m%d%H%M) \
-  nice -n 19 bash scripts/run_time_makespan_multi_a100.sh
+  OUTDIR=lab_results/archive/time_makespan_multi_leq_wsl_m2_max_t30_$(date +%m%d%H%M) \
+  nice -n 19 bash scripts/sh/makespan_multi.sh
 ```
 
 5 節の例は、5.1 節の Dumas 形式のテキストを `toy3.txt` に保存して `-i toy3.txt -m 2` で渡せば再現できる（seed 1、5 秒）。

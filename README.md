@@ -10,9 +10,9 @@ TSPTW を QUBO に定式化して `qbpp.ABS3Solver` で解く。
 |---|---|
 | `src/` | **今研究している問題のソースコード**。`tsptw/`（1 台）と `mtsptw/`（複数台）に分け、共通部品は `tsptwlib/` |
 | `instances/` | 実験に使うテストデータ。`Dumas/` は Dumas ベンチマーク（139 ファイル） |
-| `scripts/` | 実験を一括で回すシェルスクリプトと補助ツール（下の「`scripts/` の中身」） |
+| `scripts/` | 実験を一括で回すシェルスクリプト `sh/` と補助ツール `python/`（下の「`scripts/` の中身」） |
 | `results/` | **ローカル**で行った実験結果。直近のものを直下に、古いものは `results/archive/` へ |
-| `lab_results/` | **研究室の計算機**で行った実験結果 |
+| `lab_results/` | **研究室の計算機**で行った実験結果。古いものは `lab_results/archive/` へ |
 | `docs/` | 資料・論文・メモ等の文書。過去の資料は `docs/archive/` へ |
 | `archive/` | 使わなくなったソースコード（問題ごとに分類。[archive/README.md](archive/README.md)） |
 | `remove/` | 削除候補の一時置き場。git 追跡外。中身を確認したら手で消す |
@@ -125,7 +125,7 @@ python3.14 -m venv .venv
 | `prec_disjunctive.py` | 先行型（選言型） | `y[u][v]`, `r[u]`, `a[u]`, `R` | 位置も時刻も添字に持たない第 3 の系統。「u が v より先か」と各顧客の時刻（整数変数）を持つ。定義域・前後関係の枝刈りは `tsptwlib/prune.py` |
 
 各ファイルの先頭 docstring に、前身のどこをどう直したかが書いてある。
-系統間の比較結果は [docs/tsptw_results.md](docs/tsptw_results.md)。
+系統間の比較結果は [docs/archive/tsptw_results.md](docs/archive/tsptw_results.md)。
 
 `time_occupancy.py` の前身 `time_travel.py`（`x[t][v]` と `b[t][v]` の 2 変数族）は
 [archive/tsptw/time_travel.py](archive/tsptw/time_travel.py) にある。生成される QUBO は
@@ -138,7 +138,7 @@ python3.14 -m venv .venv
 
 | ファイル | 系統 | 変数 | メモ |
 |---|---|---|---|
-| `time_occupancy_multi.py` | 時間展開型・在圏・複数車両 | `o[t][i][k]` | `tsptw/time_occupancy.py` に車両添字を足した mTSPTW 版（試作）。目的は全車両の移動時間の総和。モデルサイズは [docs/time_occupancy_multi_modelsize.md](docs/time_occupancy_multi_modelsize.md) |
+| `time_occupancy_multi.py` | 時間展開型・在圏・複数車両 | `o[t][i][k]` | `tsptw/time_occupancy.py` に車両添字を足した mTSPTW 版（試作）。目的は全車両の移動時間の総和。モデルサイズは [docs/archive/time_occupancy_multi_modelsize.md](docs/archive/time_occupancy_multi_modelsize.md) |
 | `time_makespan_multi.py` | 時間展開型・複数車両 | `x[t][i][v]` | `tsptw/time_makespan.py` の mTSPTW 版。`--obj sum`（帰着時刻の和）/ `--obj max`（最大値。one-hot の `z[T]`） |
 | `time_makespan_multi_leq.py` | 時間展開型・複数車両 | `x[t][i][v]`, `Z` | ↑ の max を整数変数 `Z` と不等式 `ret_v <= Z` で書いた版 |
 | `mtsptwlib.py` | 共通部品 | — | 帰着デポ N+1 を足したインスタンス（`load_minstance`）、`make_gap`、`simulate`、車両ごとの復元・要約、`-m` の解釈 |
@@ -166,12 +166,17 @@ python3.14 -m venv .venv
 
 | ファイル | 中身 |
 |---|---|
-| `run_time_makespan_a100.sh` / `run_time_makespan_width_a100.sh` | `time_makespan.py` を研究室の A100 で計測（顧客数スイープ / 時間窓スイープ）。出力は `lab_results/` |
-| `run_time_occupancy_a100.sh` / `run_time_occupancy_width_a100.sh` | `time_occupancy.py` を同じ条件で計測 |
-| `run_all_time_a100.sh` | 上の 4 本を順番に流す（間隔・失敗時の再実行つき） |
-| `run_order_cumulative_modelsize.sh` | `order_cumulative.py` の変数数・項数だけを掃引する |
-| `run_time_makespan_multi_a100.sh` | `mtsptw/time_makespan_multi(_leq).py` を複数車両で計測 |
-| `count_model_size.py` | `time_occupancy(_multi).py` の変数数・項数を QUBO を組まずに数える |
+| `sh/makespan.sh` / `sh/makespan_width.sh` | `time_makespan.py` を研究室の A100 で計測（顧客数スイープ / 時間窓スイープ）。出力は `lab_results/` |
+| `sh/occupancy.sh` / `sh/occupancy_width.sh` | `time_occupancy.py` を同じ条件で計測 |
+| `sh/all.sh` | 上の 4 本を順番に流す（間隔・失敗時の再実行つき） |
+| `sh/order_modelsize.sh` | `order_cumulative.py` の変数数・項数だけを掃引する |
+| `sh/makespan_multi.sh` | `mtsptw/time_makespan_multi(_leq).py` を複数車両で計測 |
+| `sh/occupancy_long.sh` | 30 秒で届かなかった条件だけ、`occupancy.sh` を制限時間 300 秒で再計測する |
+| `sh/occupancy_target.sh` | `time_occupancy.py` を既知最良値に届くまで seed を変えて回し続ける |
+| `sh/test_notify.sh` | ntfy 通知の動作確認 |
+| `sh/common.sh` | 結果フォルダ名を決める共通関数（`result_dir` ほか）。各 sh から `source` する |
+| `python/count_model_size.py` | `time_occupancy(_multi).py` の変数数・項数を QUBO を組まずに数える |
+| `python/plot_mtsptw_routes.py` | mTSPTW のログからルートとタイムラインを描画する |
 
 使い方と環境変数は各ファイルの先頭コメントにある。いずれもリポジトリのルートから実行する。
 
@@ -186,4 +191,8 @@ python3.14 -m venv .venv
 - 結果の図は `results/` 直下 → 古くなったら `results/archive/` へ移す。
 - 研究室の計算機の結果は `lab_results/` に、ローカルの結果は `results/` に分ける。
 - 手元の WSL で回した結果は、スクリプトの既定出力先が `lab_results/` でも `results/` に置く。
+- 実験結果のフォルダ名は `<月日>-<時分>_<モデル>_<条件>[_<備考>][_wsl]`（例 `0928-2329_occupancy_nsweep_t300`）。
+  sh では自分で組み立てず、[scripts/sh/common.sh](scripts/sh/common.sh) の `result_dir` を使う。
+  **新しく sh を作るときも同じ**（`source "$(dirname "${BASH_SOURCE[0]}")/common.sh"` して
+  `OUTDIR=${OUTDIR:-$(result_dir <モデル> <条件>...)}`）。既定値と違う条件だけを名前に足し、細かい条件は `env.txt` に残す。
 - `__pycache__/`・`.venv/`・`remove/` は git に載せない（[.gitignore](.gitignore)）。

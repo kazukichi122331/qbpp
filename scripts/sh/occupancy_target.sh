@@ -10,15 +10,15 @@
 #   target_energy は既知最良値（到達すればその時点で打ち切られる）。
 #
 # 使い方（リポジトリのルートで）:
-#   DEADLINE="14:00" nohup bash scripts/run_time_occupancy_until_target.sh > run_target.out 2>&1 &
+#   DEADLINE="14:00" nohup bash scripts/sh/occupancy_target.sh > run_target.out 2>&1 &
 #
 # 環境変数:
 #   INSTS       インスタンス名の並び   (既定 "n200w20.001 n60w100.001")
 #   TIME_LIMIT  1 回の制限時間（秒）   (既定 300)
 #   DEADLINE    打ち切り時刻（date -d に渡る文字列） (既定 "14:00")
-#   PYTHON / BEST_FILE / OUTDIR        run_time_occupancy_a100.sh と同じ
+#   PYTHON / BEST_FILE / OUTDIR        occupancy.sh と同じ
 #
-# 出力: $OUTDIR/runs.csv（run_time_occupancy_a100.sh と同じ列）/ logs/ / env.txt
+# 出力: $OUTDIR/runs.csv（occupancy.sh と同じ列）/ logs/ / env.txt
 # =============================================================================
 set -u -o pipefail
 
@@ -29,8 +29,9 @@ DEADLINE=${DEADLINE:-"14:00"}
 BEST_FILE=${BEST_FILE:-instances/Dumas/Dumas-best-known-traveltime.txt}
 SCRIPT=src/tsptw/time_occupancy.py
 DEADLINE_EPOCH=$(date -d "$DEADLINE" +%s)
-STAMP=$(date +%m%d%H%M)
-OUTDIR=${OUTDIR:-lab_results/time_occupancy_$(hostname)_until_target_$(echo "$INSTS" | sed 's/\.001//g; s/ /-/g')_t${TIME_LIMIT}_$STAMP}
+# 出力先の名前は common.sh の result_dir で決める（例 0929-1203_occupancy_until_target_wsl）
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+OUTDIR=${OUTDIR:-$(result_dir occupancy_until_target "$(time_tag "$TIME_LIMIT" 300)")}
 
 mkdir -p "$OUTDIR/logs"
 RUNS_CSV=$OUTDIR/runs.csv
