@@ -30,9 +30,13 @@ TSPTW を QUBO に定式化して `qbpp.ABS3Solver` で解く。
 ## セットアップ
 
 ```bash
-python3.14 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+bash scripts/sh/setup_venv.sh   # venv 作成 + pip install -r requirements.txt + 下の補正
 ```
+
+pyqbpp を `pip install -U` などで入れ直したときも、このスクリプトを通す（手で入れたなら
+`chmod +x .venv/bin/qbpp-license`）。pyqbpp の wheel は `qbpp-license` を実行ビットなしで
+同梱しているため、そのままだと PATH 上の古い `/usr/bin/qbpp-license`（deb 版）が代わりに動き、
+`qbpp-license` のバージョン表示が venv の pyqbpp と食い違う。
 
 `pyqbpp` は PyPI から入らない場合がある。研究室配布の wheel を使うときは
 `requirements.txt` の該当行を取得元に書き換える。
