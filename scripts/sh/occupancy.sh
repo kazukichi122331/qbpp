@@ -47,6 +47,8 @@
 #                 数値  … 全インスタンスにその値を使う
 #   BEST_FILE   既知最良値の表                    (既定 instances/Dumas/Dumas-best-known-traveltime.txt)
 #   CUDA_VISIBLE_DEVICES  使う GPU 番号            (既定 7)
+#   SCRIPT      計測する定式化                    (既定 src/tsptw/time_occupancy.py)
+#   EXTRA_ARGS  定式化に渡す追加引数（空白区切り） (既定 空。例 "--scheme delta")
 #   OUTDIR      出力先                            (既定 lab_results/<日時>_<モデル>_<条件>。common.sh 参照)
 #
 # 到達・実行可能の判定（2026-09-28 以降）:
@@ -84,6 +86,7 @@ BEST_FILE=${BEST_FILE:-instances/Dumas/Dumas-best-known-traveltime.txt}
 # 別の番号にしたいときは CUDA_VISIBLE_DEVICES=3 bash scripts/... と前置きすればよい。
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-7}
 SCRIPT=${SCRIPT:-src/tsptw/time_occupancy.py}
+read -r -a extra_args <<< "${EXTRA_ARGS:-}"
 
 # 出力先の名前は common.sh の result_dir で決める（既定と違う条件だけ名前に足す）
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
@@ -128,7 +131,7 @@ SUMMARY_CSV=$OUTDIR/summary.csv
     echo "host        = $(hostname)"
     echo "python      = $($PYTHON -V 2>&1)  ($PYTHON)"
     echo "git commit  = $(git rev-parse --short HEAD 2>/dev/null || echo '-')"
-    echo "script      = $SCRIPT"
+    echo "script      = $SCRIPT ${EXTRA_ARGS:-}"
     echo "sizes       = $SIZES   widths = $WIDTHS   inst = $INST_ID"
     echo "runs        = $RUNS    time_limit = ${TIME_LIMIT}s   cooldown = ${COOLDOWN}s"
     echo "target      = $TARGET$([[ $TARGET == best ]] && echo "  ($BEST_FILE)")"
@@ -199,10 +202,10 @@ for n in $SIZES; do
             t0=$(date +%s.%N)
             if [[ $RUN_TIMEOUT -gt 0 ]]; then
                 timeout "$RUN_TIMEOUT" "$PYTHON" "$SCRIPT" "$TIME_LIMIT" \
-                    -i "$inst" --seed "$seed" "${target_opt[@]}" --no-plot -q > "$log" 2>&1
+                    -i "$inst" --seed "$seed" "${target_opt[@]}" "${extra_args[@]}" --no-plot -q > "$log" 2>&1
             else
                 "$PYTHON" "$SCRIPT" "$TIME_LIMIT" \
-                    -i "$inst" --seed "$seed" "${target_opt[@]}" --no-plot -q > "$log" 2>&1
+                    -i "$inst" --seed "$seed" "${target_opt[@]}" "${extra_args[@]}" --no-plot -q > "$log" 2>&1
             fi
             rc=$?
             t1=$(date +%s.%N)
