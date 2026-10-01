@@ -1,0 +1,29 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n20w40.002  N=21 (顧客 20)  L[0]=386  時間枠の平均幅 32.8
+N=21  o vars = 528  (待機 53 / サービス 475)  prune=True  prec=True (179 組)  arcgap=True
+conflict terms = 11223  (54 対)  うち 3 次の補正 0
+colocated terms = 0
+penalty: RET=387 CUST=197 CONF=99 CONT=99
+build       = 0.921 sec
+round 0: energy=333 obj=333 feasible=True travel=333 bad_cust=[] bad_pair=0 [] t=0.5
+
+----------result(300.0 sec)----------
+energy          = 333
+objective       = 333
+total_wait      = 24
+violated cons   = 0
+TTS         = 0.521 sec (最良解を見つけた時刻)
+tour        = [0, 10, 15, 17, 4, 16, 6, 18, 14, 13, 7, 1, 5, 19, 11, 8, 2, 9, 12, 20, 3, 0]
+visited     = 20/20
+travel time = 333
+return      = 357 (limit 386, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 357)
+var_count   = 528
+term_count  = 11111
+build       = 0.921 sec (式の構築 + simplify)

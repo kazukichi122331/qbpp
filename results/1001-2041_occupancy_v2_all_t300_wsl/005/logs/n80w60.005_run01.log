@@ -1,0 +1,60 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n80w60.005  N=81 (顧客 80)  L[0]=762  時間枠の平均幅 60.4
+N=81  o vars = 5563  (待機 1017 / サービス 4546)  prune=True  prec=True (2757 組)  arcgap=True
+conflict terms = 651053  (871 対)  うち 3 次の補正 0
+colocated terms = 0
+penalty: RET=763 CUST=253 CONF=127 CONT=127
+build       = 1.269 sec
+round 0: energy=821 obj=568 feasible=False travel=560 bad_cust=[55] bad_pair=0 [] t=20.3
+lns 1 early(K=20): energy=4730178 obj=568 feasible=False travel=560 bad_cust=[55] bad_pair=0 [] t=21.4
+lns 3 early(K=20): energy=4730114 obj=568 feasible=False travel=560 bad_cust=[55] bad_pair=0 [] t=23.6
+lns 6 early(K=20): energy=4716948 obj=565 feasible=False travel=557 bad_cust=[55] bad_pair=0 [] t=27.2
+lns 10 early(K=20): energy=4708129 obj=563 feasible=False travel=552 bad_cust=[55] bad_pair=0 [] t=32.9
+lns 13 early(K=20): energy=4694968 obj=560 feasible=False travel=552 bad_cust=[55] bad_pair=0 [] t=37.7
+lns 17 early(K=20): energy=3112336 obj=578 feasible=False travel=586 bad_cust=[] bad_pair=1 [(50, 55)] t=43.4
+lns 20 early(K=20): energy=3081593 obj=571 feasible=False travel=579 bad_cust=[] bad_pair=1 [(50, 55)] t=47.0
+lns 23 early(K=20): energy=3081576 obj=571 feasible=False travel=579 bad_cust=[] bad_pair=1 [(50, 55)] t=50.9
+lns 26 early(K=20): energy=3081469 obj=571 feasible=False travel=579 bad_cust=[] bad_pair=1 [(50, 55)] t=55.5
+lns: K = 30 (t=80.9)
+lns: K = 45 (t=97.4)
+lns 57 early(K=45): energy=2577367 obj=583 feasible=True travel=579 bad_cust=[] bad_pair=0 [] t=111.4
+lns 58 early(K=45): energy=2559799 obj=579 feasible=True travel=579 bad_cust=[] bad_pair=0 [] t=115.5
+lns: K = 60 (t=143.6)
+lns 71 early(K=60): energy=2551048 obj=577 feasible=True travel=577 bad_cust=[] bad_pair=0 [] t=157.0
+restart 1: energy=607 obj=607 feasible=True travel=595 bad_cust=[] bad_pair=0 [] t=202.4
+lns: K = 20 (t=202.4)
+lns 79 early(K=20): energy=2669814 obj=604 feasible=True travel=592 bad_cust=[] bad_pair=0 [] t=203.5
+lns 81 early(K=20): energy=2669806 obj=604 feasible=True travel=592 bad_cust=[] bad_pair=0 [] t=205.7
+lns 84 early(K=20): energy=2665415 obj=603 feasible=True travel=593 bad_cust=[] bad_pair=0 [] t=209.2
+lns 87 early(K=20): energy=2656595 obj=601 feasible=True travel=592 bad_cust=[] bad_pair=0 [] t=213.2
+lns 89 early(K=20): energy=2652266 obj=600 feasible=True travel=591 bad_cust=[] bad_pair=0 [] t=216.2
+lns 92 early(K=20): energy=2643458 obj=598 feasible=True travel=586 bad_cust=[] bad_pair=0 [] t=220.8
+lns 95 early(K=20): energy=2630288 obj=595 feasible=True travel=586 bad_cust=[] bad_pair=0 [] t=225.7
+lns 99 early(K=20): energy=2630260 obj=595 feasible=True travel=586 bad_cust=[] bad_pair=0 [] t=231.4
+lns 102 early(K=20): energy=2625825 obj=594 feasible=True travel=585 bad_cust=[] bad_pair=0 [] t=235.2
+lns 105 early(K=20): energy=2568734 obj=581 feasible=True travel=580 bad_cust=[] bad_pair=0 [] t=239.2
+lns 108 early(K=20): energy=2551048 obj=577 feasible=True travel=577 bad_cust=[] bad_pair=0 [] t=243.9
+lns: K = 30 (t=268.6)
+lns: K = 45 (t=285.2)
+lns: 138 回解き直し、改善 23 回、再出発 1 回
+
+----------result(300.0 sec)----------
+energy          = 577
+objective       = 577
+total_wait      = 122
+violated cons   = 0
+TTS         = 156.985 sec (最良解を見つけた時刻)
+tour        = [0, 16, 52, 43, 26, 3, 72, 75, 12, 64, 63, 20, 9, 68, 8, 53, 46, 28, 79, 35, 70, 42, 13, 76, 74, 56, 54, 22, 19, 37, 49, 39, 34, 14, 66, 58, 36, 45, 69, 11, 17, 25, 40, 7, 2, 4, 27, 1, 30, 18, 65, 5, 47, 41, 23, 48, 29, 38, 50, 78, 55, 21, 71, 61, 67, 57, 32, 10, 33, 44, 60, 51, 24, 77, 15, 62, 59, 6, 73, 80, 31, 0]
+visited     = 80/80
+travel time = 577
+return      = 699 (limit 762, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 699)
+var_count   = 5563
+term_count  = 633539
+build       = 1.269 sec (式の構築 + simplify)

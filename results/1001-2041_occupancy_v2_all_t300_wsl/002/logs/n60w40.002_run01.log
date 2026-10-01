@@ -1,0 +1,32 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n60w40.002  N=61 (顧客 60)  L[0]=721  時間枠の平均幅 40.6
+N=61  o vars = 2521  (待機 389 / サービス 2132)  prune=True  prec=True (1626 組)  arcgap=True
+conflict terms = 138721  (392 対)  うち 3 次の補正 0
+colocated terms = 0
+penalty: RET=722 CUST=253 CONF=127 CONT=127
+build       = 1.017 sec
+round 0: energy=627 obj=627 feasible=True travel=627 bad_cust=[] bad_pair=0 [] t=20.2
+lns 1 early(K=20): energy=1297745 obj=627 feasible=True travel=627 bad_cust=[] bad_pair=0 [] t=21.2
+lns 7 early(K=20): energy=1297706 obj=627 feasible=True travel=621 bad_cust=[] bad_pair=0 [] t=27.6
+lns: 7 回解き直し、改善 2 回、再出発 0 回
+
+----------result(300.0 sec)----------
+energy          = 627
+objective       = 627
+total_wait      = 70
+violated cons   = 0
+TTS         = 27.557 sec (最良解を見つけた時刻)
+tour        = [0, 30, 10, 31, 21, 47, 19, 15, 41, 16, 55, 18, 42, 12, 35, 3, 2, 44, 17, 36, 58, 6, 32, 9, 39, 37, 25, 29, 34, 46, 56, 4, 45, 7, 13, 8, 20, 23, 28, 51, 27, 38, 53, 14, 43, 50, 59, 57, 24, 49, 22, 40, 48, 33, 54, 1, 26, 52, 11, 60, 5, 0]
+visited     = 60/60
+travel time = 621
+return      = 697 (limit 721, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 697)
+var_count   = 2521
+term_count  = 134708
+build       = 1.017 sec (式の構築 + simplify)

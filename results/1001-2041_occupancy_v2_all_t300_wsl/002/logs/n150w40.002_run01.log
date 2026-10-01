@@ -1,0 +1,47 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n150w40.002  N=151 (顧客 150)  L[0]=1098  時間枠の平均幅 37.3
+N=151  o vars = 5153  (待機 819 / サービス 4334)  prune=True  prec=True (10643 組)  arcgap=True
+conflict terms = 346456  (1429 対)  うち 3 次の補正 0
+colocated terms = 46
+penalty: RET=1099 CUST=249 CONF=125 CONT=125
+build       = 1.307 sec
+round 0: energy=969 obj=969 feasible=True travel=951 bad_cust=[] bad_pair=0 [] t=20.2
+lns 1 early(K=20): energy=4081484 obj=969 feasible=True travel=951 bad_cust=[] bad_pair=0 [] t=21.3
+lns 3 early(K=20): energy=4081459 obj=969 feasible=True travel=951 bad_cust=[] bad_pair=0 [] t=23.5
+lns 6 early(K=20): energy=4073108 obj=967 feasible=True travel=950 bad_cust=[] bad_pair=0 [] t=26.8
+lns 9 early(K=20): energy=4073079 obj=967 feasible=True travel=948 bad_cust=[] bad_pair=0 [] t=30.0
+lns 12 early(K=20): energy=4073023 obj=967 feasible=True travel=948 bad_cust=[] bad_pair=0 [] t=33.3
+lns 15 early(K=20): energy=4043885 obj=960 feasible=True travel=948 bad_cust=[] bad_pair=0 [] t=36.6
+lns 18 early(K=20): energy=4031408 obj=957 feasible=True travel=948 bad_cust=[] bad_pair=0 [] t=39.9
+lns 21 early(K=20): energy=4023075 obj=955 feasible=True travel=946 bad_cust=[] bad_pair=0 [] t=43.1
+lns 24 early(K=20): energy=4023073 obj=955 feasible=True travel=946 bad_cust=[] bad_pair=0 [] t=46.4
+lns 27 early(K=20): energy=4014723 obj=953 feasible=True travel=944 bad_cust=[] bad_pair=0 [] t=49.7
+lns 32 early(K=20): energy=4014719 obj=953 feasible=True travel=944 bad_cust=[] bad_pair=0 [] t=55.1
+lns 35 early(K=20): energy=4014690 obj=953 feasible=True travel=945 bad_cust=[] bad_pair=0 [] t=58.4
+lns 38 early(K=20): energy=4006363 obj=951 feasible=True travel=944 bad_cust=[] bad_pair=0 [] t=61.7
+lns 41 early(K=20): energy=4002207 obj=950 feasible=True travel=945 bad_cust=[] bad_pair=0 [] t=64.9
+lns 44 early(K=20): energy=3998033 obj=949 feasible=True travel=944 bad_cust=[] bad_pair=0 [] t=68.2
+lns 48 early(K=20): energy=3998027 obj=949 feasible=True travel=944 bad_cust=[] bad_pair=0 [] t=72.6
+lns 53 early(K=20): energy=3985517 obj=946 feasible=True travel=941 bad_cust=[] bad_pair=0 [] t=78.0
+lns: 53 回解き直し、改善 17 回、再出発 0 回
+
+----------result(300.0 sec)----------
+energy          = 946
+objective       = 946
+total_wait      = 131
+violated cons   = 0
+TTS         = 78.039 sec (最良解を見つけた時刻)
+tour        = [0, 9, 120, 148, 39, 64, 22, 70, 107, 146, 97, 8, 32, 40, 23, 17, 48, 140, 125, 126, 59, 143, 105, 117, 57, 94, 41, 58, 37, 5, 27, 90, 71, 38, 67, 3, 135, 108, 114, 101, 19, 110, 102, 85, 75, 36, 46, 52, 88, 6, 53, 31, 60, 74, 91, 30, 134, 73, 106, 98, 127, 43, 49, 123, 54, 69, 144, 10, 116, 130, 11, 109, 139, 103, 122, 20, 61, 79, 13, 33, 82, 12, 72, 7, 2, 34, 80, 92, 86, 147, 149, 87, 35, 62, 81, 145, 55, 138, 76, 78, 121, 18, 1, 132, 83, 118, 63, 100, 66, 65, 26, 96, 84, 128, 21, 111, 77, 104, 112, 51, 93, 137, 133, 119, 56, 28, 68, 141, 95, 25, 24, 15, 131, 44, 142, 14, 113, 42, 89, 47, 129, 115, 124, 50, 45, 16, 99, 136, 150, 29, 4, 0]
+visited     = 150/150
+travel time = 941
+return      = 1072 (limit 1098, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 1077)
+var_count   = 5153
+term_count  = 334020
+build       = 1.307 sec (式の構築 + simplify)
