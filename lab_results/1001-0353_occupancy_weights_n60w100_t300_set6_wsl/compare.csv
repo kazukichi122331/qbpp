@@ -1,0 +1,4 @@
+config,n,instance,runs_ok,target_energy,reached_count,tts_mean,tts_min,tts_max,energy_mean,energy_min,violated_cons_mean,violated_cons_min,tw_violations_mean,feasible_count,var_count,term_count,build_sec_mean,wall_sec_mean,value_mean,value_min
+learnA_best,60,n60w100.001,3,515,0,,,,558.67,548,0.00,0,0.00,3,7366,2504029,7.199,335.75,533.67,532
+learnA_decay,60,n60w100.001,3,515,0,,,,542.67,534,0.00,0,0.00,3,7366,2504029,7.263,335.46,528.00,526
+learnA_decay_best,60,n60w100.001,3,515,0,,,,664.67,552,0.33,0,0.00,2,7366,2504029,7.298,336.34,533.00,533

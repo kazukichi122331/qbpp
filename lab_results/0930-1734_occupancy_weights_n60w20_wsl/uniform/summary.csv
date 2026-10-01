@@ -1,0 +1,2 @@
+n,instance,runs_ok,target_energy,reached_count,tts_mean,tts_min,tts_max,energy_mean,energy_min,violated_cons_mean,violated_cons_min,tw_violations_mean,feasible_count,var_count,term_count,build_sec_mean,wall_sec_mean,value_mean,value_min
+60,n60w20.001,10,551,3,11.434,1.698,22.516,631.50,551,0.70,0,0.40,6,1593,47088,1.073,27.50,551.50,551

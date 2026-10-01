@@ -1,0 +1,4 @@
+n,instance,run,seed,status,target_energy,energy,reached,tts,objective,violated_cons,tw_violations,feasible,var_count,term_count,build_sec,wall_sec,value,energy_reached
+200,n200w20.001,1,1,ok,1019,1258,0,118.269,1016,1,5,False,5660,280769,1.714,123.09,1027,0
+200,n200w20.001,2,2,ok,1019,1252,0,65.988,1010,1,5,False,5660,280769,1.640,123.04,1024,0
+200,n200w20.001,3,3,ok,1019,1252,0,70.820,1010,1,5,False,5660,280769,1.619,123.11,1023,0

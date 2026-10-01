@@ -1,0 +1,49 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n60w100.001  N=61 (顧客 60)  L[0]=586  時間枠の平均幅 93.7
+N=61  o vars = 7366
+conflict terms = 2494852 禁止組 / 2553485 向き付き組 (逆順組 275414)
+scheme=uniform scale=1.0 P_CUST=241 rounds=10 grow=2.0 cap=4.0 rev=1.0 forced=1.0
+  制約B 係数: 最小 121 平均 123.8 最大 242
+build       = 7.305 sec
+round 1/10: energy=639 objective=518 conflict=1 once=0 contig=0 tts=28.753
+  制約B 係数: 最小 121 平均 124.2 最大 484
+round 2/10: energy=568 objective=568 conflict=0 once=0 contig=0 tts=55.723
+  制約B 係数: 最小 121 平均 124.0 最大 339
+round 3/10: energy=825 objective=535 conflict=2 once=0 contig=0 tts=90.067
+  制約B 係数: 最小 121 平均 124.7 最大 678
+round 4/10: energy=558 objective=558 conflict=0 once=0 contig=0 tts=120.710
+  制約B 係数: 最小 121 平均 124.3 最大 474
+round 5/10: energy=568 objective=568 conflict=0 once=0 contig=0 tts=149.459
+  制約B 係数: 最小 121 平均 124.0 最大 332
+round 6/10: energy=655 objective=534 conflict=1 once=0 contig=0 tts=180.296
+  制約B 係数: 最小 121 平均 124.0 最大 484
+round 7/10: energy=633 objective=512 conflict=1 once=0 contig=0 tts=206.433
+  制約B 係数: 最小 121 平均 124.3 最大 484
+round 8/10: energy=544 objective=544 conflict=0 once=0 contig=0 tts=237.776
+  制約B 係数: 最小 121 平均 124.0 最大 339
+round 9/10: energy=802 objective=512 conflict=2 once=0 contig=0 tts=271.100
+  制約B 係数: 最小 121 平均 124.7 最大 678
+round 10/10: energy=774 objective=533 conflict=0 once=1 contig=0 tts=301.394
+TTS         = 237.776 sec (最良解を見つけた時刻, 全ラウンド通算)
+
+----------result(300.0 sec)----------
+energy          = 544
+objective       = 544
+once_constraint = 0
+conflict_constr = 0
+colocated       = 0
+contiguity      = 0
+violated cons   = 0
+tour        = [0, 17, 57, 43, 50, 6, 1, 19, 51, 36, 47, 29, 38, 46, 26, 5, 12, 39, 56, 30, 20, 18, 37, 58, 45, 34, 15, 44, 23, 40, 48, 54, 28, 41, 8, 16, 7, 31, 24, 22, 13, 42, 2, 52, 32, 14, 55, 33, 25, 35, 4, 59, 10, 27, 21, 11, 3, 9, 60, 53, 49, 0]
+visited     = 60/60
+travel time = 526
+return      = 576 (limit 586, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 576)
+var_count   = 7366
+term_count  = 2504029

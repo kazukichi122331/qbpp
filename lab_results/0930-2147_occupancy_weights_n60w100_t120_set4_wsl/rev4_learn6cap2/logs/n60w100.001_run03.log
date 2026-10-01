@@ -1,0 +1,41 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n60w100.001  N=61 (顧客 60)  L[0]=586  時間枠の平均幅 93.7
+N=61  o vars = 7366
+conflict terms = 2494852 禁止組 / 2553485 向き付き組 (逆順組 275414)
+scheme=uniform scale=1.0 P_CUST=241 rounds=6 grow=2.0 cap=2.0 rev=4.0 forced=1.0
+  制約B 係数: 最小 121 平均 163.9 最大 605
+build       = 7.108 sec
+round 1/6: energy=762 objective=520 conflict=2 once=0 contig=0 tts=19.537
+  制約B 係数: 最小 121 平均 165.0 最大 1210
+round 2/6: energy=885 objective=523 conflict=1 once=1 contig=0 tts=36.779
+  制約B 係数: 最小 121 平均 165.4 最大 1210
+round 3/6: energy=982 objective=500 conflict=0 once=2 contig=0 tts=57.018
+  制約B 係数: 最小 121 平均 165.4 最大 1210
+round 4/6: energy=893 objective=531 conflict=1 once=1 contig=0 tts=71.508
+  制約B 係数: 最小 121 平均 165.7 最大 1210
+round 5/6: energy=571 objective=571 conflict=0 once=0 contig=0 tts=98.537
+  制約B 係数: 最小 121 平均 165.7 最大 1210
+round 6/6: energy=778 objective=537 conflict=0 once=1 contig=0 tts=112.270
+TTS         = 98.537 sec (最良解を見つけた時刻, 全ラウンド通算)
+
+----------result(120.0 sec)----------
+energy          = 571
+objective       = 571
+once_constraint = 0
+conflict_constr = 0
+colocated       = 0
+contiguity      = 0
+violated cons   = 0
+tour        = [0, 6, 17, 57, 43, 50, 1, 19, 51, 36, 47, 29, 38, 46, 26, 5, 39, 56, 18, 20, 30, 44, 23, 48, 34, 45, 58, 37, 12, 15, 40, 28, 54, 41, 31, 8, 16, 7, 24, 42, 22, 13, 2, 52, 32, 14, 55, 33, 25, 35, 4, 59, 10, 27, 21, 11, 3, 9, 60, 53, 49, 0]
+visited     = 60/60
+travel time = 544
+return      = 576 (limit 586, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 576)
+var_count   = 7366
+term_count  = 2504029
