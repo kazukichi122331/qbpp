@@ -1,0 +1,44 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n40w100.001  N=41 (顧客 40)  L[0]=582  時間枠の平均幅 99.7
+N=41  o vars = 4617  (待機 698 / サービス 3919)  prune=True  prec=True (526 組)  arcgap=True
+conflict terms = 1011808  (481 対)  うち 3 次の補正 0
+colocated terms = 0
+penalty: RET=583 CUST=229 CONF=115 CONT=115
+build       = 1.356 sec
+round 0: energy=445 obj=445 feasible=True travel=444 bad_cust=[] bad_pair=0 [] t=20.4
+lns 1 early(K=20, 窓 -6): energy=1677899 obj=444 feasible=True travel=444 bad_cust=[] bad_pair=0 [] t=23.1
+lns 5 early(K=20, 窓 6): energy=1655321 obj=438 feasible=True travel=438 bad_cust=[] bad_pair=0 [] t=38.7
+lns 6 early(K=20, 窓 0): energy=1640245 obj=434 feasible=True travel=434 bad_cust=[] bad_pair=0 [] t=44.2
+lns: K = 30 (t=83.2)
+lns: K = 40 (t=103.5)
+lns: K = 20 (t=123.7)
+lns: K = 30 (t=144.7)
+lns: K = 40 (t=165.1)
+lns: K = 20 (t=185.2)
+lns: K = 30 (t=206.3)
+lns: K = 40 (t=226.7)
+lns: K = 20 (t=246.8)
+lns: K = 30 (t=267.9)
+lns: K = 40 (t=288.3)
+lns: 69 回解き直し、改善 3 回
+
+----------result(300.0 sec)----------
+energy          = 434
+objective       = 434
+total_wait      = 46
+violated cons   = 0
+TTS         = 44.197 sec (最良解を見つけた時刻)
+tour        = [0, 34, 5, 16, 26, 1, 27, 18, 32, 20, 31, 33, 13, 2, 14, 8, 22, 19, 21, 3, 24, 37, 36, 25, 15, 30, 4, 12, 35, 39, 11, 9, 29, 17, 23, 38, 6, 10, 40, 7, 28, 0]
+visited     = 40/40
+travel time = 434
+return      = 480 (limit 582, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 480)
+var_count   = 4617
+term_count  = 992880
+build       = 1.356 sec (式の構築 + simplify)

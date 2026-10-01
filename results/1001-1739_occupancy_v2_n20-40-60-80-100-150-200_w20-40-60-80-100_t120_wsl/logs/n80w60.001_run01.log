@@ -1,0 +1,19 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n80w60.001  N=81 (顧客 80)  L[0]=737  時間枠の平均幅 58.1
+N=81  o vars = 3836  (待機 538 / サービス 3298)  prune=True  prec=True (2882 組)  arcgap=True
+conflict terms = 287519  (771 対)
+colocated terms = 0
+penalty: RET=738 CUST=229 CONF=115 CONT=115
+build       = 1.107 sec
+round 0: energy=587 obj=587 feasible=True travel=583 bad_cust=[] bad_pair=0 [] t=20.2
+lns 1 (K=20, 窓 0): energy=582 obj=582 feasible=True travel=581 bad_cust=[] bad_pair=0 [] t=21.3
+lns 4 (K=20, 窓 30): energy=581 obj=581 feasible=True travel=581 bad_cust=[] bad_pair=0 [] t=24.4
+lns 6 (K=20, 窓 50): energy=578 obj=578 feasible=True travel=578 bad_cust=[] bad_pair=0 [] t=26.6
+lns 8 (K=20, 窓 70): energy=557 obj=557 feasible=True travel=557 bad_cust=[] bad_pair=0 [] t=28.7
+lns: K を 30 に広げる (t=37.1)
+lns: K を 45 に広げる (t=44.9)
+lns: K を 60 に広げる (t=54.2)

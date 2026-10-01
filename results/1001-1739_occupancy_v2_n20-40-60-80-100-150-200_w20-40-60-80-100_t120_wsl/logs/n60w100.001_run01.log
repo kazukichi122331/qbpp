@@ -1,0 +1,44 @@
+QUBO++ Ver. 2026.09.30
+Floating License for Hiroshima Univ. CS/IS Lab Member Only
+Expires at: 2027/03/31 23:59:59
+Variable Limit: Unlimited/Unlimited (CPU/GPU)
+  (Unlimited: capped only by the implementation — up to 2^30 - 1 variables of each kind, binary and integer)
+instance    = n60w100.001  N=61 (顧客 60)  L[0]=586  時間枠の平均幅 93.7
+N=61  o vars = 5607  (待機 728 / サービス 4879)  prune=True  prec=True (1319 組)  arcgap=True
+conflict terms = 1550438  (861 対)
+colocated terms = 0
+penalty: RET=587 CUST=241 CONF=121 CONT=121
+build       = 1.533 sec
+round 0: energy=653 obj=532 feasible=True travel=540 bad_cust=[] bad_pair=1 [(40, 58)] t=20.5
+lns 2 (K=20, 窓 10): energy=541 obj=541 feasible=True travel=530 bad_cust=[] bad_pair=0 [] t=22.8
+lns 4 (K=20, 窓 30): energy=539 obj=539 feasible=True travel=530 bad_cust=[] bad_pair=0 [] t=25.2
+lns 5 (K=20, 窓 40): energy=534 obj=534 feasible=True travel=530 bad_cust=[] bad_pair=0 [] t=26.3
+lns 7 (K=20, 窓 2): energy=532 obj=532 feasible=True travel=528 bad_cust=[] bad_pair=0 [] t=28.6
+lns 8 (K=20, 窓 12): energy=528 obj=528 feasible=True travel=527 bad_cust=[] bad_pair=0 [] t=29.8
+lns 11 (K=20, 窓 42): energy=527 obj=527 feasible=True travel=523 bad_cust=[] bad_pair=0 [] t=33.4
+lns 12 (K=20, 窓 52): energy=524 obj=524 feasible=True travel=523 bad_cust=[] bad_pair=0 [] t=34.6
+lns 15 (K=20, 窓 29): energy=522 obj=522 feasible=True travel=521 bad_cust=[] bad_pair=0 [] t=38.0
+lns 19 (K=20, 窓 1): energy=521 obj=521 feasible=True travel=521 bad_cust=[] bad_pair=0 [] t=42.5
+lns 29 (K=20, 窓 44): energy=518 obj=518 feasible=True travel=517 bad_cust=[] bad_pair=0 [] t=54.9
+lns 30 (K=20, 窓 54): energy=517 obj=517 feasible=True travel=517 bad_cust=[] bad_pair=0 [] t=56.3
+lns: K を 30 に広げる (t=64.5)
+lns: K を 45 に広げる (t=72.2)
+lns: K を 60 に広げる (t=80.3)
+lns: 55 回解き直し、改善 11 回
+
+----------result(120.0 sec)----------
+energy          = 518
+objective       = 518
+total_wait      = 65
+violated cons   = 0
+TTS         = 54.899 sec (最良解を見つけた時刻)
+tour        = [0, 17, 57, 43, 50, 6, 1, 19, 51, 36, 47, 29, 38, 26, 5, 20, 30, 18, 56, 39, 12, 37, 58, 46, 45, 34, 15, 44, 23, 40, 48, 28, 54, 41, 8, 16, 7, 31, 24, 42, 22, 13, 2, 52, 32, 14, 55, 33, 25, 10, 59, 4, 35, 27, 21, 11, 3, 9, 60, 53, 49, 0]
+visited     = 60/60
+travel time = 517
+return      = 582 (limit 586, 最早開始)
+tw violations = 0
+feasible    = True
+model times = ok (ソルバの時刻: 到着前の開始 0 / 時間枠外 0 / 帰着 583)
+var_count   = 5607
+term_count  = 1519223
+build       = 1.533 sec (式の構築 + simplify)
